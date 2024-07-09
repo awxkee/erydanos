@@ -39,8 +39,8 @@ let value = vsinq_f32(vdupq_n_f32(0.1f32));
 
 # Performance against libm
 
-Sine Erydanos           time:   [17.785 ns 17.884 ns 18.095 ns]\                           
-Sine libm               time:   [27.928 ns 28.595 ns 29.398 ns] 
+Sine Erydanos           time:   [17.785 ns 17.884 ns 18.095 ns]                           
+Sine libm               time:   [27.928 ns 28.595 ns 29.398 ns]
 
 Tan Erydanos            time:   [27.593 ns 27.607 ns 27.621 ns]\
 Tan libm                time:   [28.854 ns 29.165 ns 29.467 ns]

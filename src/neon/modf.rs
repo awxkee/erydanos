@@ -10,7 +10,7 @@ use std::arch::aarch64::{
 
 #[inline(always)]
 /// Compute fmod
-pub(crate) unsafe fn vfmodq_f32(a: float32x4_t, b: float32x4_t) -> float32x4_t {
+pub unsafe fn vfmodq_f32(a: float32x4_t, b: float32x4_t) -> float32x4_t {
     let dividend_vec = a;
     let divisor_vec = b;
     let division = vmulq_f32(dividend_vec, vrecpeq_f32(divisor_vec));

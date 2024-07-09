@@ -32,6 +32,6 @@ pub mod sin;
 pub mod sinf;
 pub mod tan;
 pub mod tanf;
-mod modf;
+pub mod modf;
 
 pub use general::vqshrn_n_u128;
