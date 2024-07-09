@@ -1,0 +1,19 @@
+workspace = { members = ["app"] }
+
+[package]
+name = "erydanos"
+version = "0.1.0"
+edition = "2021"
+description = "Optimized routines for ARM NEON"
+readme = "README.md"
+keywords = ["cos", "sin", "tan"]
+license = "Apache-2.0 OR BSD-3-Clause"
+authors = ["Radzivon Bartoshyk"]
+documentation = "https://github.com/awxkee/erydanos"
+categories = ["mathematics"]
+homepage = "https://github.com/awxkee/erydanos"
+repository = "https://github.com/awxkee/erydanos"
+exclude = ["*.jpg"]
+
+[dependencies]
+num-traits = "0.2.19"
