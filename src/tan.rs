@@ -5,6 +5,10 @@
  * // license that can be found in the LICENSE file.
  */
 use crate::generalf::{mlaf, rintk};
+#[cfg(all(
+    any(target_arch = "aarch64", target_arch = "arm"),
+    target_feature = "neon"
+))]
 use crate::neon::tan::vtanq_f64;
 use crate::sin::{PI_A2, PI_B2};
 #[cfg(all(
