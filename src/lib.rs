@@ -71,6 +71,11 @@ pub mod sin;
 pub mod sinf;
 pub mod sqrt;
 pub mod sqrtf;
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+pub mod sse;
 pub mod tan;
 pub mod tanf;
 mod vector;

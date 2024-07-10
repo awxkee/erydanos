@@ -2,11 +2,11 @@ workspace = { members = ["app"] }
 
 [package]
 name = "erydanos"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Optimized routines for ARM NEON"
 readme = "README.md"
-keywords = ["cos", "sin", "tan"]
+keywords = ["cos", "sin", "tan", "arithmetic"]
 license = "Apache-2.0 OR BSD-3-Clause"
 authors = ["Radzivon Bartoshyk"]
 documentation = "https://github.com/awxkee/erydanos"

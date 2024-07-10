@@ -25,6 +25,7 @@ pub mod hypot;
 pub mod hypotf;
 pub mod ln;
 pub mod lnf;
+pub mod modf;
 pub mod poly128;
 pub mod pow;
 pub mod powf;
@@ -32,6 +33,5 @@ pub mod sin;
 pub mod sinf;
 pub mod tan;
 pub mod tanf;
-pub mod modf;
 
 pub use general::vqshrn_n_u128;
