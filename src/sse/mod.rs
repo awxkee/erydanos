@@ -19,6 +19,7 @@ mod sinf;
 mod unsigned;
 mod atanf;
 mod atan2f;
+mod fmod;
 
 pub use cbrtf::_mm_cbrt_ps;
 pub use cosf::_mm_cos_ps;
@@ -59,6 +60,7 @@ pub use powf::_mm_pow_fast_ps;
 pub use powf::_mm_pow_ps;
 pub use atanf::_mm_atan_ps;
 pub use atan2f::_mm_atan2_ps;
+pub use fmod::_mm_fmod_ps;
 pub use saturation_epi32::_mm_adds_epi32;
 pub use saturation_epi32::_mm_adds_epu32;
 pub use saturation_epi32::_mm_subs_epi32;
