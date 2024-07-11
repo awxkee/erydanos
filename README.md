@@ -1,6 +1,6 @@
 # Math utilities for NEON, SSE and scalar implementation
 
-Contains basic math routines for scalar implementations and NEON simd routines.
+Contains basic math routines for scalar implementations and NEON simd and SSE routines.
 Everything implemented in single precision and double precision.
 Almost all routines have *ULP* under 1.5 that is absolutely enough for media processing application (for some media
 application it can be too high).

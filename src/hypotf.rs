@@ -5,6 +5,11 @@
  * // license that can be found in the LICENSE file.
  */
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+use crate::_mm_hypot_ps;
 use crate::abs::eabsf;
 use crate::fmaxf::efmaxf;
 use crate::fminf::efminf;
@@ -12,13 +17,17 @@ use crate::fminf::efminf;
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::hypotf::vhypotq_f32;
+use crate::neon::vhypotq_f32;
 use crate::sqrtf::esqrtf;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
+#[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
+use std::arch::x86::*;
+#[cfg(all(target_arch = "x86_64", target_feature = "sse4.1"))]
+use std::arch::x86_64::*;
 
 #[inline]
 fn do_hypotf(x: f32, y: f32) -> f32 {
@@ -55,6 +64,21 @@ fn do_hypotf_neon(x: f32, y: f32) -> f32 {
     }
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+#[inline]
+fn do_hypot_sse(x: f32, y: f32) -> f32 {
+    unsafe {
+        let vx = _mm_set1_ps(x);
+        let vy = _mm_set1_ps(y);
+        let value = _mm_hypot_ps(vx, vy);
+        let ex = f32::from_bits(_mm_extract_ps::<0>(value) as u32);
+        ex
+    }
+}
+
 /// Computes 2D Euclidian Distance *ULP 0.5*
 #[inline]
 pub fn ehypotf(x: f32, y: f32) -> f32 {
@@ -65,6 +89,13 @@ pub fn ehypotf(x: f32, y: f32) -> f32 {
     ))]
     {
         _dispatcher = do_hypotf_neon;
+    }
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_hypot_sse;
     }
     _dispatcher(x, y)
 }

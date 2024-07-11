@@ -13,7 +13,7 @@ use crate::ln::eln;
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::pow::vpowq_f64;
+use crate::neon::vpowq_f64;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"

@@ -17,7 +17,7 @@ use crate::generalf::{mlaf, rintfk, IsNegZero};
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::tanf::vtanq_f32;
+use crate::neon::vtanq_f32;
 
 pub(crate) const TAN_POLY_1_S: f32 = 0.3333353561669567628359f32;
 pub(crate) const TAN_POLY_2_S: f32 = 0.1332909226735641872812f32;
@@ -55,38 +55,6 @@ fn do_tanf(d: f32) -> f32 {
     u = mlaf(u, x2, TAN_POLY_1_S);
     u = mlaf(u, x2 * x, x);
 
-    if (q & 1) != 0 {
-        u = 1. / u;
-    }
-
-    let c = u;
-    if c.isnegzero() {
-        return 0f32;
-    }
-    c
-}
-
-#[inline]
-pub fn do_tan_coeffs(d: f32, coeffs: &Vec<f32>) -> f32 {
-    let qf = rintfk(d * FRAC_2_PI);
-    let q = qf as i32;
-    let mut x = mlaf(qf, -PI_A_F * 0.5, d);
-    x = mlaf(qf, -PI_B_F * 0.5, x);
-    x = mlaf(qf, -PI_C_F * 0.5, x);
-    x = mlaf(qf, -PI_D_F * 0.5, x);
-
-    if (q & 1) != 0 {
-        x = -x;
-    }
-
-    let mut u = coeffs[6];
-    u = mlaf(u, x, coeffs[5]);
-    u = mlaf(u, x, coeffs[4]);
-    u = mlaf(u, x, coeffs[3]);
-    u = mlaf(u, x, coeffs[2]);
-    u = mlaf(u, x, coeffs[1]);
-    u = mlaf(u, x, coeffs[0]);
-    u = mlaf(u, x * x, x);
     if (q & 1) != 0 {
         u = 1. / u;
     }

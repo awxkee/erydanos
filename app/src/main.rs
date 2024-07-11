@@ -1,14 +1,9 @@
-#![feature(float_next_up_down)]
-#![feature(const_float_bits_conv)]
-
-use std::arch::aarch64::*;
 use std::ops::Shr;
 
 use rug::Assign;
 
 use crate::search_optimized_coeffs::search_coeffs_f32;
 use crate::ulp::{count_ulp, count_ulp_f64};
-use erydanos::abs::eabs;
 use erydanos::{
     ArcCos, ArcSin, ArcTan, ArcTan2, Cosine, CubeRoot, Exponential, Logarithmic, Power, Sine,
     Tangent,

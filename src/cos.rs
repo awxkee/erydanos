@@ -16,7 +16,7 @@ use crate::generalf::{mlaf, rintk, IsNegZero};
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::cos::vcosq_f64;
+use crate::neon::vcosq_f64;
 use crate::sin::{
     PI_A2, PI_B2, SIN_POLY_10_D, SIN_POLY_2_D, SIN_POLY_3_D, SIN_POLY_4_D, SIN_POLY_5_D,
     SIN_POLY_6_D, SIN_POLY_7_D, SIN_POLY_8_D, SIN_POLY_9_D,

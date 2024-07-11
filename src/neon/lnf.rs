@@ -13,12 +13,10 @@ use std::arch::aarch64::*;
 #[inline]
 pub unsafe fn vlnq_f32(d: float32x4_t) -> float32x4_t {
     let mut res = vlnq_fast_f32(d);
-    // d == 0 || d == Inf -> Inf
-    res = vbslq_f32(
-        vorrq_u32(vceqzq_f32(d), visinfq_f32(d)),
-        vdupq_n_f32(f32::INFINITY),
-        res,
-    );
+    // d == 0 -> -Inf
+    res = vbslq_f32(vceqzq_f32(d), vdupq_n_f32(f32::NEG_INFINITY), res);
+    // d == Inf -> Inf
+    res = vbslq_f32(visinfq_f32(d), vdupq_n_f32(f32::INFINITY), res);
     // d < 0 || d == Nan -> Nan
     res = vbslq_f32(
         vorrq_u32(vcltzq_f32(d), visnanq_f32(d)),

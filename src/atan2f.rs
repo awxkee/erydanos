@@ -10,7 +10,7 @@ use crate::atanf::eatanf;
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::atan2f::vatan2q_f32;
+use crate::neon::vatan2q_f32;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"

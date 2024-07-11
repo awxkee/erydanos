@@ -47,7 +47,7 @@ pub unsafe fn vmlsfq_f64(a: float64x2_t, b: float64x2_t, c: float64x2_t) -> floa
 }
 
 #[inline(always)]
-pub(crate) unsafe fn vpow2ifq_s32(q: int32x4_t) -> int32x4_t {
+pub unsafe fn vpow2ifq_s32(q: int32x4_t) -> int32x4_t {
     let j = vshlq_n_s32::<23>(vaddq_s32(q, vdupq_n_s32(0x7f)));
     j
 }
@@ -59,31 +59,37 @@ pub unsafe fn vpow2ifq_s64(q: int64x2_t) -> int64x2_t {
 }
 
 #[inline(always)]
+/// Returns true flag if value is Infinity
 pub unsafe fn visinfq_f32(d: float32x4_t) -> uint32x4_t {
     return vceqq_f32(d, vdupq_n_f32(f32::INFINITY));
 }
 
 #[inline(always)]
+/// Returns true flag if value is Neg Infinity
 pub unsafe fn visneginfq_f32(d: float32x4_t) -> uint32x4_t {
     return vceqq_f32(d, vdupq_n_f32(f32::NEG_INFINITY));
 }
 
 #[inline(always)]
+/// Returns true flag if value is Infinity
 pub unsafe fn visinfq_f64(d: float64x2_t) -> uint64x2_t {
     return vceqq_f64(d, vdupq_n_f64(f64::INFINITY));
 }
 
 #[inline(always)]
+/// Returns true flag if value is Neg Infinity
 pub unsafe fn visneginfq_f64(d: float64x2_t) -> uint64x2_t {
     return vceqq_f64(d, vdupq_n_f64(f64::NEG_INFINITY));
 }
 
 #[inline(always)]
+/// Returns true flag if value is NaN
 pub unsafe fn visnanq_f64(d: float64x2_t) -> uint64x2_t {
     return vreinterpretq_u64_u32(vmvnq_u32(vreinterpretq_u32_u64(vceqq_f64(d, d))));
 }
 
 #[inline(always)]
+/// Returns true flag if value is NaN
 pub unsafe fn visnanq_f32(d: float32x4_t) -> uint32x4_t {
     return vmvnq_u32(vceqq_f32(d, d));
 }
@@ -125,7 +131,7 @@ pub unsafe fn visnegzeroq_f64(d: float64x2_t) -> uint64x2_t {
 }
 
 #[inline(always)]
-// Founds n in x=a+𝑛ln(2), |a| <= 1
+/// Founds n in x=a+𝑛ln(2), |a| <= 1
 pub unsafe fn vilogb2kq_f32(d: float32x4_t) -> int32x4_t {
     vsubq_s32(
         vandq_s32(
@@ -137,13 +143,13 @@ pub unsafe fn vilogb2kq_f32(d: float32x4_t) -> int32x4_t {
 }
 
 #[inline(always)]
-// Founds n in x=a+𝑛ln(2), |a| <= 1
+/// Founds a in x=a+𝑛ln(2), |a| <= 1
 pub unsafe fn vldexp3kq_f32(x: float32x4_t, n: int32x4_t) -> float32x4_t {
     vreinterpretq_f32_s32(vaddq_s32(vreinterpretq_s32_f32(x), vshlq_n_s32::<23>(n)))
 }
 
 #[inline(always)]
-// Founds n in x=a+𝑛ln(2), |a| <= 1
+/// Founds n in x=a+𝑛ln(2), |a| <= 1
 pub unsafe fn vilogb2kq_f64(d: float64x2_t) -> int64x2_t {
     vsubq_s64(
         vandq_s64(
@@ -155,7 +161,7 @@ pub unsafe fn vilogb2kq_f64(d: float64x2_t) -> int64x2_t {
 }
 
 #[inline(always)]
-// Founds n in x=a+𝑛ln(2), |a| <= 1
+/// Founds a in x=a+𝑛ln(2), |a| <= 1
 pub unsafe fn vldexp3kq_f64(x: float64x2_t, n: int64x2_t) -> float64x2_t {
     vreinterpretq_f64_s64(vaddq_s64(vreinterpretq_s64_f64(x), vshlq_n_s64::<52>(n)))
 }
@@ -230,6 +236,17 @@ pub unsafe fn vmulq_u64(ab: uint64x2_t, cd: uint64x2_t) -> uint64x2_t {
 
     /* return ac + high; */
     return vaddq_u64(high, ac);
+}
+
+#[inline(always)]
+pub unsafe fn vmul_s64(ab: int64x1_t, cd: int64x1_t) -> int64x1_t {
+    let sign_ab = vshr_n_u64::<63>(vreinterpret_u64_s64(ab));
+    let sign_cd = vshr_n_u64::<63>(vreinterpret_u64_s64(cd));
+    let sign = veor_u64(sign_ab, sign_cd);
+    let uab = vreinterpret_u64_s64(vabs_s64(ab));
+    let ucd = vreinterpret_u64_s64(vabs_s64(cd));
+    let product = vreinterpret_s64_u64(vmul_u64(uab, ucd));
+    vbsl_s64(vceqz_u64(sign), product, vneg_s64(product))
 }
 
 #[inline(always)]

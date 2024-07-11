@@ -16,7 +16,7 @@ use crate::generalf::{ilogb2k, ldexp3k, mlaf};
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::ln::vlnq_f64;
+use crate::neon::vlnq_f64;
 
 pub(crate) const LN_POLY_1_D: f64 = 1.9999999999999999977273f64;
 pub(crate) const LN_POLY_2_D: f64 = 0.66666666666667652664208f64;

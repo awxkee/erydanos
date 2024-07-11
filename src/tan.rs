@@ -9,7 +9,7 @@ use crate::generalf::{mlaf, rintk};
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::tan::vtanq_f64;
+use crate::neon::vtanq_f64;
 use crate::sin::{PI_A2, PI_B2};
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),

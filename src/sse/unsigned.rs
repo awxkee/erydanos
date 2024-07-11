@@ -4,11 +4,11 @@
  * // Use of this source code is governed by a BSD-style
  * // license that can be found in the LICENSE file.
  */
+use crate::sse::_mm_shuffle;
 #[cfg(target_arch = "x86")]
 use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
-use crate::sse::_mm_shuffle;
 
 #[inline(always)]
 /// Compare *greater than or equal to* unsigned 8,
@@ -115,7 +115,7 @@ pub unsafe fn _mm_cmpgt_epu64(a: __m128i, b: __m128i) -> __m128i {
     let b = _mm_xor_si128(b, a);
     let a = _mm_and_si128(a, b);
     let b = _mm_sub_epi64(_mm_srli_epi64::<1>(b), a);
-    const SHUFFLE_FLAG: i32 = _mm_shuffle(3,3,1,1);
+    const SHUFFLE_FLAG: i32 = _mm_shuffle(3, 3, 1, 1);
     _mm_shuffle_epi32::<SHUFFLE_FLAG>(_mm_srai_epi32::<31>(b))
 }
 
@@ -145,8 +145,8 @@ pub unsafe fn _mm_cmplt_epi64(a: __m128i, b: __m128i) -> __m128i {
 
 #[cfg(test)]
 mod tests {
-    use crate::sse::epi64::_mm_setr_epi64x;
     use super::*;
+    use crate::sse::epi64::_mm_setr_epi64x;
 
     #[test]
     fn test_ge_epi64() {
@@ -193,5 +193,4 @@ mod tests {
             assert_ne!(flag_2, 0);
         }
     }
-
 }

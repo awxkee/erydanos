@@ -2,9 +2,9 @@ workspace = { members = ["app"] }
 
 [package]
 name = "erydanos"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
-description = "Optimized routines for ARM NEON"
+description = "Optimized routines for ARM NEON and SSE"
 readme = "README.md"
 keywords = ["cos", "sin", "tan", "arithmetic"]
 license = "Apache-2.0 OR BSD-3-Clause"

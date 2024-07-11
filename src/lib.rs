@@ -5,34 +5,7 @@
  * // license that can be found in the LICENSE file.
  */
 
-use crate::abs::{eabs, eabsf};
-use crate::acos::eacos;
-use crate::acosf::eacosf;
-use crate::asin::easin;
-use crate::asinf::easinf;
-use crate::atan::eatan;
-use crate::atan2::eatan2;
-use crate::atan2f::eatan2f;
-use crate::atanf::eatanf;
-use crate::cbrt::ecbrt;
-use crate::cbrtf::ecbrtf;
-use crate::cos::ecos;
-use crate::cosf::ecosf;
-use crate::exp::eexp;
-use crate::expf::eexpf;
-use crate::floor::{efloor, efloorf};
-use crate::ln::eln;
-use crate::lnf::elnf;
-use crate::pow::epow;
-use crate::powf::epowf;
-use crate::sin::esin;
-use crate::sinf::esinf;
-use crate::sqrt::esqrt;
-use crate::sqrtf::esqrtf;
-use crate::tan::etan;
-use crate::tanf::etanf;
-
-pub mod abs;
+mod abs;
 pub mod acos;
 pub mod acosf;
 pub mod asin;
@@ -51,34 +24,80 @@ pub mod double_precision;
 pub mod exp;
 pub mod expf;
 pub mod floor;
-pub mod fmax;
-pub mod fmaxf;
-pub mod fmin;
-pub mod fminf;
-pub mod generalf;
-pub mod hypot;
-pub mod hypotf;
-pub mod ln;
-pub mod lnf;
+mod fmax;
+mod fmaxf;
+mod fmin;
+mod fminf;
+mod generalf;
+mod hypot;
+mod hypotf;
+mod ln;
+mod lnf;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-pub mod neon;
-pub mod pow;
-pub mod powf;
-pub mod sin;
-pub mod sinf;
-pub mod sqrt;
-pub mod sqrtf;
+mod neon;
+mod pow;
+mod powf;
+mod sin;
+mod sinf;
+mod sqrt;
+mod sqrtf;
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
     target_feature = "sse4.1"
 ))]
-pub mod sse;
-pub mod tan;
-pub mod tanf;
+mod sse;
+mod tan;
+mod tanf;
 mod vector;
+
+pub use abs::{eabs, eabsf};
+pub use acos::eacos;
+pub use acosf::eacosf;
+pub use asin::easin;
+pub use asinf::easinf;
+pub use atan::eatan;
+pub use atan2::eatan2;
+pub use atan2f::eatan2f;
+pub use atanf::eatanf;
+pub use cbrt::ecbrt;
+pub use cbrtf::ecbrtf;
+pub use cos::ecos;
+pub use cosf::ecosf;
+pub use exp::eexp;
+pub use expf::eexpf;
+pub use floor::{efloor, efloorf};
+pub use fmax::efmax;
+pub use fmaxf::efmaxf;
+pub use fmin::efmin;
+pub use fminf::efminf;
+pub use generalf::*;
+pub use hypot::ehypot;
+pub use hypotf::ehypotf;
+pub use ln::eln;
+pub use lnf::elnf;
+pub use pow::epow;
+pub use powf::epowf;
+pub use sin::esin;
+pub use sinf::esinf;
+pub use sqrt::esqrt;
+pub use sqrtf::esqrtf;
+pub use tan::etan;
+pub use tanf::etanf;
+
+#[cfg(all(
+    any(target_arch = "aarch64", target_arch = "arm"),
+    target_feature = "neon"
+))]
+pub use neon::*;
+
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+pub use sse::*;
 
 pub trait Sqrtf {
     fn esqrt(self) -> Self;

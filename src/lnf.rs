@@ -5,17 +5,26 @@
  * // license that can be found in the LICENSE file.
  */
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+use crate::_mm_ln_ps;
 use crate::generalf::{ilogb2kf, ldexp3kf, mlaf};
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::lnf::vlnq_f32;
+use crate::neon::vlnq_f32;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
+#[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
+use std::arch::x86::*;
+#[cfg(all(target_arch = "x86_64", target_feature = "sse4.1"))]
+use std::arch::x86_64::*;
 
 pub const LN_POLY_1_F: f32 = 2f32;
 pub const LN_POLY_2_F: f32 = 0.6666677f32;
@@ -59,6 +68,20 @@ fn do_lnf_neon(x: f32) -> f32 {
     }
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+#[inline]
+fn do_ln_sse(d: f32) -> f32 {
+    unsafe {
+        let v = _mm_set1_ps(d);
+        let value = _mm_ln_ps(v);
+        let ex = f32::from_bits(_mm_extract_ps::<0>(value) as u32);
+        ex
+    }
+}
+
 /// Computes natural logarithm for an argument *ULP 1.0*
 pub fn elnf(d: f32) -> f32 {
     let mut _dispatcher: fn(f32) -> f32 = do_ln;
@@ -68,6 +91,13 @@ pub fn elnf(d: f32) -> f32 {
     ))]
     {
         _dispatcher = do_lnf_neon;
+    }
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_ln_sse;
     }
     _dispatcher(d)
 }

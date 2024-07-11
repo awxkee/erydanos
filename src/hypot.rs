@@ -12,7 +12,7 @@ use crate::fmin::efmin;
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::hypot::vhypotq_f64;
+use crate::neon::vhypotq_f64;
 use crate::sqrt::esqrt;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),

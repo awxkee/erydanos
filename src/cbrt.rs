@@ -16,7 +16,7 @@ use crate::cbrtf::halley_cbrt;
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::cbrt::vcbrtq_f64;
+use crate::neon::vcbrtq_f64;
 
 const B1: u32 = 715094163;
 

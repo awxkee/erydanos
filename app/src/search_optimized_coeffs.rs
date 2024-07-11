@@ -4,7 +4,6 @@ use erydanos::asin::*;
 use erydanos::asinf::*;
 use erydanos::atan::do_atan_coeffs;
 use erydanos::atanf::*;
-use erydanos::tanf::do_tan_coeffs;
 
 pub fn search_coeffs_f32() {
     let mut max_ulp: f64 = 0.;
@@ -34,15 +33,15 @@ pub fn search_coeffs_f32() {
         for i in -200..200 {
             let scale = 0.005f32;
 
-            let counted = rug::Float::tan(rug::Float::with_val(100, i as f32 * scale));
-            let ap = do_tan_coeffs(i as f32 * scale, &new_coeffs);
-            let lm = counted.to_f32();
-
-            let ulp = count_ulp(ap, &counted) as f64;
-            if ulp > max_ulp {
-                max_ulp = ulp;
-                best_val = i as f32 * scale;
-            }
+            // let counted = rug::Float::tan(rug::Float::with_val(100, i as f32 * scale));
+            // let ap = do_tan_coeffs(i as f32 * scale, &new_coeffs);
+            // let lm = counted.to_f32();
+            //
+            // let ulp = count_ulp(ap, &counted) as f64;
+            // if ulp > max_ulp {
+            //     max_ulp = ulp;
+            //     best_val = i as f32 * scale;
+            // }
         }
 
         if max_ulp < best_ulp {

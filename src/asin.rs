@@ -17,7 +17,7 @@ use crate::generalf::{copysignk, mlaf};
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::asin::vasinq_f64;
+use crate::neon::vasinq_f64;
 use crate::sqrt::esqrt;
 
 pub const ASIN_POLY_1_D: f64 = 1.000000000000000023366;

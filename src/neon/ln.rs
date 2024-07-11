@@ -32,12 +32,10 @@ pub unsafe fn vlnq_f64(d: float64x2_t) -> float64x2_t {
         vcvtq_f64_s64(n),
         vmulq_f64(x, u),
     );
-    // d == 0 || d == Inf -> Inf
-    res = vbslq_f64(
-        vorrq_u64(vceqzq_f64(d), visinfq_f64(d)),
-        vdupq_n_f64(f64::INFINITY),
-        res,
-    );
+    // d == 0 -> -Inf
+    res = vbslq_f64(vceqzq_f64(d), vdupq_n_f64(f64::NEG_INFINITY), res);
+    // d == Inf -> Inf
+    res = vbslq_f64(visinfq_f64(d), vdupq_n_f64(f64::INFINITY), res);
     // d < 0 || d == Nan -> Nan
     res = vbslq_f64(
         vorrq_u64(vcltzq_f64(d), visnanq_f64(d)),

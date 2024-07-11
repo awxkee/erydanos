@@ -11,7 +11,7 @@ use crate::generalf::{copysignfk, mlaf};
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::asinf::vasinq_f32;
+use crate::neon::vasinq_f32;
 use crate::sqrtf::esqrtf;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),

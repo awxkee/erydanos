@@ -5,17 +5,26 @@
  * // license that can be found in the LICENSE file.
  */
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+use crate::_mm_exp_ps;
 use crate::generalf::{mlaf, pow2if, rintfk};
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::expf::vexpq_f32;
+use crate::neon::vexpq_f32;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
+#[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
+use std::arch::x86::*;
+#[cfg(all(target_arch = "x86_64", target_feature = "sse4.1"))]
+use std::arch::x86_64::*;
 
 pub(crate) const EXP_POLY_1_S: f32 = 2f32;
 pub(crate) const EXP_POLY_2_S: f32 = 0.16666707f32;
@@ -65,6 +74,20 @@ fn do_exp_neon(d: f32) -> f32 {
     }
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+#[inline]
+fn do_exp_sse(d: f32) -> f32 {
+    unsafe {
+        let v = _mm_set1_ps(d);
+        let value = _mm_exp_ps(v);
+        let ex = f32::from_bits(_mm_extract_ps::<0>(value) as u32);
+        ex
+    }
+}
+
 /// Computes exp for an argument *ULP 1.0*
 #[inline]
 pub fn eexpf(d: f32) -> f32 {
@@ -75,6 +98,13 @@ pub fn eexpf(d: f32) -> f32 {
     ))]
     {
         _dispatcher = do_exp_neon;
+    }
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_exp_sse;
     }
     _dispatcher(d)
 }

@@ -16,7 +16,7 @@ use crate::generalf::{mlaf, rintk, IsNegZero};
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::sin::vsinq_f64;
+use crate::neon::vsinq_f64;
 
 pub(crate) const SIN_POLY_2_D: f64 = -0.1666666666666666666666f64;
 pub(crate) const SIN_POLY_3_D: f64 = 0.008333333333333333332719f64;

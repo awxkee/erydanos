@@ -10,7 +10,7 @@ use crate::generalf::{mlaf, pow2i, rintk};
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::exp::vexpq_f64;
+use crate::neon::vexpq_f64;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"

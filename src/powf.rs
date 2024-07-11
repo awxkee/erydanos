@@ -5,6 +5,11 @@
  * // license that can be found in the LICENSE file.
  */
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+use crate::_mm_pow_ps;
 use crate::abs::eabsf;
 use crate::expf::eexpf;
 use crate::generalf::{copysignfk, is_neg_infinitef, is_pos_infinitef};
@@ -13,12 +18,16 @@ use crate::lnf::elnf;
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::powf::vpowq_f32;
+use crate::neon::vpowq_f32;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
+#[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
+use std::arch::x86::*;
+#[cfg(all(target_arch = "x86_64", target_feature = "sse4.1"))]
+use std::arch::x86_64::*;
 
 #[inline]
 fn do_pow(d: f32, n: f32) -> f32 {
@@ -49,6 +58,20 @@ pub fn do_pow_neon(d: f32, n: f32) -> f32 {
     }
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+#[inline]
+pub fn do_pow_sse(d: f32, n: f32) -> f32 {
+    unsafe {
+        let val = _mm_set1_ps(d);
+        let power = _mm_set1_ps(n);
+        let gt = _mm_extract_ps::<0>(_mm_pow_ps(val, power)) as u32;
+        f32::from_bits(gt)
+    }
+}
+
 #[inline]
 pub fn epowf(d: f32, n: f32) -> f32 {
     let mut _dispatcher: fn(f32, f32) -> f32 = do_pow;
@@ -58,6 +81,13 @@ pub fn epowf(d: f32, n: f32) -> f32 {
     ))]
     {
         _dispatcher = do_pow_neon;
+    }
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_pow_sse;
     }
     _dispatcher(d, n)
 }

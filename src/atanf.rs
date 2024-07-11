@@ -10,7 +10,7 @@ use crate::generalf::mlaf;
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::neon::atanf::vatanq_f32;
+use crate::neon::vatanq_f32;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
