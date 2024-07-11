@@ -25,14 +25,14 @@ unsafe fn halley_cbrt(x: __m128, a: __m128) -> __m128 {
 
 #[inline(always)]
 unsafe fn integer_pow_1_3(hx: __m128i) -> __m128i {
-    let scale = _mm_set1_epi32(341);
+    let scale = _mm_set1_epi64x(341);
     let hi = _mm_srli_epi64::<10>(_mm_mul_epu64(
         _mm_unpackhi_epi32(hx, _mm_setzero_si128()),
         scale,
     ));
     let lo = _mm_srli_epi64::<10>(_mm_mul_epu64(
         _mm_unpacklo_epi32(hx, _mm_setzero_si128()),
-        _mm_set1_epi64x(341),
+        scale,
     ));
     _mm_packus_epi64(lo, hi)
 }
@@ -65,13 +65,29 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_expf() {
+    fn test_cbrtf() {
+        unsafe {
+            // Test regular
+            let value = _mm_set1_ps(0.0201934222);
+            let comparison = _mm_cbrt_ps(value);
+            let flag_1 = f32::from_bits(_mm_extract_ps::<3>(comparison) as u32);
+            assert_eq!(flag_1, 0.272313982f32);
+        }
+
         unsafe {
             // Test regular
             let value = _mm_set1_ps(27f32);
             let comparison = _mm_cbrt_ps(value);
             let flag_1 = f32::from_bits(_mm_extract_ps::<0>(comparison) as u32);
             assert_eq!(flag_1, 3f32);
+        }
+
+        unsafe {
+            // Test regular
+            let value = _mm_set1_ps(0.5f32);
+            let comparison = _mm_cbrt_ps(value);
+            let flag_1 = f32::from_bits(_mm_extract_ps::<0>(comparison) as u32);
+            assert_eq!(flag_1, 0.7937005f32);
         }
 
         unsafe {
