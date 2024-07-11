@@ -15,13 +15,12 @@ use std::arch::x86_64::*;
 #[inline]
 /// Computes cosine function with error bound *ULP 1.5*
 pub unsafe fn _mm_cos_ps(d: __m128) -> __m128 {
-    let half_1 = _mm_set1_ps(0.5f32);
     let q = _mm_add_epi32(
         _mm_set1_epi32(1),
-        _mm_mul_epi32(
+        _mm_mullo_epi32(
             _mm_rint_ps(_mm_sub_ps(
                 _mm_mul_ps(d, _mm_set1_ps(std::f32::consts::FRAC_1_PI)),
-                half_1,
+                _mm_set1_ps(0.5f32),
             )),
             _mm_set1_epi32(2),
         ),
@@ -55,6 +54,13 @@ mod tests {
 
     #[test]
     fn test_cosf() {
+        unsafe {
+            let value = _mm_set1_ps(-2.70752239);
+            let comparison = _mm_cos_ps(value);
+            let flag_1 = f32::from_bits(_mm_extract_ps::<1>(comparison) as u32);
+            let control = -0.907261451f32;
+            assert_eq!(flag_1, control);
+        }
         unsafe {
             let value = _mm_set1_ps(2f32);
             let comparison = _mm_cos_ps(value);
