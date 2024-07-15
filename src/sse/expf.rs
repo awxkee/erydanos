@@ -8,7 +8,7 @@
 use crate::expf::{
     EXP_POLY_1_S, EXP_POLY_2_S, EXP_POLY_3_S, EXP_POLY_4_S, EXP_POLY_5_S, L2L_F, L2U_F,
 };
-use crate::sse::general::_mm_rint_ps;
+use crate::sse::generalf::_mm_rint_ps;
 use crate::{_mm_mlaf_ps, _mm_pow2if_epi32, _mm_select_ps};
 #[cfg(target_arch = "x86")]
 use std::arch::x86::*;

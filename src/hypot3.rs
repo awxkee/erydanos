@@ -8,13 +8,22 @@
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use std::arch::aarch64::*;
+use crate::vhypot3q_f64;
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+use crate::{_mm_extract_pd, _mm_hypot3_pd};
+use crate::{eabs, efmax};
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
-use crate::vhypot3q_f64;
-use crate::{eabs, efmax};
+use std::arch::aarch64::*;
+#[cfg(all(target_feature = "sse4.1", target_arch = "x86"))]
+use std::arch::x86::*;
+#[cfg(all(target_feature = "sse4.1", target_arch = "x86_64"))]
+use std::arch::x86_64::*;
 
 #[inline]
 fn do_hypot3(x: f64, y: f64, z: f64) -> f64 {
@@ -60,6 +69,20 @@ fn do_hypot3_neon(x: f64, y: f64, z: f64) -> f64 {
     }
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+#[inline]
+fn do_hypot3_sse(x: f64, y: f64, z: f64) -> f64 {
+    unsafe {
+        let vx = _mm_set1_pd(x);
+        let vy = _mm_set1_pd(y);
+        let vz = _mm_set1_pd(z);
+        _mm_extract_pd::<0>(_mm_hypot3_pd(vx, vy, vz))
+    }
+}
+
 /// Computes 3D Euclidian Distance *ULP 0.6666*
 #[inline]
 pub fn ehypot3(x: f64, y: f64, z: f64) -> f64 {
@@ -70,6 +93,13 @@ pub fn ehypot3(x: f64, y: f64, z: f64) -> f64 {
     ))]
     {
         _dispatcher = do_hypot3_neon;
+    }
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_hypot3_sse;
     }
     _dispatcher(x, y, z)
 }

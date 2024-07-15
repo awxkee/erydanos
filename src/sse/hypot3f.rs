@@ -71,9 +71,18 @@ mod tests {
             let vz = _mm_set1_ps(5.);
             let comparison = _mm_hypot3_ps(vx, vy, vz);
             let flag_1 = f32::from_bits(_mm_extract_ps::<0>(comparison) as u32);
-            assert_eq!(flag_1, f32::from_bits(_mm_extract_ps::<1>(comparison) as u32));
-            assert_eq!(flag_1, f32::from_bits(_mm_extract_ps::<2>(comparison) as u32));
-            assert_eq!(flag_1, f32::from_bits(_mm_extract_ps::<3>(comparison) as u32));
+            assert_eq!(
+                flag_1,
+                f32::from_bits(_mm_extract_ps::<1>(comparison) as u32)
+            );
+            assert_eq!(
+                flag_1,
+                f32::from_bits(_mm_extract_ps::<2>(comparison) as u32)
+            );
+            assert_eq!(
+                flag_1,
+                f32::from_bits(_mm_extract_ps::<3>(comparison) as u32)
+            );
             assert_eq!(flag_1, 7.0710678118654752440f32);
         }
     }

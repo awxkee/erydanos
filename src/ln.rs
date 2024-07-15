@@ -17,15 +17,24 @@ use crate::generalf::{ilogb2k, ldexp3k, mlaf};
     target_feature = "neon"
 ))]
 use crate::neon::vlnq_f64;
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+use crate::{_mm_extract_pd, _mm_ln_pd};
+#[cfg(all(target_feature = "sse4.1", target_arch = "x86"))]
+use std::arch::x86::*;
+#[cfg(all(target_feature = "sse4.1", target_arch = "x86_64"))]
+use std::arch::x86_64::*;
 
-pub(crate) const LN_POLY_1_D: f64 = 1.9999999999999999977273f64;
-pub(crate) const LN_POLY_2_D: f64 = 0.66666666666667652664208f64;
-pub(crate) const LN_POLY_3_D: f64 = 0.39999999999298481856961f64;
-pub(crate) const LN_POLY_4_D: f64 = 0.2857142876143736275867f64;
-pub(crate) const LN_POLY_5_D: f64 = 0.22222196978570449848180f64;
-pub(crate) const LN_POLY_6_D: f64 = 0.18183635619969267855036f64;
-pub(crate) const LN_POLY_7_D: f64 = 0.14810676790894580143625f64;
-pub(crate) const LN_POLY_8_D: f64 = 0.15312429691862720905483f64;
+pub(crate) const LN_POLY_1_D: f64 = 2.;
+pub(crate) const LN_POLY_2_D: f64 = 0.666_666_666_666_777_874_006_3;
+pub(crate) const LN_POLY_3_D: f64 = 0.399_999_999_950_799_600_689_777;
+pub(crate) const LN_POLY_4_D: f64 = 0.285_714_294_746_548_025_383_248;
+pub(crate) const LN_POLY_5_D: f64 = 0.222_221_366_518_767_365_905_163;
+pub(crate) const LN_POLY_6_D: f64 = 0.181_863_266_251_982_985_677_316;
+pub(crate) const LN_POLY_7_D: f64 = 0.152_519_917_006_351_951_593_857;
+pub(crate) const LN_POLY_8_D: f64 = 0.153_487_338_491_425_068_243_146;
 
 // Absolute error 1.136351756823757474514312*10^-18
 #[inline]
@@ -68,6 +77,19 @@ fn do_ln_neon(x: f64) -> f64 {
     }
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+#[inline]
+fn do_ln_sse(x: f64) -> f64 {
+    unsafe {
+        let vx = _mm_set1_pd(x);
+        _mm_extract_pd::<0>(_mm_ln_pd(vx))
+    }
+}
+
+/// Computes natural logarithm *ULP 3.5*
 pub fn eln(d: f64) -> f64 {
     let mut _dispatcher: fn(f64) -> f64 = do_ln;
     #[cfg(all(
@@ -76,6 +98,13 @@ pub fn eln(d: f64) -> f64 {
     ))]
     {
         _dispatcher = do_ln_neon;
+    }
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_ln_sse;
     }
     _dispatcher(d)
 }

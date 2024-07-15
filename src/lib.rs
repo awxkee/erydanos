@@ -96,18 +96,20 @@ pub use tanf::etanf;
 ))]
 pub use neon::*;
 
+use crate::hypot3::ehypot3;
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
     target_feature = "sse4.1"
 ))]
 pub use sse::*;
-use crate::hypot3::ehypot3;
 
 pub trait Sqrtf {
+    /// Computes square root
     fn esqrt(self) -> Self;
 }
 
 pub trait Cosine {
+    /// Computes cosine
     fn ecos(self) -> Self;
 }
 
@@ -124,6 +126,7 @@ impl Cosine for f64 {
 }
 
 pub trait Sine {
+    /// Computes sine
     fn esin(self) -> Self;
 }
 
@@ -140,6 +143,7 @@ impl Sine for f64 {
 }
 
 pub trait Exponential {
+    /// Computes exponent
     fn eexp(self) -> Self;
 }
 
@@ -168,6 +172,7 @@ impl Sqrtf for f64 {
 }
 
 pub trait Roundable {
+    /// Rounds value towards infinity
     fn efloor(self) -> Self;
 }
 
@@ -184,6 +189,7 @@ impl Roundable for f64 {
 }
 
 pub trait Signed {
+    /// Modulo operation
     fn eabs(self) -> Self;
 }
 
@@ -200,6 +206,7 @@ impl Signed for f64 {
 }
 
 pub trait Logarithmic {
+    /// Computes natural logarithm for value
     fn eln(self) -> Self;
 }
 
@@ -216,6 +223,7 @@ impl Logarithmic for f64 {
 }
 
 pub trait Tangent {
+    /// Computes tan for value
     fn etan(self) -> Self;
 }
 
@@ -232,6 +240,7 @@ impl Tangent for f64 {
 }
 
 pub trait Power {
+    /// Computes power for given value and power
     fn epow(self, n: Self) -> Self;
 }
 
@@ -248,6 +257,7 @@ impl Power for f64 {
 }
 
 pub trait ArcTan {
+    /// Computes arc tangent
     fn eatan(self) -> Self;
 }
 
@@ -264,6 +274,7 @@ impl ArcTan for f64 {
 }
 
 pub trait ArcSin {
+    /// Computes arc sine
     fn easin(self) -> Self;
 }
 
@@ -280,6 +291,7 @@ impl ArcSin for f64 {
 }
 
 pub trait ArcCos {
+    /// Computes arc cosine
     fn eacos(self) -> Self;
 }
 
@@ -312,6 +324,7 @@ impl ArcTan2 for f64 {
 }
 
 pub trait CubeRoot {
+    /// Computes cube root
     fn ecbrt(self) -> Self;
 }
 
@@ -328,6 +341,7 @@ impl CubeRoot for f64 {
 }
 
 pub trait Euclidean3DDistance {
+    /// Computes euclidean 3D distance
     fn hypot3(self, y: Self, z: Self) -> Self;
 }
 
@@ -340,5 +354,22 @@ impl Euclidean3DDistance for f32 {
 impl Euclidean3DDistance for f64 {
     fn hypot3(self, y: Self, z: Self) -> Self {
         ehypot3(self, y, z)
+    }
+}
+
+pub trait Euclidean2DDistance {
+    /// Computes euclidean 2D distance
+    fn ehypot(self, y: Self) -> Self;
+}
+
+impl Euclidean2DDistance for f32 {
+    fn ehypot(self, y: Self) -> Self {
+        ehypotf(self, y)
+    }
+}
+
+impl Euclidean2DDistance for f64 {
+    fn ehypot(self, y: Self) -> Self {
+        ehypot(self, y)
     }
 }

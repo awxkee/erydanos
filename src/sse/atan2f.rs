@@ -5,11 +5,11 @@
  * // license that can be found in the LICENSE file.
  */
 
+use crate::{_mm_atan_ps, _mm_eqzero_ps, _mm_ltzero_ps, _mm_select_ps};
 #[cfg(target_arch = "x86")]
 use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
-use crate::{_mm_atan_ps, _mm_eqzero_ps, _mm_ltzero_ps, _mm_select_ps};
 
 /// Computes atan for Y,X
 #[inline(always)]

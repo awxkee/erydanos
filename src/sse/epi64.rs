@@ -92,3 +92,36 @@ pub unsafe fn _mm_blendv_epi64(xmm0: __m128i, xmm1: __m128i, mask: __m128i) -> _
 pub unsafe fn _mm_setr_epi64x(a: i64, b: i64) -> __m128i {
     _mm_set_epi64x(b, a)
 }
+
+#[inline(always)]
+#[rustfmt::skip]
+/// Converts signed 64 bit integers into double
+pub unsafe fn _mm_cvtepi64_pd(v: __m128i) -> __m128d {
+    let magic_i_lo   = _mm_set1_epi64x(0x4330000000000000); // 2^52               encoded as floating-point
+    let magic_i_hi32 = _mm_set1_epi64x(0x4530000080000000); // 2^84 + 2^63        encoded as floating-point
+    let magic_i_all  = _mm_set1_epi64x(0x4530000080100000); // 2^84 + 2^63 + 2^52 encoded as floating-point
+    let magic_d_all  = _mm_castsi128_pd(magic_i_all);
+
+    let     v_lo     = _mm_blend_epi16::<0b00110011>(magic_i_lo, v);      // Blend the 32 lowest significant bits of v with magic_int_lo
+    let mut v_hi     = _mm_srli_epi64::<32>(v);                           // Extract the 32 most significant bits of v
+    v_hi     = _mm_xor_si128(v_hi, magic_i_hi32);               // Flip the msb of v_hi and blend with 0x45300000
+    let     v_hi_dbl = _mm_sub_pd(_mm_castsi128_pd(v_hi), magic_d_all); // Compute in double precision:
+    _mm_add_pd(v_hi_dbl, _mm_castsi128_pd(v_lo))     // (v_hi - magic_d_all) + v_lo  Do not assume associativity of floating point addition !!
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::_mm_extract_pd;
+
+    #[test]
+    fn test_cvtepi64_pd() {
+        unsafe {
+            // Test regular
+            let value = _mm_set1_epi64x(24);
+            let converted = _mm_cvtepi64_pd(value);
+            let flag = _mm_extract_pd::<0>(converted);
+            assert_eq!(flag, 24.);
+        }
+    }
+}
