@@ -1,13 +1,10 @@
 use std::ops::Shr;
-
+use libm::hypotf;
 use rug::Assign;
 
 use crate::search_optimized_coeffs::search_coeffs_f32;
 use crate::ulp::{count_ulp, count_ulp_f64};
-use erydanos::{
-    ArcCos, ArcSin, ArcTan, ArcTan2, Cosine, CubeRoot, Exponential, Logarithmic, Power, Sine,
-    Tangent,
-};
+use erydanos::{ArcCos, ArcSin, ArcTan, ArcTan2, Cosine, CubeRoot, ehypot3f, Exponential, Logarithmic, Power, Sine, Tangent};
 
 mod random_coeffs;
 mod search_optimized_coeffs;
@@ -88,10 +85,13 @@ fn main() {
     //                            7.0286875805892933342908819335643795001448882776914963128865953514f64));
     /// original value 1.95, app rempif 7.02867214722499, 7.028687580589293
     /// MATHEMATICA 7.02868758058929
-    let ag = (0.185f64).etan();
-    let rg = rug::Float::tan(rug::Float::with_val(100, 0.1850f64));
-    println!("approx {}, real {}", ag, rg.to_f64(),);
-    println!("{}", count_ulp_f64(ag, &rg));
+    let x = 2.0f32;
+    let y = 32f32;
+    let z = 12f32;
+    let ag = ehypot3f(x, y, z);
+    let rg = rug::Float::tan(rug::Float::with_val(25, 0.1850f64));
+    println!("approx {}, real {}", ag, (x*x + y * y + z*z).sqrt());
+    // println!("{}", count_ulp_f64(ag, &rg));
     // println!(
     //     " bits diff {}",
     //     rg.to_f32().to_bits().max(ag.to_bits()) - rg.to_f32().to_bits().min(ag.to_bits())

@@ -33,6 +33,8 @@ mod sin;
 mod sinf;
 mod tan;
 mod tanf;
+mod hypot3f;
+mod hypot3;
 
 pub use asin::vasinq_f64;
 pub use asinf::vasinq_f32;
@@ -94,3 +96,7 @@ pub use sin::vsinq_f64;
 pub use sinf::vsinq_f32;
 pub use tan::vtanq_f64;
 pub use tanf::vtanq_f32;
+pub use hypot3f::vhypot3q_f32;
+pub use hypot3f::vhypot3q_fast_f32;
+pub use hypot3::vhypot3q_f64;
+pub use hypot3::vhypot3q_fast_f64;

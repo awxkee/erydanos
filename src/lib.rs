@@ -30,6 +30,8 @@ mod fmin;
 mod fminf;
 mod generalf;
 mod hypot;
+mod hypot3;
+mod hypot3f;
 mod hypotf;
 mod ln;
 mod lnf;
@@ -75,6 +77,7 @@ pub use fmin::efmin;
 pub use fminf::efminf;
 pub use generalf::*;
 pub use hypot::ehypot;
+pub use hypot3f::ehypot3f;
 pub use hypotf::ehypotf;
 pub use ln::eln;
 pub use lnf::elnf;
@@ -98,6 +101,7 @@ pub use neon::*;
     target_feature = "sse4.1"
 ))]
 pub use sse::*;
+use crate::hypot3::ehypot3;
 
 pub trait Sqrtf {
     fn esqrt(self) -> Self;
@@ -320,5 +324,21 @@ impl CubeRoot for f32 {
 impl CubeRoot for f64 {
     fn ecbrt(self) -> Self {
         ecbrt(self)
+    }
+}
+
+pub trait Euclidean3DDistance {
+    fn hypot3(self, y: Self, z: Self) -> Self;
+}
+
+impl Euclidean3DDistance for f32 {
+    fn hypot3(self, y: Self, z: Self) -> Self {
+        ehypot3f(self, y, z)
+    }
+}
+
+impl Euclidean3DDistance for f64 {
+    fn hypot3(self, y: Self, z: Self) -> Self {
+        ehypot3(self, y, z)
     }
 }

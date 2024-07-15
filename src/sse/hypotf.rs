@@ -19,8 +19,8 @@ pub unsafe fn _mm_hypot_ps(x: __m128, y: __m128) -> __m128 {
     let min = _mm_min_ps(x, y);
     let r = _mm_div_ps(min, max);
     let mut ret = _mm_mul_ps(_mm_sqrt_ps(_mm_mlaf_ps(r, r, _mm_set1_ps(1f32))), max);
-    let is_any_infinite = _mm_and_ps(_mm_isinf_ps(x), _mm_isinf_ps(y));
-    let is_any_nan = _mm_and_ps(_mm_isnan_ps(x), _mm_isnan_ps(y));
+    let is_any_infinite = _mm_or_ps(_mm_isinf_ps(x), _mm_isinf_ps(y));
+    let is_any_nan = _mm_or_ps(_mm_isnan_ps(x), _mm_isnan_ps(y));
     let is_min_zero = _mm_eqzero_ps(min);
     let is_result_nan = _mm_isnan_ps(ret);
     ret = _mm_select_ps(is_any_infinite, _mm_set1_ps(f32::INFINITY), ret);

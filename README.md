@@ -28,6 +28,7 @@ Implemented routines:
 - [x] tan
 - [x] sqrt
 - [x] ceil
+- [x] hypot3
 
 # Example
 
