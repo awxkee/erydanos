@@ -5,7 +5,17 @@
  * // license that can be found in the LICENSE file.
  */
 
+#[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
+use std::arch::x86::*;
+#[cfg(all(target_arch = "x86_64", target_feature = "sse4.1"))]
+use std::arch::x86_64::*;
+
 use crate::generalf::mlaf;
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+use crate::{_mm_atan_pd, _mm_extract_pd};
 
 // Chebyshev
 pub const ATAN_POLY_1_D: f64 = 0.9999999999999999f64;
@@ -78,57 +88,28 @@ fn do_atan(d: f64) -> f64 {
     u
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
 #[inline]
-pub fn do_atan_coeffs(d: f64, coeffs: &Vec<f64>) -> f64 {
-    let mut x = d;
-    let q = if x < 0f64 {
-        x = -x;
-        1
-    } else {
-        0
-    };
-    let c = x;
-    if x > 1f64 {
-        x = 1f64 / x;
+fn do_atan_sse(d: f64) -> f64 {
+    unsafe {
+        let j = _mm_set1_pd(d);
+        _mm_extract_pd::<0>(_mm_atan_pd(j))
     }
-
-    let x2 = x * x;
-    let mut u = ATAN_POLY_21_D;
-    u = mlaf(u, x2, ATAN_POLY_20_D);
-    u = mlaf(u, x2, ATAN_POLY_19_D);
-    u = mlaf(u, x2, ATAN_POLY_18_D);
-    u = mlaf(u, x2, ATAN_POLY_17_D);
-    u = mlaf(u, x2, ATAN_POLY_16_D);
-    u = mlaf(u, x2, ATAN_POLY_15_D);
-    u = mlaf(u, x2, ATAN_POLY_14_D);
-    u = mlaf(u, x2, ATAN_POLY_13_D);
-    u = mlaf(u, x2, ATAN_POLY_12_D);
-    u = mlaf(u, x2, ATAN_POLY_11_D);
-    u = mlaf(u, x2, ATAN_POLY_10_D);
-    u = mlaf(u, x2, ATAN_POLY_9_D);
-    u = mlaf(u, x2, ATAN_POLY_8_D);
-    u = mlaf(u, x2, ATAN_POLY_7_D);
-    u = mlaf(u, x2, ATAN_POLY_6_D);
-    u = mlaf(u, x2, ATAN_POLY_5_D);
-    u = mlaf(u, x2, ATAN_POLY_4_D);
-    u = mlaf(u, x2, coeffs[2]);
-    u = mlaf(u, x2, coeffs[1]);
-    u = mlaf(u, x2, coeffs[0]);
-    u = u * x;
-    u = if c > 1f64 {
-        std::f64::consts::FRAC_PI_2 - u
-    } else {
-        u
-    };
-    if q & 1 != 0 {
-        u = -u;
-    }
-    u
 }
 
 #[inline]
 /// Computes atan for f64 with error bound *ULP 2.0*
 pub fn eatan(d: f64) -> f64 {
     let mut _dispatcher: fn(f64) -> f64 = do_atan;
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_atan_sse;
+    }
     _dispatcher(d)
 }

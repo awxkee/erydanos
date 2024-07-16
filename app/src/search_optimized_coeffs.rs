@@ -2,7 +2,6 @@ use crate::random_coeffs::{random_coeff, random_coeff_f64};
 use crate::ulp::{count_ulp, count_ulp_f64};
 use erydanos::asin::*;
 use erydanos::asinf::*;
-use erydanos::atan::do_atan_coeffs;
 use erydanos::atanf::*;
 use erydanos::exp::do_exp_coeff;
 

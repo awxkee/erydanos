@@ -88,6 +88,7 @@ pub unsafe fn _mm_max_epi64x(a: __m128i, b: __m128i) -> __m128i {
     let mask = _mm_cmpgt_epi64(a, b);
     _mm_blendv_epi8(b, a, mask)
 }
+
 #[inline(always)]
 /// Takes min for epi64
 pub unsafe fn _mm_min_epi64x(a: __m128i, b: __m128i) -> __m128i {

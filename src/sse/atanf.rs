@@ -40,3 +40,35 @@ pub unsafe fn _mm_atan_ps(x: __m128) -> __m128 {
     u = _mm_select_ps(negative_mask, _mm_neg_ps(u), u);
     u
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::_mm_atan_ps;
+
+    #[test]
+    fn test_atanf() {
+        unsafe {
+            let value = _mm_set1_ps(-2.70752239);
+            let comparison = _mm_atan_ps(value);
+            let flag_1 = f32::from_bits(_mm_extract_ps::<1>(comparison) as u32);
+            let control = -1.216996f32;
+            assert_eq!(flag_1, control);
+        }
+        unsafe {
+            let value = _mm_set1_ps(2f32);
+            let comparison = _mm_atan_ps(value);
+            let flag_1 = f32::from_bits(_mm_extract_ps::<0>(comparison) as u32);
+            let control = 1.107148717794090503017065460f32;
+            assert_eq!(flag_1, control);
+        }
+
+        unsafe {
+            let value = _mm_set1_ps(-2f32);
+            let comparison = _mm_atan_ps(value);
+            let flag_1 = f32::from_bits(_mm_extract_ps::<0>(comparison) as u32);
+            let control = -1.107148717794090503017065460f32;
+            assert_eq!(flag_1, control);
+        }
+    }
+}

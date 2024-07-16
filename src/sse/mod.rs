@@ -4,6 +4,8 @@
  * // Use of this source code is governed by a BSD-style
  * // license that can be found in the LICENSE file.
  */
+mod atan;
+mod atan2;
 mod atan2f;
 mod atanf;
 mod cbrtf;
@@ -33,6 +35,8 @@ mod tan;
 mod tanf;
 mod unsigned;
 
+pub use atan::_mm_atan_pd;
+pub use atan2::_mm_atan2_pd;
 pub use atan2f::_mm_atan2_ps;
 pub use atanf::_mm_atan_ps;
 pub use cbrtf::_mm_cbrt_ps;
