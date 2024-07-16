@@ -107,6 +107,34 @@ pub unsafe fn _mm_cvtepi64_pd(v: __m128i) -> __m128d {
     _mm_add_pd(v_hi_dbl, _mm_castsi128_pd(v_lo))     // (v_hi - magic_d_all) + v_lo  Do not assume associativity of floating point addition !!
 }
 
+#[inline(always)]
+/// Shifts packed 64-bit integers in a right by the amount specified by the corresponding element in count while shifting in zeros,
+pub unsafe fn _mm_srlv_epi64x(a: __m128i, count: __m128i) -> __m128i {
+    let shift_low = _mm_srl_epi64(a, count); // high 64 is garbage
+    let count_high = _mm_unpackhi_epi64(count, count); // broadcast the high element
+    let shift_high = _mm_srl_epi64(a, count_high); // low 64 is garbage
+
+    // use movsd as a blend.
+    return _mm_castpd_si128(_mm_move_sd(
+        _mm_castsi128_pd(shift_high),
+        _mm_castsi128_pd(shift_low),
+    ));
+}
+
+#[inline(always)]
+/// Shifts packed 64-bit integers in a left by the amount specified by the corresponding element in count while shifting in zeros, and returns the result.
+pub unsafe fn _mm_sllv_epi64x(a: __m128i, count: __m128i) -> __m128i {
+    let shift_low = _mm_sll_epi64(a, count); // high 64 is garbage
+    let count_high = _mm_unpackhi_epi64(count, count); // broadcast the high element
+    let shift_high = _mm_sll_epi64(a, count_high); // low 64 is garbage
+
+    // use movsd as a blend.
+    return _mm_castpd_si128(_mm_move_sd(
+        _mm_castsi128_pd(shift_high),
+        _mm_castsi128_pd(shift_low),
+    ));
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

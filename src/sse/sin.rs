@@ -4,17 +4,16 @@
  * // Use of this source code is governed by a BSD-style
  * // license that can be found in the LICENSE file.
  */
-use std::arch::x86_64::{
-    __m128d, _mm_add_epi64, _mm_and_si128, _mm_cmpeq_epi64, _mm_mul_pd, _mm_set1_epi64x,
-    _mm_set1_pd, _mm_setzero_si128,
-};
-
 use crate::sin::{
     PI_A2, PI_B2, SIN_POLY_10_D, SIN_POLY_2_D, SIN_POLY_3_D, SIN_POLY_4_D, SIN_POLY_5_D,
     SIN_POLY_6_D, SIN_POLY_7_D, SIN_POLY_8_D, SIN_POLY_9_D,
 };
 use crate::sse::general::_mm_rint_pd;
 use crate::{_mm_cvtepi64_pd, _mm_mlaf_pd, _mm_neg_pd, _mm_selecti_pd};
+#[cfg(target_arch = "x86")]
+use std::arch::x86::*;
+#[cfg(target_arch = "x86_64")]
+use std::arch::x86_64::*;
 
 #[inline]
 /// Computes sine function with *ULP 1.5* on range [-15; 15]

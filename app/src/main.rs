@@ -96,7 +96,12 @@ fn main() {
     println!("approx {}, real {}", ag, rg.to_f64());
     println!("{}", count_ulp_f64(ag, &rg));
     // 249063
-    println!("{}, {}, {}", 0x24 as f32 / 255f32, 0x90 as f32 / 255f32, 0x63 as f32 / 255f32);
+    println!(
+        "{}, {}, {}",
+        0x24 as f32 / 255f32,
+        0x90 as f32 / 255f32,
+        0x63 as f32 / 255f32
+    );
     // println!(
     //     " bits diff {}",
     //     rg.to_f32().to_bits().max(ag.to_bits()) - rg.to_f32().to_bits().min(ag.to_bits())

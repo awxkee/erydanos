@@ -10,6 +10,7 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 use crate::_mm_shuffle;
+use crate::sse::epi64::{_mm_sllv_epi64x, _mm_srlv_epi64x};
 
 #[inline(always)]
 /// Founds n in x=a+𝑛ln(2), |a| <= 1
@@ -107,31 +108,10 @@ pub unsafe fn _mm_ltzero_pd(d: __m128d) -> __m128d {
 }
 
 #[inline(always)]
-/// Shifts packed 64-bit integers in a right by the amount specified by the corresponding element in count while shifting in zeros,
-pub unsafe fn _mm_srlv_epi64x(a: __m128i, count: __m128i) -> __m128i {
-    let shift_low = _mm_srl_epi64(a, count); // high 64 is garbage
-    let count_high = _mm_unpackhi_epi64(count, count); // broadcast the high element
-    let shift_high = _mm_srl_epi64(a, count_high); // low 64 is garbage
-
-    // use movsd as a blend.
-    return _mm_castpd_si128(_mm_move_sd(
-        _mm_castsi128_pd(shift_high),
-        _mm_castsi128_pd(shift_low),
-    ));
-}
-
-#[inline(always)]
-/// Shifts packed 64-bit integers in a left by the amount specified by the corresponding element in count while shifting in zeros, and returns the result.
-pub unsafe fn _mm_sllv_epi64x(a: __m128i, count: __m128i) -> __m128i {
-    let shift_low = _mm_sll_epi64(a, count); // high 64 is garbage
-    let count_high = _mm_unpackhi_epi64(count, count); // broadcast the high element
-    let shift_high = _mm_sll_epi64(a, count_high); // low 64 is garbage
-
-    // use movsd as a blend.
-    return _mm_castpd_si128(_mm_move_sd(
-        _mm_castsi128_pd(shift_high),
-        _mm_castsi128_pd(shift_low),
-    ));
+/// Computes 2^n in f64 form for signed 64 bits integers, returns f64 in bits
+pub unsafe fn _mm_pow2i_epi64(n: __m128i) -> __m128i {
+    let j = _mm_slli_epi64::<52>(_mm_add_epi64(n, _mm_set1_epi32(0x3ff)));
+    j
 }
 
 #[inline(always)]
