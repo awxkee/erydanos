@@ -29,6 +29,8 @@ mod saturation_epi32;
 mod saturation_epi64;
 mod sin;
 mod sinf;
+mod tan;
+mod tanf;
 mod unsigned;
 
 pub use atan2f::_mm_atan2_ps;
@@ -112,6 +114,8 @@ pub use saturation_epi64::_mm_adds_epu64;
 pub use saturation_epi64::_mm_subs_epi64;
 pub use sin::_mm_sin_pd;
 pub use sinf::_mm_sin_ps;
+pub use tan::_mm_tan_pd;
+pub use tanf::_mm_tan_ps;
 pub use unsigned::_mm_cmpge_epi64;
 pub use unsigned::_mm_cmpge_epu16;
 pub use unsigned::_mm_cmpge_epu32;

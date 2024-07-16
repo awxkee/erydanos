@@ -5,12 +5,10 @@
  * // license that can be found in the LICENSE file.
  */
 #[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
 ))]
-use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
-use std::f32::consts::FRAC_2_PI;
-
+use crate::_mm_tan_ps;
 use crate::cosf::{PI_A_F, PI_B_F, PI_C_F, PI_D_F};
 use crate::generalf::{mlaf, rintfk, IsNegZero};
 #[cfg(all(
@@ -18,6 +16,16 @@ use crate::generalf::{mlaf, rintfk, IsNegZero};
     target_feature = "neon"
 ))]
 use crate::neon::vtanq_f32;
+#[cfg(all(
+    any(target_arch = "aarch64", target_arch = "arm"),
+    target_feature = "neon"
+))]
+use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
+#[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
+use std::arch::x86::*;
+#[cfg(all(target_arch = "x86_64", target_feature = "sse4.1"))]
+use std::arch::x86_64::*;
+use std::f32::consts::FRAC_2_PI;
 
 pub(crate) const TAN_POLY_1_S: f32 = 0.3333353561669567628359f32;
 pub(crate) const TAN_POLY_2_S: f32 = 0.1332909226735641872812f32;
@@ -78,6 +86,18 @@ fn do_tanf_neon(d: f32) -> f32 {
     }
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+#[inline(always)]
+fn do_tanf_sse(d: f32) -> f32 {
+    unsafe {
+        let ld = _mm_set1_ps(d);
+        f32::from_bits(_mm_extract_ps::<0>(_mm_tan_ps(ld)) as u32)
+    }
+}
+
 /// Computes tan *ULP 2.0*
 #[inline]
 pub fn etanf(d: f32) -> f32 {
@@ -88,6 +108,13 @@ pub fn etanf(d: f32) -> f32 {
     ))]
     {
         _dispatcher = do_tanf_neon;
+    }
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_tanf_sse;
     }
     _dispatcher(d)
 }

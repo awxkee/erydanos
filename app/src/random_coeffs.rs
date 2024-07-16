@@ -104,14 +104,18 @@ pub fn random_coeff(d: f32) -> f32 {
 pub fn random_coeff_f64(d: f64) -> f64 {
     let mut rng = rand::thread_rng();
 
-    let n2: u64 = rng.gen_range(0..=950);
+    let mut f1 = rug::Float::with_val(53, d);
+    let scale = Float::with_val(f1.prec(), f64::EPSILON);
+
+    let n2: u64 = rng.gen_range(0..=1023);
     let n1: u64 = rng.gen_range(0..=n2);
-    let mut ck = d;
+    let increment = Float::with_val(f1.prec(), scale).mul(Integer::from(n1));
     let goes_up = rng.gen_bool(1.0 / 2.0);
     if goes_up {
-        ck = add_bits_f64(ck, n1);
+        f1 = f1.add(increment);
     } else {
-        ck = sub_bits_f64(ck, n1);
+        f1 = f1.sub(increment);
     }
-    ck
+    let new_value = f1.to_f64();
+    return new_value;
 }

@@ -9,7 +9,10 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
-use crate::{_mm_abs_pd, _mm_copysign_pd, _mm_exp_pd, _mm_expq_fast_pd, _mm_isinf_pd, _mm_isnan_pd, _mm_isneginf_pd, _mm_isnotintegral_pd, _mm_ln_fast_pd, _mm_ln_pd, _mm_select_pd};
+use crate::{
+    _mm_abs_pd, _mm_copysign_pd, _mm_exp_pd, _mm_expq_fast_pd, _mm_isinf_pd, _mm_isnan_pd,
+    _mm_isneginf_pd, _mm_isnotintegral_pd, _mm_ln_fast_pd, _mm_ln_pd, _mm_select_pd,
+};
 
 #[inline]
 /// Computes pow function *ULP 2.0*
@@ -23,8 +26,12 @@ pub unsafe fn _mm_pow_pd(d: __m128d, n: __m128d) -> __m128d {
     let is_power_neg_infinity = _mm_isneginf_pd(n);
     // Not integral values do not allowed for negative numbers
     let inf = _mm_set1_pd(f64::INFINITY);
-    let is_nan_with_integral = _mm_and_pd(_mm_cmplt_pd(d, _mm_setzero_pd()), _mm_isnotintegral_pd(n));
-    let is_any_nan = _mm_or_pd( _mm_or_pd(_mm_isnan_pd(d), _mm_isnan_pd(n)), is_nan_with_integral);
+    let is_nan_with_integral =
+        _mm_and_pd(_mm_cmplt_pd(d, _mm_setzero_pd()), _mm_isnotintegral_pd(n));
+    let is_any_nan = _mm_or_pd(
+        _mm_or_pd(_mm_isnan_pd(d), _mm_isnan_pd(n)),
+        is_nan_with_integral,
+    );
     let mut ret = _mm_select_pd(is_infinity, inf, c);
     ret = _mm_select_pd(is_power_neg_infinity, _mm_set1_pd(0.), ret);
     ret = _mm_select_pd(is_any_nan, _mm_set1_pd(f64::NAN), ret);
@@ -83,7 +90,6 @@ mod tests {
             let flag_1 = _mm_extract_pd::<0>(comparison);
             assert!(flag_1.is_nan());
         }
-
 
         unsafe {
             let value = _mm_set1_pd(-2f64);

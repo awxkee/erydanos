@@ -27,10 +27,10 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 pub(crate) const EXP_POLY_1_D: f64 = 2f64;
-pub(crate) const EXP_POLY_2_D: f64 = 0.166666666666666666667f64;
-pub(crate) const EXP_POLY_3_D: f64 = -0.00277777777777777777778f64;
-pub(crate) const EXP_POLY_4_D: f64 = 0.0000661375661375661375661f64;
-pub(crate) const EXP_POLY_5_D: f64 = -1.65343915343915343915e-6f64;
+pub(crate) const EXP_POLY_2_D: f64 = 0.16666666666666674f64;
+pub(crate) const EXP_POLY_3_D: f64 = -0.0027777777777777614f64;
+pub(crate) const EXP_POLY_4_D: f64 = 6.613756613755705e-5f64;
+pub(crate) const EXP_POLY_5_D: f64 = -1.6534391534392554e-6f64;
 pub(crate) const EXP_POLY_6_D: f64 = 4.17535139757361979584e-8f64;
 pub(crate) const EXP_POLY_7_D: f64 = -1.05683802773749863697e-9f64;
 pub(crate) const EXP_POLY_8_D: f64 = 2.67650730613693576657e-11f64;
@@ -61,6 +61,38 @@ fn do_exp(d: f64) -> f64 {
     u = mlaf(u, f, EXP_POLY_4_D);
     u = mlaf(u, f, EXP_POLY_3_D);
     u = mlaf(u, f, EXP_POLY_2_D);
+    u = mlaf(u, f, EXP_POLY_1_D);
+    let u = 1f64 + 2f64 * r / (u - r);
+    let i2 = pow2i(q);
+    let mut r = u * i2;
+    if d < -964f64 {
+        r = 0f64;
+    }
+    if d > 709f64 {
+        r = f64::INFINITY;
+    }
+    r
+}
+
+#[inline]
+pub fn do_exp_coeff(d: f64, coeff: &Vec<f64>) -> f64 {
+    let qf = rintk(d * R_LN2);
+    let q = qf as i32;
+
+    let mut r = mlaf(qf, -L2_U, d);
+    r = mlaf(qf, -L2_L, r);
+
+    let f = r * r;
+    // Poly for u = r*(exp(r)+1)/(exp(r)-1)
+    let mut u = EXP_POLY_10_D;
+    u = mlaf(u, f, EXP_POLY_9_D);
+    u = mlaf(u, f, EXP_POLY_8_D);
+    u = mlaf(u, f, EXP_POLY_7_D);
+    u = mlaf(u, f, EXP_POLY_6_D);
+    u = mlaf(u, f, coeff[3]);
+    u = mlaf(u, f, coeff[2]);
+    u = mlaf(u, f, coeff[1]);
+    u = mlaf(u, f, coeff[0]);
     u = mlaf(u, f, EXP_POLY_1_D);
     let u = 1f64 + 2f64 * r / (u - r);
     let i2 = pow2i(q);

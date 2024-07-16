@@ -4,6 +4,7 @@ use erydanos::asin::*;
 use erydanos::asinf::*;
 use erydanos::atan::do_atan_coeffs;
 use erydanos::atanf::*;
+use erydanos::exp::do_exp_coeff;
 
 pub fn search_coeffs_f32() {
     let mut max_ulp: f64 = 0.;
@@ -58,16 +59,17 @@ pub fn search_coeffs_f32() {
 pub fn search_coeffs_f64() {
     let mut max_ulp: f64 = 0.;
     let mut initial_coeffs = vec![];
-    initial_coeffs.push(ASIN_POLY_1_D);
-    initial_coeffs.push(ASIN_POLY_2_D);
-    initial_coeffs.push(ASIN_POLY_3_D);
-    initial_coeffs.push(ASIN_POLY_4_D);
+    // initial_coeffs.push(EXP_POLY_2_D);
+    // initial_coeffs.push(EXP_POLY_3_D);
+    // initial_coeffs.push(EXP_POLY_4_D);
+    // initial_coeffs.push(EXP_POLY_5_D);
+    // initial_coeffs.push(EXP_POLY_6_D);
 
     let mut best_match_coeeffs: Vec<f64> = initial_coeffs.clone().iter().map(|&x| x).collect();
     let mut best_ulp = f64::MAX;
     let mut best_value = 0.;
 
-    for _ in 0..20000 {
+    for _ in 0..10000 {
         let new_coeffs: Vec<f64> = initial_coeffs
             .clone()
             .iter()
@@ -77,11 +79,11 @@ pub fn search_coeffs_f64() {
         let mut best_val = 0.;
         max_ulp = 0.;
 
-        for i in -200..200 {
+        for i in -2000..2000 {
             let scale = 0.005f64;
 
-            let counted = rug::Float::asin(rug::Float::with_val(100, i as f64 * scale));
-            let ap = do_asin_coeffs(i as f64 * scale, &new_coeffs);
+            let counted = rug::Float::exp(rug::Float::with_val(100, i as f64 * scale));
+            let ap = do_exp_coeff(i as f64 * scale, &new_coeffs);
 
             let ulp = count_ulp_f64(ap, &counted) as f64;
             if ulp > max_ulp {
