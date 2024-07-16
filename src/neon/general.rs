@@ -266,3 +266,18 @@ pub unsafe fn vmulq_s64(ab: int64x2_t, cd: int64x2_t) -> int64x2_t {
     let product = vreinterpretq_s64_u64(vmulq_u64(uab, ucd));
     vbslq_s64(vceqzq_u64(sign), product, vnegq_s64(product))
 }
+
+#[inline(always)]
+/// Returns true flag if value is not an integral value
+pub unsafe fn visnotintegralq_f32(d: float32x4_t) -> uint32x4_t {
+    return vmvnq_u32(vceqq_f32(d, vcvtq_f32_s32(vcvtq_s32_f32(d))));
+}
+
+#[inline(always)]
+/// Returns true flag if value is not an integral value
+pub unsafe fn visnotintegralq_f64(d: float64x2_t) -> uint64x2_t {
+    return vreinterpretq_u64_u32(vmvnq_u32(vreinterpretq_u32_u64(vceqq_f64(
+        d,
+        vcvtq_f64_s64(vcvtq_s64_f64(d)),
+    ))));
+}

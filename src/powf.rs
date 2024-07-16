@@ -11,6 +11,7 @@
 ))]
 use crate::_mm_pow_ps;
 use crate::abs::eabsf;
+use crate::efloorf;
 use crate::expf::eexpf;
 use crate::generalf::{copysignfk, is_neg_infinitef, is_pos_infinitef};
 use crate::lnf::elnf;
@@ -34,6 +35,9 @@ fn do_pow(d: f32, n: f32) -> f32 {
     let value = eabsf(d);
     let mut c = eexpf(n * elnf(value));
     c = copysignfk(c, d);
+    if d < 0. && efloorf(n) != n {
+        return f32::NAN;
+    }
     if is_pos_infinitef(n) || d.is_infinite() {
         f32::INFINITY
     } else if is_neg_infinitef(n) {

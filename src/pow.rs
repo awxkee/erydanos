@@ -6,6 +6,7 @@
  */
 
 use crate::abs::eabs;
+use crate::efloor;
 use crate::exp::eexp;
 use crate::generalf::{copysignk, is_neg_infinite, is_pos_infinite};
 use crate::ln::eln;
@@ -25,6 +26,9 @@ fn do_pow(d: f64, n: f64) -> f64 {
     let value = eabs(d);
     let mut c = eexp(n * eln(value));
     c = copysignk(c, d);
+    if d < 0. && efloor(n) != n {
+        return f64::NAN;
+    }
     if is_pos_infinite(n) || d.is_infinite() {
         f64::INFINITY
     } else if is_neg_infinite(n) {

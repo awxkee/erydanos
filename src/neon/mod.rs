@@ -80,6 +80,8 @@ pub use general::vpow2ifq_s64;
 pub use general::vqshrn_n_u128;
 pub use general::vsignbitq_f32;
 pub use general::vsignbitq_f64;
+pub use general::visnotintegralq_f32;
+pub use general::visnotintegralq_f64;
 pub use general::*;
 pub use hypot::vhypotq_f64;
 pub use hypot3::vhypot3q_f64;

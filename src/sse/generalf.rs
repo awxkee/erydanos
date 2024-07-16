@@ -140,6 +140,18 @@ pub unsafe fn _mm_packus_epi64(a: __m128i, b: __m128i) -> __m128i {
     moved
 }
 
+#[inline(always)]
+/// Checks if arguments is integral value
+pub unsafe fn _mm_isintegral_ps(d: __m128) -> __m128 {
+    return _mm_cmpeq_ps(d, _mm_floor_ps(d));
+}
+
+#[inline(always)]
+/// Checks if arguments is not integral value
+pub unsafe fn _mm_isnotintegral_ps(d: __m128) -> __m128 {
+    return _mm_cmpneq_ps(d, _mm_floor_ps(d));
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

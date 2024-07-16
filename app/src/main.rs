@@ -4,10 +4,7 @@ use std::ops::Shr;
 
 use crate::search_optimized_coeffs::search_coeffs_f32;
 use crate::ulp::{count_ulp, count_ulp_f64};
-use erydanos::{
-    ehypot3f, esin, ArcCos, ArcSin, ArcTan, ArcTan2, Cosine, CubeRoot, Exponential, Logarithmic,
-    Power, Sine, Tangent,
-};
+use erydanos::{ehypot3f, esin, ArcCos, ArcSin, ArcTan, ArcTan2, Cosine, CubeRoot, Exponential, Logarithmic, Power, Sine, Tangent, epow, eln, eexp};
 
 mod random_coeffs;
 mod search_optimized_coeffs;
@@ -95,6 +92,7 @@ fn main() {
     let rg = rug::Float::sin(rug::Float::with_val(53, -2.70752239));
     println!("approx {}, real {}", ag, rg.to_f64());
     println!("{}", count_ulp_f64(ag, &rg));
+    println!("{}", epow(-15f64, 3f64));
     // 249063
     println!(
         "{}, {}, {}",

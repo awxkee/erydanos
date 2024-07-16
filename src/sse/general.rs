@@ -218,6 +218,33 @@ pub unsafe fn _mm_rint_pd(f: __m128d) -> __m128i {
     _mm_cvtpd_epi64(k)
 }
 
+#[inline(always)]
+/// Copies sign from `y` to `x`
+pub unsafe fn _mm_copysign_pd(x: __m128d, y: __m128d) -> __m128d {
+    _mm_castsi128_pd(_mm_xor_si128(
+        _mm_andnot_si128(_mm_castpd_si128(_mm_set1_pd(-0.0f64)), _mm_castpd_si128(x)),
+        _mm_and_si128(_mm_castpd_si128(_mm_set1_pd(-0.0f64)), _mm_castpd_si128(y)),
+    ))
+}
+
+#[inline(always)]
+/// Returns flag value is Neg Infinity
+pub unsafe fn _mm_isneginf_pd(d: __m128d) -> __m128d {
+    return _mm_cmpeq_pd(d, _mm_set1_pd(f64::NEG_INFINITY));
+}
+
+#[inline(always)]
+/// Checks if arguments is integral value
+pub unsafe fn _mm_isintegral_pd(d: __m128d) -> __m128d {
+    return _mm_cmpeq_pd(d, _mm_floor_pd(d));
+}
+
+#[inline(always)]
+/// Checks if arguments is not integral value
+pub unsafe fn _mm_isnotintegral_pd(d: __m128d) -> __m128d {
+    return _mm_cmpneq_pd(d, _mm_floor_pd(d));
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -316,6 +343,25 @@ mod tests {
             let comparison = _mm_abs_pd(value);
             let flag = _mm_extract_pd::<0>(comparison);
             assert_eq!(flag.is_nan(), true);
+        }
+    }
+
+    #[test]
+    fn test_copysignd() {
+        unsafe {
+            let value = _mm_set1_pd(23f64);
+            let other = _mm_set1_pd(-2f64);
+            let comparison = _mm_copysign_pd(value, other);
+            let flag = _mm_extract_pd::<0>(comparison);
+            assert_eq!(flag, -23f64);
+        }
+
+        unsafe {
+            let value = _mm_set1_pd(23f64);
+            let other = _mm_set1_pd(2f64);
+            let comparison = _mm_copysign_pd(value, other);
+            let flag = _mm_extract_pd::<0>(comparison);
+            assert_eq!(flag, 23f64);
         }
     }
 }
