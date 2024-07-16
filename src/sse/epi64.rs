@@ -5,6 +5,7 @@
  * // license that can be found in the LICENSE file.
  */
 
+use crate::_mm_cmplt_epi64;
 #[cfg(target_arch = "x86")]
 use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
@@ -13,11 +14,7 @@ use std::arch::x86_64::*;
 #[inline(always)]
 /// Mod function for i64
 pub unsafe fn _mm_abs_epi64(a: __m128i) -> __m128i {
-    #[allow(overflowing_literals)]
-    let sign_mask = _mm_set1_epi64x(0x8000000000000000i64);
-    let sign_bits = _mm_and_si128(a, sign_mask);
-    let negated = _mm_sub_epi64(_mm_xor_si128(a, sign_bits), sign_bits);
-    return negated;
+    _mm_select_epi64(_mm_cmplt_epi64(a, _mm_setzero_si128()), _mm_neg_epi64(a), a)
 }
 
 #[inline(always)]
@@ -63,7 +60,7 @@ pub unsafe fn _mm_mul_epu64(ab: __m128i, cd: __m128i) -> __m128i {
     return _mm_add_epi64(high, ac);
 }
 
-#[inline(always)]
+#[inline(never)]
 /// Multiplies signed 64 bytes integers
 pub unsafe fn _mm_mul_epi64(ab: __m128i, cd: __m128i) -> __m128i {
     let sign_ab = _mm_srli_epi64::<63>(ab);
@@ -72,11 +69,12 @@ pub unsafe fn _mm_mul_epi64(ab: __m128i, cd: __m128i) -> __m128i {
     let uab = _mm_abs_epi64(ab);
     let ucd = _mm_abs_epi64(cd);
     let product = _mm_mul_epu64(uab, ucd);
-    _mm_select_epi64(
+    let o = _mm_select_epi64(
         _mm_cmpeq_epi64(sign, _mm_setzero_si128()),
         product,
         _mm_neg_epi64(product),
-    )
+    );
+    return o;
 }
 
 #[inline(always)]

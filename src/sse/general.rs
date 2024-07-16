@@ -9,6 +9,8 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
+use crate::_mm_shuffle;
+
 #[inline(always)]
 /// Founds n in x=a+𝑛ln(2), |a| <= 1
 pub unsafe fn _mm_ilogb2k_pd(d: __m128d) -> __m128i {
@@ -93,14 +95,179 @@ pub unsafe fn _mm_select_pd(mask: __m128d, true_vals: __m128d, false_vals: __m12
 }
 
 #[inline(always)]
+/// If mask then `true_vals` otherwise `false_val`
+pub unsafe fn _mm_selecti_pd(mask: __m128i, true_vals: __m128d, false_vals: __m128d) -> __m128d {
+    _mm_blendv_pd(false_vals, true_vals, _mm_castsi128_pd(mask))
+}
+
+#[inline(always)]
 /// Returns flag value is lower than zero
 pub unsafe fn _mm_ltzero_pd(d: __m128d) -> __m128d {
     return _mm_cmplt_pd(d, _mm_set1_pd(0.));
 }
 
+#[inline(always)]
+/// Shifts packed 64-bit integers in a right by the amount specified by the corresponding element in count while shifting in zeros,
+pub unsafe fn _mm_srlv_epi64x(a: __m128i, count: __m128i) -> __m128i {
+    let shift_low = _mm_srl_epi64(a, count); // high 64 is garbage
+    let count_high = _mm_unpackhi_epi64(count, count); // broadcast the high element
+    let shift_high = _mm_srl_epi64(a, count_high); // low 64 is garbage
+
+    // use movsd as a blend.
+    return _mm_castpd_si128(_mm_move_sd(
+        _mm_castsi128_pd(shift_high),
+        _mm_castsi128_pd(shift_low),
+    ));
+}
+
+#[inline(always)]
+/// Shifts packed 64-bit integers in a left by the amount specified by the corresponding element in count while shifting in zeros, and returns the result.
+pub unsafe fn _mm_sllv_epi64x(a: __m128i, count: __m128i) -> __m128i {
+    let shift_low = _mm_sll_epi64(a, count); // high 64 is garbage
+    let count_high = _mm_unpackhi_epi64(count, count); // broadcast the high element
+    let shift_high = _mm_sll_epi64(a, count_high); // low 64 is garbage
+
+    // use movsd as a blend.
+    return _mm_castpd_si128(_mm_move_sd(
+        _mm_castsi128_pd(shift_high),
+        _mm_castsi128_pd(shift_low),
+    ));
+}
+
+#[inline(always)]
+/// Converts double into signed 64 bytes int with truncation
+pub unsafe fn _mm_cvtpd_epi64(v: __m128d) -> __m128i {
+    let k51 = _mm_set1_epi64x(51 + 0x3FF);
+
+    // Exponent indicates whether the number can be represented as uint64_t.
+    let biased_exp = _mm_and_si128(
+        _mm_srli_epi64::<52>(_mm_castpd_si128(v)),
+        _mm_set1_epi64x(0x7FF),
+    );
+    let mantissa = _mm_and_si128(_mm_castpd_si128(v), _mm_set1_epi64x((1 << 52) - 1));
+
+    // Calculate left and right shifts to move mantissa into place.
+    let shift_right = _mm_subs_epu16(k51, biased_exp);
+    let shift_left = _mm_subs_epu16(biased_exp, k51);
+
+    // Shift mantissa into place.
+    let shifted = _mm_srli_epi64::<1>(_mm_srlv_epi64x(
+        _mm_sllv_epi64x(mantissa, shift_left),
+        shift_right,
+    ));
+    // Include implicit 1-bit.
+    let implicit_bit_shifted = _mm_srlv_epi64x(
+        _mm_sllv_epi64x(_mm_set1_epi64x(1 << 51), shift_left),
+        shift_right,
+    );
+    let magnitude = _mm_or_si128(shifted, implicit_bit_shifted);
+
+    // Fill each 64-bit part with sign bits.
+    const SIGN_MASK: i32 = _mm_shuffle(3, 3, 1, 1);
+    let sign_mask = _mm_shuffle_epi32::<SIGN_MASK>(_mm_srai_epi32::<31>(_mm_castpd_si128(v)));
+    // Adjust for negative values.
+    let sign_adjusted = _mm_sub_epi64(_mm_xor_si128(magnitude, sign_mask), sign_mask);
+
+    // 0xFF is exp < 64
+    const UPPER_BOUND_MASK: i32 = _mm_shuffle(2, 2, 0, 0);
+    let upper_bound_mask = _mm_shuffle_epi32::<UPPER_BOUND_MASK>(_mm_cmpgt_epi32(
+        _mm_set1_epi32(64 + 0x3FF),
+        biased_exp,
+    ));
+    // Saturate overflow values to INT64_MIN.
+    let bounded = _mm_or_si128(
+        _mm_and_si128(upper_bound_mask, sign_adjusted),
+        _mm_andnot_si128(upper_bound_mask, _mm_set1_epi64x(i64::MAX)),
+    );
+
+    return bounded;
+}
+
+#[inline(always)]
+/// Converts double into unsigned int 64 bytes with truncation
+pub unsafe fn _mm_cvtpd_epu64(v: __m128d) -> __m128i {
+    let k51 = _mm_set1_epi64x(51 + 0x3FF);
+
+    // Exponent indicates whether the number can be represented as uint64_t.
+    let biased_exp = _mm_and_si128(
+        _mm_srli_epi64::<52>(_mm_castpd_si128(v)),
+        _mm_set1_epi64x(0x7FF),
+    );
+    let mantissa = _mm_and_si128(_mm_castpd_si128(v), _mm_set1_epi64x((1 << 52) - 1));
+
+    // Calculate left and right shifts to move mantissa into place.
+    let shift_right = _mm_subs_epu16(k51, biased_exp);
+    let shift_left = _mm_subs_epu16(biased_exp, k51);
+
+    // Shift mantissa into place.
+    let shifted = _mm_srli_epi64::<1>(_mm_srlv_epi64x(
+        _mm_sllv_epi64x(mantissa, shift_left),
+        shift_right,
+    ));
+    // Include implicit 1-bit.
+    let implicit_bit_shifted = _mm_srlv_epi64x(
+        _mm_sllv_epi64x(_mm_set1_epi64x(1 << 51), shift_left),
+        shift_right,
+    );
+    let magnitude = _mm_or_si128(shifted, implicit_bit_shifted);
+
+    // Fill each 64-bit part with sign bits.
+    const SIGN_MASK_SHUFFLE: i32 = _mm_shuffle(3, 3, 1, 1);
+    let sign_mask =
+        _mm_shuffle_epi32::<SIGN_MASK_SHUFFLE>(_mm_srai_epi32::<31>(_mm_castpd_si128(v)));
+    // Mask out negative values to 0.
+    let lower_bounded = _mm_andnot_si128(sign_mask, magnitude);
+
+    // 0xFF is exp < 64
+    const SIGN_UPPER_BOUND_SHUFFLE: i32 = _mm_shuffle(2, 2, 0, 0);
+    let upper_bound_mask = _mm_shuffle_epi32::<SIGN_UPPER_BOUND_SHUFFLE>(_mm_cmpgt_epi32(
+        _mm_set1_epi32(64 + 0x3FF),
+        biased_exp,
+    ));
+    // Mask out overflow values to 0.
+    let fully_bounded = _mm_and_si128(lower_bounded, upper_bound_mask);
+
+    return fully_bounded;
+}
+
+#[inline(always)]
+/// Rounds and takes integral part 64 bytes from double
+pub unsafe fn _mm_rint_pd(f: __m128d) -> __m128i {
+    const ROUNDING_FLAG: i32 = _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC;
+    let k = _mm_round_pd::<ROUNDING_FLAG>(f);
+    _mm_cvtpd_epi64(k)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_cvtpd_epi64() {
+        unsafe {
+            // Test regular
+            let value = _mm_set1_pd(23f64);
+            let comparison = _mm_cvtpd_epi64(value);
+            let flag = _mm_extract_epi64::<0>(comparison);
+            assert_eq!(flag, 23);
+        }
+
+        unsafe {
+            // Test negative regular
+            let value = _mm_set1_pd(-23f64);
+            let comparison = _mm_cvtpd_epi64(value);
+            let flag = _mm_extract_epi64::<0>(comparison);
+            assert_eq!(flag, -23);
+        }
+
+        unsafe {
+            // Test Infinity
+            let value = _mm_set1_pd(f64::INFINITY);
+            let comparison = _mm_cvtpd_epu64(value);
+            let flag = _mm_extract_epi64::<0>(comparison);
+            assert_eq!(flag, 0);
+        }
+    }
 
     #[test]
     fn test_if_inf() {
