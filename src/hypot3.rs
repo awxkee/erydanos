@@ -46,10 +46,8 @@ fn do_hypot3(x: f64, y: f64, z: f64) -> f64 {
 
     if x == f64::INFINITY || y == f64::INFINITY || z == f64::INFINITY {
         f64::INFINITY
-    } else if x.is_nan() || y.is_nan() || z.is_nan() {
+    } else if x.is_nan() || y.is_nan() || z.is_nan() || ret.is_nan() {
         f64::NAN
-    } else if ret.is_nan() {
-        f64::INFINITY
     } else {
         ret
     }

@@ -46,10 +46,8 @@ fn do_hypot3f(x: f32, y: f32, z: f32) -> f32 {
 
     if x == f32::INFINITY || y == f32::INFINITY || z == f32::INFINITY {
         f32::INFINITY
-    } else if x.is_nan() || y.is_nan() || z.is_nan() {
+    } else if x.is_nan() || y.is_nan() || z.is_nan() || ret.is_nan() {
         f32::NAN
-    } else if ret.is_nan() {
-        f32::INFINITY
     } else {
         ret
     }

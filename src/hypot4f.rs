@@ -47,10 +47,8 @@ fn do_hypot4f(x: f32, y: f32, z: f32, w: f32) -> f32 {
 
     if x.is_infinite() || y.is_infinite() || z.is_infinite() || w.is_infinite() {
         f32::INFINITY
-    } else if x.is_nan() || y.is_nan() || z.is_nan() || w.is_nan() {
+    } else if x.is_nan() || y.is_nan() || z.is_nan() || w.is_nan() || ret.is_nan() {
         f32::NAN
-    } else if ret.is_nan() {
-        f32::INFINITY
     } else {
         ret
     }

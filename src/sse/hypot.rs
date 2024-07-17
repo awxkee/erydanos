@@ -22,13 +22,12 @@ pub unsafe fn _mm_hypot_pd(x: __m128d, y: __m128d) -> __m128d {
     let r = _mm_div_pd(min, max);
     let mut ret = _mm_mul_pd(_mm_sqrt_pd(_mm_mlaf_pd(r, r, _mm_set1_pd(1.))), max);
     let is_any_infinite = _mm_or_pd(_mm_isinf_pd(x), _mm_isinf_pd(y));
-    let is_any_nan = _mm_or_pd(_mm_isnan_pd(x), _mm_isnan_pd(y));
+    let mut is_any_nan = _mm_or_pd(_mm_isnan_pd(x), _mm_isnan_pd(y));
     let is_min_zero = _mm_eqzero_pd(min);
-    let is_result_nan = _mm_isnan_pd(ret);
+    is_any_nan = _mm_or_pd(_mm_isnan_pd(ret), is_any_nan);
     ret = _mm_select_pd(is_any_infinite, _mm_set1_pd(f64::INFINITY), ret);
     ret = _mm_select_pd(is_any_nan, _mm_set1_pd(f64::NAN), ret);
     ret = _mm_select_pd(is_min_zero, _mm_set1_pd(0.), ret);
-    ret = _mm_select_pd(is_result_nan, _mm_set1_pd(f64::INFINITY), ret);
     ret
 }
 

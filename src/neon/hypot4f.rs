@@ -19,7 +19,7 @@ pub unsafe fn vhypot4q_f32(
     let y = vabsq_f32(y);
     let z = vabsq_f32(z);
     let w = vabsq_f32(w);
-    let max = vmaxq_f32(vmaxq_f32(x, y), z);
+    let max = vmaxq_f32(vmaxq_f32(vmaxq_f32(x, y), z), w);
     let norm_x = vdivq_f32(x, max);
     let norm_y = vdivq_f32(y, max);
     let norm_z = vdivq_f32(z, max);
@@ -40,16 +40,15 @@ pub unsafe fn vhypot4q_f32(
         vorrq_u32(vorrq_u32(visinfq_f32(x), visinfq_f32(y)), visinfq_f32(z)),
         visinfq_f32(w),
     );
-    let is_any_nan = vorrq_u32(
+    let mut is_any_nan = vorrq_u32(
         vorrq_u32(vorrq_u32(visnanq_f32(x), visnanq_f32(y)), visnanq_f32(z)),
         visnanq_f32(w),
     );
     let is_max_zero = vceqzq_f32(max);
-    let is_result_nan = visnanq_f32(ret);
+    is_any_nan = vorrq_u32(visnanq_f32(ret), is_any_nan);
     ret = vbslq_f32(is_any_infinite, vdupq_n_f32(f32::INFINITY), ret);
     ret = vbslq_f32(is_any_nan, vdupq_n_f32(f32::NAN), ret);
     ret = vbslq_f32(is_max_zero, vdupq_n_f32(0f32), ret);
-    ret = vbslq_f32(is_result_nan, vdupq_n_f32(f32::INFINITY), ret);
     ret
 }
 
@@ -65,7 +64,7 @@ pub unsafe fn vhypot4q_fast_f32(
     let y = vabsq_f32(y);
     let z = vabsq_f32(z);
     let w = vabsq_f32(w);
-    let max = vmaxq_f32(vmaxq_f32(x, y), z);
+    let max = vmaxq_f32(vmaxq_f32(vmaxq_f32(x, y), z), w);
     let norm_x = vdivq_f32(x, max);
     let norm_y = vdivq_f32(y, max);
     let norm_z = vdivq_f32(z, max);

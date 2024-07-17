@@ -29,13 +29,12 @@ pub unsafe fn _mm_hypot3_ps(x: __m128, y: __m128, z: __m128) -> __m128 {
     );
     let mut ret = _mm_mul_ps(_mm_sqrt_ps(accumulator), max);
     let is_any_infinite = _mm_or_ps(_mm_or_ps(_mm_isinf_ps(x), _mm_isinf_ps(y)), _mm_isinf_ps(z));
-    let is_any_nan = _mm_or_ps(_mm_or_ps(_mm_isnan_ps(x), _mm_isnan_ps(y)), _mm_isnan_ps(z));
+    let mut is_any_nan = _mm_or_ps(_mm_or_ps(_mm_isnan_ps(x), _mm_isnan_ps(y)), _mm_isnan_ps(z));
     let is_max_zero = _mm_eqzero_ps(max);
-    let is_result_nan = _mm_isnan_ps(ret);
+    is_any_nan = _mm_or_ps(_mm_isnan_ps(ret), is_any_nan);
     ret = _mm_select_ps(is_any_infinite, _mm_set1_ps(f32::INFINITY), ret);
     ret = _mm_select_ps(is_any_nan, _mm_set1_ps(f32::NAN), ret);
     ret = _mm_select_ps(is_max_zero, _mm_set1_ps(0f32), ret);
-    ret = _mm_select_ps(is_result_nan, _mm_set1_ps(f32::INFINITY), ret);
     ret
 }
 

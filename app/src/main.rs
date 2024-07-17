@@ -93,6 +93,7 @@ fn main() {
     let z = 12f32;
     let ag = esin(-2.70752239);
     let rg = rug::Float::sin(rug::Float::with_val(53, -2.70752239));
+    println!("{}", f32::NAN.hypot(2f32));
     println!("approx {}, real {}", ag, rg.to_f64());
     println!("{}", count_ulp_f64(ag, &rg));
     println!("{}", (27f32).epow(1. / 3.));

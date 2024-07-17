@@ -40,12 +40,10 @@ fn do_hypotf(x: f32, y: f32) -> f32 {
 
     if (x == f32::INFINITY) || (y == f32::INFINITY) {
         f32::INFINITY
-    } else if x.is_nan() || y.is_nan() {
+    } else if x.is_nan() || y.is_nan() || ret.is_nan() {
         f32::NAN
     } else if min == 0. {
         max
-    } else if ret.is_nan() {
-        f32::INFINITY
     } else {
         ret
     }

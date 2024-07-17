@@ -17,7 +17,7 @@ pub unsafe fn _mm_hypot4_ps(x: __m128, y: __m128, z: __m128, w: __m128) -> __m12
     let y = _mm_abs_ps(y);
     let z = _mm_abs_ps(z);
     let w = _mm_abs_ps(w);
-    let max = _mm_max_ps(_mm_max_ps(x, y), z);
+    let max = _mm_max_ps(_mm_max_ps(_mm_max_ps(x, y), z), w);
     let norm_x = _mm_div_ps(x, max);
     let norm_y = _mm_div_ps(y, max);
     let norm_z = _mm_div_ps(z, max);
@@ -37,16 +37,15 @@ pub unsafe fn _mm_hypot4_ps(x: __m128, y: __m128, z: __m128, w: __m128) -> __m12
         _mm_or_ps(_mm_or_ps(_mm_isinf_ps(x), _mm_isinf_ps(y)), _mm_isinf_ps(z)),
         _mm_isinf_ps(w),
     );
-    let is_any_nan = _mm_or_ps(
+    let mut is_any_nan = _mm_or_ps(
         _mm_or_ps(_mm_or_ps(_mm_isnan_ps(x), _mm_isnan_ps(y)), _mm_isnan_ps(z)),
         _mm_isnan_ps(w),
     );
     let is_max_zero = _mm_eqzero_ps(max);
-    let is_result_nan = _mm_isnan_ps(ret);
+    is_any_nan = _mm_or_ps(_mm_isnan_ps(ret), is_any_nan);
     ret = _mm_select_ps(is_any_infinite, _mm_set1_ps(f32::INFINITY), ret);
     ret = _mm_select_ps(is_any_nan, _mm_set1_ps(f32::NAN), ret);
     ret = _mm_select_ps(is_max_zero, _mm_set1_ps(0f32), ret);
-    ret = _mm_select_ps(is_result_nan, _mm_set1_ps(f32::INFINITY), ret);
     ret
 }
 
@@ -57,7 +56,7 @@ pub unsafe fn _mm_hypot4_fast_ps(x: __m128, y: __m128, z: __m128, w: __m128) -> 
     let y = _mm_abs_ps(y);
     let z = _mm_abs_ps(z);
     let w = _mm_abs_ps(w);
-    let max = _mm_max_ps(_mm_max_ps(x, y), z);
+    let max = _mm_max_ps(_mm_max_ps(_mm_max_ps(x, y), z), w);
     let norm_x = _mm_div_ps(x, max);
     let norm_y = _mm_div_ps(y, max);
     let norm_z = _mm_div_ps(z, max);

@@ -27,13 +27,12 @@ pub unsafe fn vhypot3q_f64(x: float64x2_t, y: float64x2_t, z: float64x2_t) -> fl
 
     let mut ret = vmulq_f64(vsqrtq_f64(accumulator), max);
     let is_any_infinite = vorrq_u64(vorrq_u64(visinfq_f64(x), visinfq_f64(y)), visinfq_f64(z));
-    let is_any_nan = vorrq_u64(vorrq_u64(visnanq_f64(x), visnanq_f64(y)), visnanq_f64(z));
+    let mut is_any_nan = vorrq_u64(vorrq_u64(visnanq_f64(x), visnanq_f64(y)), visnanq_f64(z));
     let is_max_zero = vceqzq_f64(max);
-    let is_result_nan = visnanq_f64(ret);
+    is_any_nan = vorrq_u64(visnanq_f64(ret), is_any_nan);
     ret = vbslq_f64(is_any_infinite, vdupq_n_f64(f64::INFINITY), ret);
     ret = vbslq_f64(is_any_nan, vdupq_n_f64(f64::NAN), ret);
     ret = vbslq_f64(is_max_zero, vdupq_n_f64(0f64), ret);
-    ret = vbslq_f64(is_result_nan, vdupq_n_f64(f64::INFINITY), ret);
     ret
 }
 
