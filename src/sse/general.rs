@@ -74,7 +74,27 @@ pub unsafe fn _mm_isinf_pd(d: __m128d) -> __m128d {
 #[inline(always)]
 /// Extracts f64 value
 pub unsafe fn _mm_extract_pd<const IMM: i32>(d: __m128d) -> f64 {
-    f64::from_bits(_mm_extract_epi64::<IMM>(_mm_castpd_si128(d)) as u64)
+    #[cfg(target_arch = "x86_64")]
+    {
+        if IMM == 0 {
+            return f64::from_bits(_mm_cvtsi128_si64(_mm_castpd_si128(d)) as u64);
+        } else {
+            return f64::from_bits(_mm_extract_epi64::<IMM>(_mm_castpd_si128(d)) as u64);
+        }
+    }
+    #[cfg(target_arch = "x86")]
+    {
+        let (low, high);
+        let rc = _mm_castpd_si128(d);
+        if IMM == 0 {
+            low = _mm_cvtsi128_si32(rc);
+            high = _mm_cvtsi128_si32(_mm_srli_si128::<4>(rc));
+        } else {
+            low = _mm_cvtsi128_si32(_mm_srli_si128::<8>(rc));
+            high = _mm_cvtsi128_si32(_mm_srli_si128::<12>(rc));
+        }
+        return f64::from_bits(((high as u64) << 32) | low as u64);
+    }
 }
 
 #[inline(always)]
