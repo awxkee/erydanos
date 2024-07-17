@@ -4,6 +4,10 @@
  * // Use of this source code is governed by a BSD-style
  * // license that can be found in the LICENSE file.
  */
+mod acos;
+mod acosf;
+mod asin;
+mod asinf;
 mod atan;
 mod atan2;
 mod atan2f;
@@ -35,6 +39,10 @@ mod tan;
 mod tanf;
 mod unsigned;
 
+pub use acos::_mm_acos_pd;
+pub use acosf::_mm_acos_ps;
+pub use asin::_mm_asin_pd;
+pub use asinf::_mm_asin_ps;
 pub use atan::_mm_atan_pd;
 pub use atan2::_mm_atan2_pd;
 pub use atan2f::_mm_atan2_ps;
@@ -108,6 +116,8 @@ pub use ln::_mm_ln_fast_pd;
 pub use ln::_mm_ln_pd;
 pub use lnf::_mm_ln_fast_ps;
 pub use lnf::_mm_ln_ps;
+pub use pow::_mm_pow_fast_pd;
+pub use pow::_mm_pow_pd;
 pub use powf::_mm_pow_fast_ps;
 pub use powf::_mm_pow_ps;
 pub use saturation_epi32::_mm_adds_epi32;

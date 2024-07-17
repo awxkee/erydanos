@@ -5,6 +5,11 @@
  * // license that can be found in the LICENSE file.
  */
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+use crate::_mm_atan2_ps;
 use crate::atanf::eatanf;
 #[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
@@ -16,6 +21,10 @@ use crate::neon::vatan2q_f32;
     target_feature = "neon"
 ))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
+#[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
+use std::arch::x86::*;
+#[cfg(all(target_arch = "x86_64", target_feature = "sse4.1"))]
+use std::arch::x86_64::*;
 
 fn do_atan2f(y: f32, x: f32) -> f32 {
     if x == 0. {
@@ -53,6 +62,19 @@ fn do_atan2f_neon(y: f32, x: f32) -> f32 {
     }
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+#[inline(always)]
+fn do_atan2f_sse(y: f32, x: f32) -> f32 {
+    unsafe {
+        let vy = _mm_set1_ps(y);
+        let vx = _mm_set1_ps(x);
+        f32::from_bits(_mm_extract_ps::<0>(_mm_atan2_ps(vy, vx)) as u32)
+    }
+}
+
 /// Computes atan2 between vector, *ULP 1.0*
 #[inline]
 pub fn eatan2f(y: f32, x: f32) -> f32 {
@@ -63,6 +85,13 @@ pub fn eatan2f(y: f32, x: f32) -> f32 {
     ))]
     {
         _dispatcher = do_atan2f_neon;
+    }
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_atan2f_sse;
     }
     _dispatcher(y, x)
 }

@@ -5,6 +5,11 @@
  * // license that can be found in the LICENSE file.
  */
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+use crate::_mm_asin_ps;
 use crate::abs::eabsf;
 use crate::generalf::{copysignfk, mlaf};
 #[cfg(all(
@@ -18,6 +23,10 @@ use crate::sqrtf::esqrtf;
     target_feature = "neon"
 ))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
+#[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
+use std::arch::x86::*;
+#[cfg(all(target_arch = "x86_64", target_feature = "sse4.1"))]
+use std::arch::x86_64::*;
 
 pub(crate) const ASIN_POLY_2_F: u32 = 0x3f7ffffe; // 0.99999996772155
 pub(crate) const ASIN_POLY_3_F: u32 = 0x36f8402e; // 7.398621160063735e-6
@@ -80,6 +89,20 @@ fn do_asinf_neon(d: f32) -> f32 {
     }
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+#[inline]
+fn do_asinf_sse(d: f32) -> f32 {
+    unsafe {
+        let v = _mm_set1_ps(d);
+        let value = _mm_asin_ps(v);
+        let ex = f32::from_bits(_mm_extract_ps::<0>(value) as u32);
+        ex
+    }
+}
+
 /// Computes asin for an argument *ULP 2.0*
 #[inline]
 pub fn easinf(d: f32) -> f32 {
@@ -90,6 +113,13 @@ pub fn easinf(d: f32) -> f32 {
     ))]
     {
         _dispatcher = do_asinf_neon;
+    }
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_asinf_sse;
     }
     _dispatcher(d)
 }

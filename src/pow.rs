@@ -16,10 +16,19 @@ use crate::ln::eln;
 ))]
 use crate::neon::vpowq_f64;
 #[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+use crate::{_mm_extract_pd, _mm_pow_pd};
+#[cfg(all(
     any(target_arch = "aarch64", target_arch = "arm"),
     target_feature = "neon"
 ))]
 use std::arch::aarch64::{vdupq_n_f64, vgetq_lane_f64};
+#[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
+use std::arch::x86::*;
+#[cfg(all(target_arch = "x86_64", target_feature = "sse4.1"))]
+use std::arch::x86_64::*;
 
 #[inline]
 fn do_pow(d: f64, n: f64) -> f64 {
@@ -53,6 +62,19 @@ fn do_pow_neon(d: f64, n: f64) -> f64 {
     }
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+#[inline]
+fn do_pow_sse(d: f64, n: f64) -> f64 {
+    unsafe {
+        let val = _mm_set1_pd(d);
+        let power = _mm_set1_pd(n);
+        _mm_extract_pd::<0>(_mm_pow_pd(val, power))
+    }
+}
+
 #[inline]
 pub fn epow(d: f64, n: f64) -> f64 {
     let mut _dispatcher: fn(f64, f64) -> f64 = do_pow;
@@ -62,6 +84,13 @@ pub fn epow(d: f64, n: f64) -> f64 {
     ))]
     {
         _dispatcher = do_pow_neon;
+    }
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_pow_sse;
     }
     _dispatcher(d, n)
 }

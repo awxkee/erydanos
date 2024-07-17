@@ -5,6 +5,8 @@
  * // license that can be found in the LICENSE file.
  */
 
+mod acos;
+mod acosf;
 mod asin;
 mod asinf;
 mod atan2f;
@@ -37,6 +39,8 @@ mod sinf;
 mod tan;
 mod tanf;
 
+pub use acos::vacosq_f64;
+pub use acosf::vacosq_f32;
 pub use asin::vasinq_f64;
 pub use asinf::vasinq_f32;
 pub use atan2f::vatan2q_f32;

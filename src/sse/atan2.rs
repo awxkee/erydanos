@@ -9,8 +9,8 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
-use crate::{_mm_atan_pd, _mm_eqzero_pd, _mm_select_pd};
 use crate::sse::general::_mm_ltzero_pd;
+use crate::{_mm_atan_pd, _mm_eqzero_pd, _mm_select_pd};
 
 /// Computes atan for Y,X
 #[inline(always)]

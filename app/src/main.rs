@@ -1,13 +1,13 @@
-use libm::{hypotf, sin};
-use rug::Assign;
 use std::ops::Shr;
 
-use crate::search_optimized_coeffs::{search_coeffs_f32, search_coeffs_f64};
-use crate::ulp::{count_ulp, count_ulp_f64};
+use rug::Assign;
+
 use erydanos::{
-    eabs, eexp, ehypot3f, eln, epow, esin, ArcCos, ArcSin, ArcTan, ArcTan2, Cosine, CubeRoot,
-    Exponential, Logarithmic, Power, Sine, Tangent,
+    eabs, eexp, eln, epow, esin, ArcCos, ArcSin, ArcTan, ArcTan2, Cosine, CubeRoot, Exponential,
+    Logarithmic, Power, Sine, Tangent,
 };
+
+use crate::ulp::count_ulp_f64;
 
 mod random_coeffs;
 mod search_optimized_coeffs;
@@ -95,13 +95,7 @@ fn main() {
     let rg = rug::Float::sin(rug::Float::with_val(53, -2.70752239));
     println!("approx {}, real {}", ag, rg.to_f64());
     println!("{}", count_ulp_f64(ag, &rg));
-    println!(
-        "ln {}, ln*3 {}, e {}, epow {}",
-        eln(15f64),
-        eln(15f64) * 3f64,
-        eexp(eln(15f64) * 3f64),
-        epow(-15f64, 3f64)
-    );
+    println!("{}", (27f32).epow(1. / 3.));
     // 249063
     println!(
         "{}, {}, {}",

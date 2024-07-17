@@ -42,3 +42,33 @@ pub unsafe fn vasinq_f32(d: float32x4_t) -> float32x4_t {
     ret = vbslq_f32(zeros_is_zeros, vdupq_n_f32(0f32), ret);
     vcopysignq_f32(ret, d)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_asinf() {
+        unsafe {
+            let value = vdupq_n_f32(0.3);
+            let comparison = vasinq_f32(value);
+            let flag_1 = vgetq_lane_f32::<1>(comparison);
+            let control = 0.304692654015397507972f32;
+            assert_eq!(flag_1, control);
+        }
+        unsafe {
+            let value = vdupq_n_f32(-0.3);
+            let comparison = vasinq_f32(value);
+            let flag_1 = vgetq_lane_f32::<1>(comparison);
+            let control = -0.304692654015397507972f32;
+            assert_eq!(flag_1, control);
+        }
+
+        unsafe {
+            let value = vdupq_n_f32(-2f32);
+            let comparison = vasinq_f32(value);
+            let flag_1 = vgetq_lane_f32::<1>(comparison);
+            assert!(flag_1.is_nan());
+        }
+    }
+}
