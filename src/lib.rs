@@ -377,3 +377,20 @@ impl Euclidean2DDistance for f64 {
         ehypot(self, y)
     }
 }
+
+pub trait Euclidean4DDistance {
+    /// Computes euclidean 4D distance
+    fn hypot4(self, y: Self, z: Self, w: Self) -> Self;
+}
+
+impl Euclidean4DDistance for f32 {
+    fn hypot4(self, y: Self, z: Self, w: Self) -> Self {
+        ehypot4f(self, y, z, w)
+    }
+}
+
+impl Euclidean4DDistance for f64 {
+    fn hypot4(self, y: Self, z: Self, w: Self) -> Self {
+        ehypot4(self, y, z, w)
+    }
+}

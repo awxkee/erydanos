@@ -26,9 +26,9 @@ unsafe fn integer_pow_1_3(hx: uint32x4_t) -> uint32x4_t {
     vcombine_u32(vmovn_u64(lo), vmovn_u64(hi))
 }
 
-/// Takes cube root from value *ULP 1.5*
+/// Takes cube root from value *ULP 1.5*, Skipping Nan, Inf checks
 #[inline(always)]
-pub unsafe fn vcbrtq_f32(x: float32x4_t) -> float32x4_t {
+pub unsafe fn vcbrtq_fast_f32(x: float32x4_t) -> float32x4_t {
     let mut ui = vreinterpretq_u32_f32(x);
     let hx = vandq_u32(ui, vdupq_n_u32(0x7fffffff));
 
@@ -41,8 +41,38 @@ pub unsafe fn vcbrtq_f32(x: float32x4_t) -> float32x4_t {
 
     let c0 = halley_cbrt(t, x);
     let c1 = halley_cbrt(c0, x);
-    let mut v = vbslq_f32(vceqzq_f32(x), vdupq_n_f32(0f32), c1);
-    v = vbslq_f32(visinfq_f32(x), vdupq_n_f32(f32::INFINITY), v);
+    let v = vbslq_f32(vceqzq_f32(x), vdupq_n_f32(0f32), c1);
+    v
+}
+
+/// Takes cube root from value *ULP 1.5*
+#[inline(always)]
+pub unsafe fn vcbrtq_f32(x: float32x4_t) -> float32x4_t {
+    let c1 = vcbrtq_fast_f32(x);
+    let mut v = vbslq_f32(visinfq_f32(x), vdupq_n_f32(f32::INFINITY), c1);
     v = vbslq_f32(visneginfq_f32(x), vdupq_n_f32(f32::NEG_INFINITY), v);
     v
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_acosf() {
+        unsafe {
+            let value = vdupq_n_f32(27f32);
+            let comparison = vcbrtq_f32(value);
+            let flag_1 = vgetq_lane_f32::<1>(comparison);
+            let control = 3f32;
+            assert_eq!(flag_1, control);
+        }
+        unsafe {
+            let value = vdupq_n_f32(27f32);
+            let comparison = vcbrtq_fast_f32(value);
+            let flag_1 = vgetq_lane_f32::<1>(comparison);
+            let control = 3f32;
+            assert_eq!(flag_1, control);
+        }
+    }
 }

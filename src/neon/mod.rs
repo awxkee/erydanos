@@ -49,6 +49,7 @@ pub use atan2f::vatan2q_f32;
 pub use atanf::vatanq_f32;
 pub use cbrt::vcbrtq_f64;
 pub use cbrtf::vcbrtq_f32;
+pub use cbrtf::vcbrtq_fast_f32;
 pub use ceil::vceilq_f64;
 pub use ceil::vceilq_ie_f64;
 pub use ceilf::vceilq_f32;

@@ -37,9 +37,9 @@ unsafe fn integer_pow_1_3(hx: __m128i) -> __m128i {
     _mm_packus_epi64(lo, hi)
 }
 
-/// Takes cube root from value *ULP 1.5*
+/// Takes cube root from value *ULP 1.5*, Skipping NaN, Inf checks
 #[inline(always)]
-pub unsafe fn _mm_cbrt_ps(x: __m128) -> __m128 {
+pub unsafe fn _mm_cbrt_fast_ps(x: __m128) -> __m128 {
     let mut ui = _mm_castps_si128(x);
     let hx = _mm_and_si128(ui, _mm_set1_epi32(0x7fffffff));
 
@@ -54,8 +54,15 @@ pub unsafe fn _mm_cbrt_ps(x: __m128) -> __m128 {
 
     let c0 = halley_cbrt(t, x);
     let c1 = halley_cbrt(c0, x);
-    let mut v = _mm_select_ps(_mm_eqzero_ps(x), _mm_set1_ps(0f32), c1);
-    v = _mm_select_ps(_mm_isinf_ps(x), _mm_set1_ps(f32::INFINITY), v);
+    let v = _mm_select_ps(_mm_eqzero_ps(x), _mm_set1_ps(0f32), c1);
+    v
+}
+
+/// Takes cube root from value *ULP 1.5*
+#[inline(always)]
+pub unsafe fn _mm_cbrt_ps(x: __m128) -> __m128 {
+    let c1 = _mm_cbrt_fast_ps(x);
+    let mut v = _mm_select_ps(_mm_isinf_ps(x), _mm_set1_ps(f32::INFINITY), c1);
     v = _mm_select_ps(_mm_isneginf_ps(x), _mm_set1_ps(f32::NEG_INFINITY), v);
     v
 }
@@ -70,6 +77,14 @@ mod tests {
             // Test regular
             let value = _mm_set1_ps(0.0201934222);
             let comparison = _mm_cbrt_ps(value);
+            let flag_1 = f32::from_bits(_mm_extract_ps::<3>(comparison) as u32);
+            assert_eq!(flag_1, 0.272313982f32);
+        }
+
+        unsafe {
+            // Test regular
+            let value = _mm_set1_ps(0.0201934222);
+            let comparison = _mm_cbrt_fast_ps(value);
             let flag_1 = f32::from_bits(_mm_extract_ps::<3>(comparison) as u32);
             assert_eq!(flag_1, 0.272313982f32);
         }
