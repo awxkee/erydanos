@@ -30,7 +30,7 @@ pub unsafe fn _mm_hypot3_pd(x: __m128d, y: __m128d, z: __m128d) -> __m128d {
     );
     let mut ret = _mm_mul_pd(_mm_sqrt_pd(accumulator), max);
     let is_any_infinite = _mm_or_pd(_mm_or_pd(_mm_isinf_pd(x), _mm_isinf_pd(y)), _mm_isinf_pd(z));
-    let is_any_nan = _mm_or_pd(_mm_isnan_pd(x), _mm_isnan_pd(y));
+    let is_any_nan = _mm_or_pd(_mm_or_pd(_mm_isnan_pd(x), _mm_isnan_pd(y)), _mm_isnan_pd(z));
     let is_max_zero = _mm_eqzero_pd(max);
     let is_result_nan = _mm_isnan_pd(ret);
     ret = _mm_select_pd(is_any_infinite, _mm_set1_pd(f64::INFINITY), ret);

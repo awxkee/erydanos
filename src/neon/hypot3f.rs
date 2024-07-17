@@ -27,7 +27,7 @@ pub unsafe fn vhypot3q_f32(x: float32x4_t, y: float32x4_t, z: float32x4_t) -> fl
 
     let mut ret = vmulq_f32(vsqrtq_f32(accumulator), max);
     let is_any_infinite = vorrq_u32(vorrq_u32(visinfq_f32(x), visinfq_f32(y)), visinfq_f32(z));
-    let is_any_nan = vorrq_u32(visnanq_f32(x), visnanq_f32(y));
+    let is_any_nan = vorrq_u32(vorrq_u32(visnanq_f32(x), visnanq_f32(y)), visnanq_f32(z));
     let is_max_zero = vceqzq_f32(max);
     let is_result_nan = visnanq_f32(ret);
     ret = vbslq_f32(is_any_infinite, vdupq_n_f32(f32::INFINITY), ret);

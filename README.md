@@ -29,6 +29,7 @@ Implemented routines:
 - [x] sqrt
 - [x] ceil
 - [x] hypot3
+- [x] hypot4
 
 # Example
 
