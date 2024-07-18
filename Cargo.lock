@@ -170,7 +170,7 @@ checksum = "60b1af1c220855b6ceac025d3f6ecdd2b7c4894bfe9cd9bda4fbb4bc7c0d4cf0"
 
 [[package]]
 name = "erydanos"
-version = "0.2.7"
+version = "0.2.8"
 dependencies = [
  "num-traits",
 ]
