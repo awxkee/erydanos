@@ -17,6 +17,15 @@ use crate::cbrtf::halley_cbrt;
     target_feature = "neon"
 ))]
 use crate::neon::vcbrtq_f64;
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+use crate::{_mm_cbrt_pd, _mm_extract_pd};
+#[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
+use std::arch::x86::*;
+#[cfg(all(target_arch = "x86_64", target_feature = "sse4.1"))]
+use std::arch::x86_64::*;
 
 const B1: u32 = 715094163;
 
@@ -56,6 +65,17 @@ fn do_cbrt_neon(d: f64) -> f64 {
     }
 }
 
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "sse4.1"
+))]
+fn do_cbrt_sse(d: f64) -> f64 {
+    unsafe {
+        let ld = _mm_set1_pd(d);
+        _mm_extract_pd::<0>(_mm_cbrt_pd(ld))
+    }
+}
+
 /// Computes Cube Root *ULP 2.0*
 pub fn ecbrt(x: f64) -> f64 {
     let mut _dispatcher: fn(f64) -> f64 = do_ecbrt;
@@ -65,6 +85,13 @@ pub fn ecbrt(x: f64) -> f64 {
     ))]
     {
         _dispatcher = do_cbrt_neon;
+    }
+    #[cfg(all(
+        any(target_arch = "x86_64", target_arch = "x86"),
+        target_feature = "sse4.1"
+    ))]
+    {
+        _dispatcher = do_cbrt_sse;
     }
     _dispatcher(x)
 }

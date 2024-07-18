@@ -5,7 +5,8 @@
  * // license that can be found in the LICENSE file.
  */
 
-/// Minimum of two numbers
+#[inline]
+/// Find min between a pair of values
 pub fn efminf(x: f32, y: f32) -> f32 {
     if y.is_nan() || (x < y) {
         x

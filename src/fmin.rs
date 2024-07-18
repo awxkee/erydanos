@@ -5,6 +5,8 @@
  * // license that can be found in the LICENSE file.
  */
 
+#[inline]
+/// Find min between a pair of values
 pub fn efmin(x: f64, y: f64) -> f64 {
     if y.is_nan() || (x < y) {
         x

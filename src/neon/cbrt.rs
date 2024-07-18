@@ -32,6 +32,14 @@ unsafe fn integer_pow_1_3(hx: uint64x2_t) -> uint64x2_t {
 
 #[inline(always)]
 pub unsafe fn vcbrtq_f64(x: float64x2_t) -> float64x2_t {
+    let mut v = vcbrtq_fast_f64(x);
+    v = vbslq_f64(visinfq_f64(x), vdupq_n_f64(f64::INFINITY), v);
+    v = vbslq_f64(visneginfq_f64(x), vdupq_n_f64(f64::NEG_INFINITY), v);
+    v
+}
+
+#[inline(always)]
+pub unsafe fn vcbrtq_fast_f64(x: float64x2_t) -> float64x2_t {
     let mut ui = vreinterpretq_u64_f64(x);
     let hx = vandq_u64(vshrq_n_u64::<32>(ui), vdupq_n_u64(0x7fffffff));
 
@@ -46,8 +54,39 @@ pub unsafe fn vcbrtq_f64(x: float64x2_t) -> float64x2_t {
     let c1 = halley_cbrt(c0, x);
     let c2 = halley_cbrt(c1, x);
 
-    let mut v = vbslq_f64(vceqzq_f64(x), vdupq_n_f64(0f64), c2);
-    v = vbslq_f64(visinfq_f64(x), vdupq_n_f64(f64::INFINITY), v);
-    v = vbslq_f64(visneginfq_f64(x), vdupq_n_f64(f64::NEG_INFINITY), v);
+    let v = vbslq_f64(vceqzq_f64(x), vdupq_n_f64(0f64), c2);
     v
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_cbrtd() {
+        unsafe {
+            let value = vdupq_n_f64(27f64);
+            let comparison = vcbrtq_f64(value);
+            let flag_1 = vgetq_lane_f64::<1>(comparison);
+            let control = 3f64;
+            assert_eq!(flag_1, control);
+            assert_eq!(vgetq_lane_f64::<0>(comparison), flag_1);
+        }
+        unsafe {
+            let value = vdupq_n_f64(27f64);
+            let comparison = vcbrtq_fast_f64(value);
+            let flag_1 = vgetq_lane_f64::<1>(comparison);
+            let control = 3f64;
+            assert_eq!(flag_1, control);
+            assert_eq!(vgetq_lane_f64::<0>(comparison), flag_1);
+        }
+        unsafe {
+            let value = vdupq_n_f64(1500000000f64);
+            let comparison = vcbrtq_f64(value);
+            let flag_1 = vgetq_lane_f64::<1>(comparison);
+            let control = 1144.7142425533316f64;
+            assert_eq!(flag_1, control);
+            assert_eq!(vgetq_lane_f64::<0>(comparison), flag_1);
+        }
+    }
 }

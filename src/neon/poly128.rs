@@ -22,18 +22,18 @@ pub struct u128x1_t(uint64x1_t, uint64x1_t);
 pub struct s128x1_t(int64x1_t, int64x1_t);
 
 /// Type represents u128, in low u64 and high u64 part
-/// We'll keep this splat because mainly it is required to perform operations in both of them sequentially
+/// Low parts and half parts are interleaved
 ///
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone)]
-pub struct u128x2_t(u128x1_t, u128x1_t);
+pub struct u128x2_t(uint64x2_t, uint64x2_t);
 
 /// Type represents i128, in low i64 and high i64 part
-/// We'll keep this splat because mainly it is required to perform operations in both of them sequentially
+/// Low parts and half parts are interleaved
 ///
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone)]
-pub struct s128x2_t(s128x1_t, s128x1_t);
+pub struct s128x2_t(int64x2_t, int64x2_t);
 
 /// Computes i128 as i64 and extracts in general register
 #[inline(always)]
@@ -74,10 +74,8 @@ pub unsafe fn vcvtq_u128_u64(v: uint64x2_t) -> u128x1_t {
 }
 
 #[inline(always)]
-pub unsafe fn vmovnq_u128(p: u128x2_t) -> uint64x2_t {
-    let v0 = vadd_u64(p.0 .0, p.0 .1);
-    let v1 = vadd_u64(p.1 .0, p.1 .1);
-    vcombine_u64(v0, v1)
+pub unsafe fn vmovnq_u128(v: u128x2_t) -> uint64x2_t {
+    vaddq_u64(v.0, v.1)
 }
 
 #[inline(always)]
@@ -142,10 +140,7 @@ pub unsafe fn vmullq_u64(a: uint64x2_t, b: uint64x2_t) -> u128x2_t {
     let j2 = vmulq_u64(xh, yl);
     let j3 = vmulq_u64(xl, yl);
     let d1 = vsubq_u64(vaddq_u64(vaddq_u64(j0, j1), vaddq_u64(j2, j3)), r0);
-    u128x2_t(
-        vcreate_u128(vget_low_u64(d0), vget_low_u64(d1)),
-        vcreate_u128(vget_high_u64(d0), vget_high_u64(d1)),
-    )
+    u128x2_t(d0, d1)
 }
 
 #[inline]
@@ -179,17 +174,29 @@ pub unsafe fn vaddw_s64(a: s128x1_t, b: int64x1_t) -> s128x1_t {
 #[inline]
 /// Widening add u64 to u128
 pub unsafe fn vaddwq_u64(a: u128x2_t, b: uint64x2_t) -> u128x2_t {
-    let r0 = vaddw_u64(a.0, vget_low_u64(b));
-    let r1 = vaddw_u64(a.1, vget_high_u64(b));
-    u128x2_t(r0, r1)
+    let r0 = vaddq_u64(a.0, b);
+    let v = vsubq_u64(r0, a.0);
+    u128x2_t(
+        r0,
+        vaddq_u64(
+            vsubq_u64(a.0, vsubq_u64(r0, v)),
+            vaddq_u64(vsubq_u64(b, v), a.1),
+        ),
+    )
 }
 
 #[inline]
 /// Widening add i64 to i128
 pub unsafe fn vaddwq_s64(a: s128x2_t, b: int64x2_t) -> s128x2_t {
-    let r0 = vaddw_s64(a.0, vget_low_s64(b));
-    let r1 = vaddw_s64(a.1, vget_high_s64(b));
-    s128x2_t(r0, r1)
+    let r0 = vaddq_s64(a.0, b);
+    let v = vsubq_s64(r0, a.0);
+    s128x2_t(
+        r0,
+        vaddq_s64(
+            vsubq_s64(a.0, vsubq_s64(r0, v)),
+            vaddq_s64(vsubq_s64(b, v), a.1),
+        ),
+    )
 }
 
 #[inline]
@@ -201,7 +208,7 @@ pub unsafe fn vshr_n_u128<const BITS: i32>(a: u128x1_t) -> u128x1_t {
 #[inline]
 /// Shifts right u128 immediate
 pub unsafe fn vshrq_n_u128<const BITS: i32>(a: u128x2_t) -> u128x2_t {
-    u128x2_t(vshr_n_u128::<BITS>(a.0), vshr_n_u128::<BITS>(a.1))
+    u128x2_t(vshrq_n_u64::<BITS>(a.0), vshrq_n_u64::<BITS>(a.1))
 }
 
 #[inline]
@@ -213,5 +220,29 @@ pub unsafe fn vshr_n_s128<const BITS: i32>(a: s128x1_t) -> s128x1_t {
 #[inline]
 /// Shifts right s128 immediate
 pub unsafe fn vshrq_n_s128<const BITS: i32>(a: s128x2_t) -> s128x2_t {
-    s128x2_t(vshr_n_s128::<BITS>(a.0), vshr_n_s128::<BITS>(a.1))
+    s128x2_t(vshrq_n_s64::<BITS>(a.0), vshrq_n_s64::<BITS>(a.1))
+}
+
+#[inline]
+/// Shifts left u128 immediate
+pub unsafe fn vshl_n_u128<const BITS: i32>(a: u128x1_t) -> u128x1_t {
+    u128x1_t(vshl_n_u64::<BITS>(a.0), vshl_n_u64::<BITS>(a.1))
+}
+
+#[inline]
+/// Shifts left u128 immediate
+pub unsafe fn vshlq_n_u128<const BITS: i32>(a: u128x2_t) -> u128x2_t {
+    u128x2_t(vshlq_n_u64::<BITS>(a.0), vshlq_n_u64::<BITS>(a.1))
+}
+
+#[inline]
+/// Shifts left s128 immediate
+pub unsafe fn vshl_n_s128<const BITS: i32>(a: s128x1_t) -> s128x1_t {
+    s128x1_t(vshl_n_s64::<BITS>(a.0), vshl_n_s64::<BITS>(a.1))
+}
+
+#[inline]
+/// Shifts right s128 immediate
+pub unsafe fn vshlq_n_s128<const BITS: i32>(a: s128x2_t) -> s128x2_t {
+    s128x2_t(vshlq_n_s64::<BITS>(a.0), vshlq_n_s64::<BITS>(a.1))
 }
