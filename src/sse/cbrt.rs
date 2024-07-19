@@ -9,7 +9,7 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
-use crate::sse::poly128::{_mm_add_epi128, _mm_movn_epi128, _mm_mull_epu64, _mm_srli_epi128};
+use crate::sse::poly128::{_mm_addw_epi128, _mm_movn_epi128, _mm_mull_epu64, _mm_srli_epi128x};
 use crate::{_mm_eqzero_pd, _mm_isinf_pd, _mm_isneginf_pd, _mm_mlaf_pd, _mm_select_pd};
 
 #[inline(always)]
@@ -26,9 +26,9 @@ unsafe fn halley_cbrt(x: __m128d, a: __m128d) -> __m128d {
 unsafe fn integer_pow_1_3(hx: __m128i) -> __m128i {
     let scale = _mm_set1_epi64x(341);
     let wide = _mm_mull_epu64(hx, scale);
-    let shifted = _mm_srli_epi128::<10>(wide);
+    let shifted = _mm_srli_epi128x::<10>(wide);
     let addiction = _mm_set1_epi64x(715094163);
-    let product = _mm_add_epi128(shifted, addiction);
+    let product = _mm_addw_epi128(shifted, addiction);
     _mm_movn_epi128(product)
 }
 

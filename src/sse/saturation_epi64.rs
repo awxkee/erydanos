@@ -51,3 +51,32 @@ pub unsafe fn _mm_subs_epi64(lhs: __m128i, rhs: __m128i) -> __m128i {
         ),
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::_mm_extract_epi64x;
+
+    #[test]
+    fn saturation_add_epu64() {
+        unsafe {
+            let value1 = _mm_set1_epi64x(u64::MAX as i64);
+            let value2 = _mm_set1_epi64x(15);
+
+            let comparison = _mm_adds_epu64(value1, value2);
+            let flag_1 = _mm_extract_epi64x::<0>(comparison) as u64;
+            let control = u64::MAX;
+            assert_eq!(flag_1, control);
+        }
+
+        unsafe {
+            let value1 = _mm_set1_epi64x(15);
+            let value2 = _mm_set1_epi64x(15);
+
+            let comparison = _mm_adds_epu64(value1, value2);
+            let flag_1 = _mm_extract_epi64x::<0>(comparison) as u64;
+            let control = 30;
+            assert_eq!(flag_1, control);
+        }
+    }
+}

@@ -210,6 +210,7 @@ pub unsafe fn vmul_u64(ab: uint64x1_t, cd: uint64x1_t) -> uint64x1_t {
 }
 
 #[inline(always)]
+/// Multiplies u64 together and takes low part, do not care about overflowing
 pub unsafe fn vmulq_u64(ab: uint64x2_t, cd: uint64x2_t) -> uint64x2_t {
     /* ac = (ab & 0xFFFFFFFF) * (cd & 0xFFFFFFFF); */
     let ab_low = vmovn_u64(ab);
@@ -240,13 +241,7 @@ pub unsafe fn vmulq_u64(ab: uint64x2_t, cd: uint64x2_t) -> uint64x2_t {
 
 #[inline(always)]
 pub unsafe fn vmul_s64(ab: int64x1_t, cd: int64x1_t) -> int64x1_t {
-    let sign_ab = vshr_n_u64::<63>(vreinterpret_u64_s64(ab));
-    let sign_cd = vshr_n_u64::<63>(vreinterpret_u64_s64(cd));
-    let sign = veor_u64(sign_ab, sign_cd);
-    let uab = vreinterpret_u64_s64(vabs_s64(ab));
-    let ucd = vreinterpret_u64_s64(vabs_s64(cd));
-    let product = vreinterpret_s64_u64(vmul_u64(uab, ucd));
-    vbsl_s64(vceqz_u64(sign), product, vneg_s64(product))
+    vreinterpret_s64_u64(vmul_u64(vreinterpret_u64_s64(ab), vreinterpret_u64_s64(cd)))
 }
 
 #[inline(always)]
@@ -258,13 +253,10 @@ pub unsafe fn vqshrn_n_u128<const SHIFT: i32>(a: uint64x2x2_t) -> uint64x2_t {
 
 #[inline(always)]
 pub unsafe fn vmulq_s64(ab: int64x2_t, cd: int64x2_t) -> int64x2_t {
-    let sign_ab = vshrq_n_u64::<63>(vreinterpretq_u64_s64(ab));
-    let sign_cd = vshrq_n_u64::<63>(vreinterpretq_u64_s64(cd));
-    let sign = veorq_u64(sign_ab, sign_cd);
-    let uab = vreinterpretq_u64_s64(vabsq_s64(ab));
-    let ucd = vreinterpretq_u64_s64(vabsq_s64(cd));
-    let product = vreinterpretq_s64_u64(vmulq_u64(uab, ucd));
-    vbslq_s64(vceqzq_u64(sign), product, vnegq_s64(product))
+    vreinterpretq_s64_u64(vmulq_u64(
+        vreinterpretq_u64_s64(ab),
+        vreinterpretq_u64_s64(cd),
+    ))
 }
 
 #[inline(always)]
@@ -280,4 +272,58 @@ pub unsafe fn visnotintegralq_f64(d: float64x2_t) -> uint64x2_t {
         d,
         vcvtq_f64_s64(vcvtq_s64_f64(d)),
     ))));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_mul_lo_64int() {
+        unsafe {
+            let value1 = vdupq_n_u64(27);
+            let value2 = vdupq_n_u64(2);
+
+            let comparison = vmulq_u64(value1, value2);
+            let flag_1 = vgetq_lane_u64::<0>(comparison);
+            let control = 27 * 2;
+            assert_eq!(flag_1, control);
+        }
+        unsafe {
+            let value1 = vdupq_n_s64(27);
+            let value2 = vdupq_n_s64(2);
+
+            let comparison = vmulq_s64(value1, value2);
+            let flag_1 = vgetq_lane_s64::<0>(comparison);
+            let control = 27 * 2;
+            assert_eq!(flag_1, control);
+        }
+        unsafe {
+            let value1 = vdupq_n_s64(27);
+            let value2 = vdupq_n_s64(-2);
+
+            let comparison = vmulq_s64(value1, value2);
+            let flag_1 = vgetq_lane_s64::<0>(comparison);
+            let control = -27 * 2;
+            assert_eq!(flag_1, control);
+        }
+        unsafe {
+            let value1 = vdupq_n_s64(-27);
+            let value2 = vdupq_n_s64(-2);
+
+            let comparison = vmulq_s64(value1, value2);
+            let flag_1 = vgetq_lane_s64::<0>(comparison);
+            let control = 27 * 2;
+            assert_eq!(flag_1, control);
+        }
+        unsafe {
+            let value1 = vdupq_n_s64(-27);
+            let value2 = vdupq_n_s64(2);
+
+            let comparison = vmulq_s64(value1, value2);
+            let flag_1 = vgetq_lane_s64::<0>(comparison);
+            let control = -27 * 2;
+            assert_eq!(flag_1, control);
+        }
+    }
 }

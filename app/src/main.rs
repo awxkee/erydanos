@@ -1,4 +1,4 @@
-use std::ops::Shr;
+use std::ops::{Add, Mul, Shr};
 
 use rug::Assign;
 
@@ -78,6 +78,152 @@ fn combine_parts(low_low: i64, low_high: i64, high_low: i64, high_high: i64) -> 
     (low_low + low_high) + (high_high + high_low) << 32
 }
 
+#[inline(never)]
+fn multiply_u64(a: u64, b: u64) -> (u64, u64) {
+    let a_low = a & 0xFFFFFFFF;
+    let a_high = a >> 32;
+    let b_low = b & 0xFFFFFFFF;
+    let b_high = b >> 32;
+
+    let low_low = a_low.wrapping_mul(b_low);
+    let low_high = a_low.wrapping_mul(b_high);
+    let high_low = a_high.wrapping_mul(b_low);
+    let high_high = a_high.wrapping_mul(b_high);
+
+    let mid1 = (low_low >> 32)
+        .wrapping_add(low_high & 0xFFFFFFFF)
+        .wrapping_add(high_low & 0xFFFFFFFF);
+    let mid2 = (mid1 >> 32)
+        .wrapping_add(low_high >> 32)
+        .wrapping_add(high_low >> 32)
+        .wrapping_add(high_high);
+
+    let result_low = (low_low & 0xFFFFFFFF).wrapping_add(mid1 << 32);
+    let result_high = mid2;
+
+    (result_low, result_high)
+}
+
+#[inline(never)]
+fn lhs_u128(low: u64, high: u64, shift: i64) -> (u64, u64) {
+    if (shift < 0) {
+        panic!("Shift count cannot be negative");
+    }
+    let (lo, mut hi);
+    if (shift >= 64) {
+        lo = 0;
+        hi = low << (shift - 64);
+    } else {
+        lo = low << shift;
+        hi = high << shift;
+
+        // Handle the overflow from lower to upper part
+        hi |= low >> (64 - shift);
+    }
+
+    return (lo, hi);
+}
+
+#[inline(never)]
+fn lhs_s128(low: i64, high: i64, shift: i64) -> (i64, i64) {
+    if (shift < 0) {
+        panic!("Shift count cannot be negative");
+    }
+    let (lo, mut hi);
+    if (shift >= 64) {
+        lo = 0;
+        hi = low << (shift - 64);
+    } else {
+        lo = low << shift;
+        hi = high << shift;
+
+        // Handle the overflow from lower to upper part
+        hi |= low >> (64 - shift);
+    }
+
+    return (lo, hi);
+}
+
+fn add_u128(a: (u64, u64), b: (u64, u64)) -> (u64, u64) {
+    // Add the lower parts
+    let rs_lo = a.0.wrapping_add(b.0);
+
+    // Check for carry from the lower part addition
+    let carry = rs_lo < a.0;
+
+    // Add the upper parts along with the carry
+    let rs_hi =
+        a.1.wrapping_add(b.1.wrapping_add(if carry { 1 } else { 0 }));
+
+    return (rs_lo, rs_hi);
+}
+
+fn add_s128(a: (i64, i64), b: (i64, i64)) -> (i64, i64) {
+    // Add the lower parts
+    let rs_lo = a.0.wrapping_add(b.0);
+
+    // Check for carry from the lower part addition
+    let carry = rs_lo < a.0;
+
+    // Add the upper parts along with the carry
+    let rs_hi =
+        a.1.wrapping_add(b.1.wrapping_add(if carry { 1 } else { 0 }));
+
+    return (rs_lo, rs_hi);
+}
+
+#[inline(never)]
+#[no_mangle]
+fn multiply_ui64(lhs: u64, rhs: u64) -> (u64, u64) {
+    let a_high = lhs >> 32;
+    let a_low = lhs & 0xffffffff;
+    let b_high = rhs >> 32;
+    let b_low = rhs & 0xffffffff;
+
+    let low1 = a_low * b_low;
+    let low2 = a_low * b_high;
+    let low3 = a_high * b_low;
+    let high = a_high * b_high;
+
+    let mut hi = high;
+    let mut lo = low1;
+    let carry1 = lhs_u128(low3, 0, 32);
+    let carry2 = lhs_u128(low2, 0, 32);
+    let mut result = (lo, hi);
+    result = add_u128(result, carry1);
+    result = add_u128(result, carry2);
+    return result;
+}
+
+#[inline(never)]
+#[no_mangle]
+fn multiply_i64(lhs: i64, rhs: i64) -> (i64, i64) {
+    let a_high = lhs >> 32;
+    let a_low = lhs & 0xffffffff;
+    let b_high = rhs >> 32;
+    let b_low = rhs & 0xffffffff;
+
+    let low1 = a_low * b_low;
+    let low2 = a_low * b_high;
+    let low3 = a_high * b_low;
+    let high = a_high * b_high;
+
+    let mut hi = high;
+    let mut lo = low1;
+    let carry1 = lhs_s128(low3, 0, 32);
+    let carry2 = lhs_s128(low2, 0, 32);
+    let mut result = (lo, hi);
+    result = add_s128(result, carry1);
+    result = add_s128(result, carry2);
+    return result;
+}
+
+fn add_with_overflow_detection(a: i64, b: i64) -> (i64, bool) {
+    let sum = a.wrapping_add(b);
+    let overflow = (!(a ^ b) & (a ^ sum)) < 0;
+    (sum, overflow)
+}
+
 fn main() {
     // for i in -200..200 {
     //     let scale = 0.001f32;
@@ -93,18 +239,19 @@ fn main() {
     let z = 12f32;
     let ag = esin(-2.70752239);
     let rg = rug::Float::sin(rug::Float::with_val(53, -2.70752239));
-    println!("{}", 27f32.ecbrt());
-    println!("{}", f32::NAN.hypot(2f32));
-    println!("approx {}, real {}", ag, rg.to_f64());
-    println!("{}", count_ulp_f64(ag, &rg));
-    println!("{}", (27f32).epow(1. / 3.));
-    // 249063
+    // println!("{:?}", multiply_ui64(2, 4));
+    println!("{:?}", multiply_ui64(u64::MAX, 2));
+    println!("{}", u64::MAX as i128 * 2);
+    let product = multiply_ui64((-4i64) as u64, (-2i64) as u64);
     println!(
-        "{}, {}, {}",
-        0x24 as f32 / 255f32,
-        0x90 as f32 / 255f32,
-        0x63 as f32 / 255f32
+        "sign {}, {}, product {}",
+        product.0 as i64,
+        product.1 as i64,
+        product.0 as i128 | ((product.1 as i128) << 64)
     );
+    println!("{:?}", multiply_u64(i64::MAX as u64, (-2i64) as u64));
+    println!("{}", product.0 as i128 | ((product.1 as i128) << 64));
+
     // println!(
     //     " bits diff {}",
     //     rg.to_f32().to_bits().max(ag.to_bits()) - rg.to_f32().to_bits().min(ag.to_bits())

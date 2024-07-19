@@ -5,11 +5,12 @@
  * // license that can be found in the LICENSE file.
  */
 
-use crate::_mm_cmplt_epi64;
 #[cfg(target_arch = "x86")]
 use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
+
+use crate::_mm_cmplt_epi64;
 
 #[inline(always)]
 /// Mod function for i64
@@ -35,7 +36,8 @@ pub unsafe fn _mm_select_epi64(mask: __m128i, true_vals: __m128i, false_vals: __
 }
 
 #[inline(always)]
-/// Multiplies unsigned 64 bytes integers
+/// Multiplies unsigned 64 bytes integers, takes only lower half after multiplication, do not care about overflow
+/// Formally it is *_mm_mullo_epu64*
 pub unsafe fn _mm_mul_epu64(ab: __m128i, cd: __m128i) -> __m128i {
     /* ac = (ab & 0xFFFFFFFF) * (cd & 0xFFFFFFFF); */
     let ac = _mm_mul_epu32(ab, cd);
@@ -61,20 +63,10 @@ pub unsafe fn _mm_mul_epu64(ab: __m128i, cd: __m128i) -> __m128i {
 }
 
 #[inline(never)]
-/// Multiplies signed 64 bytes integers
+/// Multiplies unsigned 64 bytes integers, takes only lower half after multiplication, do not care about overflow
+/// Formally it is *_mm_mullo_epi64*
 pub unsafe fn _mm_mul_epi64(ab: __m128i, cd: __m128i) -> __m128i {
-    let sign_ab = _mm_srli_epi64::<63>(ab);
-    let sign_cd = _mm_srli_epi64::<63>(cd);
-    let sign = _mm_xor_si128(sign_ab, sign_cd);
-    let uab = _mm_abs_epi64(ab);
-    let ucd = _mm_abs_epi64(cd);
-    let product = _mm_mul_epu64(uab, ucd);
-    let o = _mm_select_epi64(
-        _mm_cmpeq_epi64(sign, _mm_setzero_si128()),
-        product,
-        _mm_neg_epi64(product),
-    );
-    return o;
+    _mm_mul_epu64(ab, cd)
 }
 
 #[inline(always)]
@@ -93,7 +85,7 @@ pub unsafe fn _mm_setr_epi64x(a: i64, b: i64) -> __m128i {
 
 #[inline(always)]
 #[rustfmt::skip]
-/// Converts signed 64 bit integers into double
+/// Converts signed 64-bit integers into double
 pub unsafe fn _mm_cvtepi64_pd(v: __m128i) -> __m128d {
     let magic_i_lo   = _mm_set1_epi64x(0x4330000000000000); // 2^52               encoded as floating-point
     let magic_i_hi32 = _mm_set1_epi64x(0x4530000080000000); // 2^84 + 2^63        encoded as floating-point
@@ -135,10 +127,89 @@ pub unsafe fn _mm_sllv_epi64x(a: __m128i, count: __m128i) -> __m128i {
     ));
 }
 
+#[inline(always)]
+/// Extracts i64 value
+pub unsafe fn _mm_extract_epi64x<const IMM: i32>(d: __m128i) -> i64 {
+    #[cfg(target_arch = "x86_64")]
+    {
+        return if IMM == 0 {
+            _mm_cvtsi128_si64(d)
+        } else {
+            _mm_extract_epi64::<IMM>(d)
+        };
+    }
+    #[cfg(target_arch = "x86")]
+    {
+        let (low, high);
+        if IMM == 0 {
+            low = _mm_cvtsi128_si32(d);
+            high = _mm_cvtsi128_si32(_mm_srli_si128::<4>(d));
+        } else {
+            low = _mm_cvtsi128_si32(_mm_srli_si128::<8>(d));
+            high = _mm_cvtsi128_si32(_mm_srli_si128::<12>(d));
+        }
+        return ((high as i64) << 32) | low as i64;
+    }
+}
+
+#[inline(always)]
+/// Bitwise not epi64
+pub unsafe fn _mm_not_epi64(a: __m128i) -> __m128i {
+    #[allow(overflowing_literals)]
+    let all_ones = _mm_set1_epi64x(0xffff_ffff_ffff_ffff);
+    return _mm_xor_si128(a, all_ones);
+}
+
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::_mm_extract_pd;
+
+    use super::*;
+
+    #[test]
+    fn test_mul_lo_epi64() {
+        unsafe {
+            // Test regular
+            let value1 = _mm_set1_epi64x(24);
+            let value2 = _mm_set1_epi64x(2);
+            let product = _mm_mul_epu64(value1, value2);
+            let flag = _mm_extract_epi64x::<0>(product);
+            assert_eq!(flag, 24 * 2);
+        }
+
+        unsafe {
+            // Test regular
+            let value1 = _mm_set1_epi64x(-27);
+            let value2 = _mm_set1_epi64x(2);
+            let product = _mm_mul_epi64(value1, value2);
+            let flag = _mm_extract_epi64x::<0>(product);
+            assert_eq!(flag, -27 * 2);
+        }
+        unsafe {
+            // Test regular
+            let value1 = _mm_set1_epi64x(27);
+            let value2 = _mm_set1_epi64x(-2);
+            let product = _mm_mul_epi64(value1, value2);
+            let flag = _mm_extract_epi64x::<0>(product);
+            assert_eq!(flag, -27 * 2);
+        }
+        unsafe {
+            // Test regular
+            let value1 = _mm_set1_epi64x(-27);
+            let value2 = _mm_set1_epi64x(-2);
+            let product = _mm_mul_epi64(value1, value2);
+            let flag = _mm_extract_epi64x::<0>(product);
+            assert_eq!(flag, 27 * 2);
+        }
+        unsafe {
+            // Test regular
+            let value1 = _mm_set1_epi64x(i32::MAX as i64);
+            let value2 = _mm_set1_epi64x(2);
+            let product = _mm_mul_epi64(value1, value2);
+            let flag = _mm_extract_epi64x::<0>(product);
+            assert_eq!(flag, i32::MAX as i64 * 2);
+        }
+    }
 
     #[test]
     fn test_cvtepi64_pd() {
