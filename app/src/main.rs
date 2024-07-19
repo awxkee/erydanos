@@ -78,7 +78,7 @@ fn combine_parts(low_low: i64, low_high: i64, high_low: i64, high_high: i64) -> 
     (low_low + low_high) + (high_high + high_low) << 32
 }
 
-#[inline(never)]
+#[inline(always)]
 fn multiply_u64(a: u64, b: u64) -> (u64, u64) {
     let a_low = a & 0xFFFFFFFF;
     let a_high = a >> 32;
@@ -104,7 +104,7 @@ fn multiply_u64(a: u64, b: u64) -> (u64, u64) {
     (result_low, result_high)
 }
 
-#[inline(never)]
+#[inline(always)]
 fn lhs_u128(low: u64, high: u64, shift: i64) -> (u64, u64) {
     if (shift < 0) {
         panic!("Shift count cannot be negative");
@@ -124,7 +124,7 @@ fn lhs_u128(low: u64, high: u64, shift: i64) -> (u64, u64) {
     return (lo, hi);
 }
 
-#[inline(never)]
+#[inline(always)]
 fn lhs_s128(low: i64, high: i64, shift: i64) -> (i64, i64) {
     if (shift < 0) {
         panic!("Shift count cannot be negative");
@@ -172,7 +172,7 @@ fn add_s128(a: (i64, i64), b: (i64, i64)) -> (i64, i64) {
     return (rs_lo, rs_hi);
 }
 
-#[inline(never)]
+#[inline(always)]
 #[no_mangle]
 fn multiply_ui64(lhs: u64, rhs: u64) -> (u64, u64) {
     let a_high = lhs >> 32;
@@ -195,7 +195,7 @@ fn multiply_ui64(lhs: u64, rhs: u64) -> (u64, u64) {
     return result;
 }
 
-#[inline(never)]
+#[inline(always)]
 #[no_mangle]
 fn multiply_i64(lhs: i64, rhs: i64) -> (i64, i64) {
     let a_high = lhs >> 32;

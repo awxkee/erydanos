@@ -62,7 +62,7 @@ pub unsafe fn _mm_mul_epu64(ab: __m128i, cd: __m128i) -> __m128i {
     return _mm_add_epi64(high, ac);
 }
 
-#[inline(never)]
+#[inline(always)]
 /// Multiplies unsigned 64 bytes integers, takes only lower half after multiplication, do not care about overflow
 /// Formally it is *_mm_mullo_epi64*
 pub unsafe fn _mm_mul_epi64(ab: __m128i, cd: __m128i) -> __m128i {

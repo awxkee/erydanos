@@ -82,7 +82,7 @@ pub fn sub_bits_f64(k: f64, r_bits: u64) -> f64 {
     f64::from_bits(next_bits)
 }
 
-#[inline(never)]
+#[inline(always)]
 pub fn random_coeff(d: f32) -> f32 {
     let mut rng = rand::thread_rng();
 
