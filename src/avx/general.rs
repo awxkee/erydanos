@@ -8,7 +8,7 @@ use std::arch::x86_64::*;
 #[inline]
 /// Computes b*c + a using fma when available
 pub unsafe fn _mm256_prefer_fma_pd(a: __m256d, b: __m256d, c: __m256d) -> __m256d {
-    return _mm256_add_pd(_mm_mul_pd(b, c), a);
+    return _mm256_add_pd(_mm256_mul_pd(b, c), a);
 }
 
 #[cfg(target_feature = "fma")]
