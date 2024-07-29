@@ -198,14 +198,14 @@ pub unsafe fn _mm256_extract_pd<const IMM: i32>(d: __m256d) -> f64 {
             low = _mm256_cvtsi256_si32(rc);
             high = _mm256_cvtsi256_si32(_mm256_srli_si256::<4>(rc));
         } else if IMM == 1 {
-            low = _mm_cvtsi128_si32(_mm256_srli_si256::<8>(rc));
-            high = _mm_cvtsi128_si32(_mm256_srli_si256::<12>(rc));
+            low = _mm256_cvtsi256_si32(_mm256_srli_si256::<8>(rc));
+            high = _mm256_cvtsi256_si32(_mm256_srli_si256::<12>(rc));
         } else if IMM == 2 {
-            low = _mm_cvtsi128_si32(_mm256_srli_si256::<16>(rc));
-            high = _mm_cvtsi128_si32(_mm256_srli_si256::<20>(rc));
+            low = _mm256_cvtsi256_si32(_mm256_srli_si256::<16>(rc));
+            high = _mm256_cvtsi256_si32(_mm256_srli_si256::<20>(rc));
         } else {
-            low = _mm_cvtsi128_si32(_mm256_srli_si256::<24>(rc));
-            high = _mm_cvtsi128_si32(_mm256_srli_si256::<28>(rc));
+            low = _mm256_cvtsi256_si32(_mm256_srli_si256::<24>(rc));
+            high = _mm256_cvtsi256_si32(_mm256_srli_si256::<28>(rc));
         }
         return f64::from_bits(((high as u64) << 32) | low as u64);
     }
