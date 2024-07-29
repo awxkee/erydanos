@@ -5,7 +5,7 @@
  * // license that can be found in the LICENSE file.
  */
 use crate::{
-    _mm_eqzero_ps, _mm_isinf_ps, _mm_isneginf_ps, _mm_mlaf_ps, _mm_mul_epu64, _mm_packus_epi64,
+    _mm_eqzero_ps, _mm_isinf_ps, _mm_isneginf_ps, _mm_mlaf_ps, _mm_mul_epu64, _mm_packts_epi64,
     _mm_select_ps,
 };
 #[cfg(target_arch = "x86")]
@@ -34,7 +34,7 @@ unsafe fn integer_pow_1_3(hx: __m128i) -> __m128i {
         _mm_unpacklo_epi32(hx, _mm_setzero_si128()),
         scale,
     ));
-    _mm_packus_epi64(lo, hi)
+    _mm_packts_epi64(lo, hi)
 }
 
 /// Takes cube root from value *ULP 1.5*, Skipping NaN, Inf checks

@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 erydanos = {path = ".."}
 libm = "0.2.8"
-rug = "1.24.1"
+#rug = "1.24.1"
 rand = "0.9.0-alpha.1"
 
 [dev-dependencies]

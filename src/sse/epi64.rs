@@ -11,6 +11,7 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 use crate::_mm_cmplt_epi64;
+use crate::shuffle::_mm_shuffle;
 
 #[inline(always)]
 /// Mod function for i64
@@ -87,15 +88,15 @@ pub unsafe fn _mm_setr_epi64x(a: i64, b: i64) -> __m128i {
 #[rustfmt::skip]
 /// Converts signed 64-bit integers into double
 pub unsafe fn _mm_cvtepi64_pd(v: __m128i) -> __m128d {
-    let magic_i_lo   = _mm_set1_epi64x(0x4330000000000000); // 2^52               encoded as floating-point
+    let magic_i_lo = _mm_set1_epi64x(0x4330000000000000); // 2^52               encoded as floating-point
     let magic_i_hi32 = _mm_set1_epi64x(0x4530000080000000); // 2^84 + 2^63        encoded as floating-point
-    let magic_i_all  = _mm_set1_epi64x(0x4530000080100000); // 2^84 + 2^63 + 2^52 encoded as floating-point
-    let magic_d_all  = _mm_castsi128_pd(magic_i_all);
+    let magic_i_all = _mm_set1_epi64x(0x4530000080100000); // 2^84 + 2^63 + 2^52 encoded as floating-point
+    let magic_d_all = _mm_castsi128_pd(magic_i_all);
 
-    let     v_lo     = _mm_blend_epi16::<0b00110011>(magic_i_lo, v);      // Blend the 32 lowest significant bits of v with magic_int_lo
-    let mut v_hi     = _mm_srli_epi64::<32>(v);                           // Extract the 32 most significant bits of v
-    v_hi     = _mm_xor_si128(v_hi, magic_i_hi32);               // Flip the msb of v_hi and blend with 0x45300000
-    let     v_hi_dbl = _mm_sub_pd(_mm_castsi128_pd(v_hi), magic_d_all); // Compute in double precision:
+    let v_lo = _mm_blend_epi16::<0b00110011>(magic_i_lo, v);      // Blend the 32 lowest significant bits of v with magic_int_lo
+    let mut v_hi = _mm_srli_epi64::<32>(v);                           // Extract the 32 most significant bits of v
+    v_hi = _mm_xor_si128(v_hi, magic_i_hi32);               // Flip the msb of v_hi and blend with 0x45300000
+    let v_hi_dbl = _mm_sub_pd(_mm_castsi128_pd(v_hi), magic_d_all); // Compute in double precision:
     _mm_add_pd(v_hi_dbl, _mm_castsi128_pd(v_lo))     // (v_hi - magic_d_all) + v_lo  Do not assume associativity of floating point addition !!
 }
 
@@ -158,6 +159,38 @@ pub unsafe fn _mm_not_epi64(a: __m128i) -> __m128i {
     #[allow(overflowing_literals)]
     let all_ones = _mm_set1_epi64x(0xffff_ffff_ffff_ffff);
     return _mm_xor_si128(a, all_ones);
+}
+
+#[inline]
+/// Arithmetic shift for i64, shifting with sign bits
+pub unsafe fn _mm_srai_epi64x<const IMM8: i32>(a: __m128i) -> __m128i {
+    let m = _mm_set1_epi64x(1 << (64 - 1));
+    let x = _mm_srli_epi64::<IMM8>(a);
+    let result = _mm_sub_epi64(_mm_xor_si128(x, m), m); //result = x^m - m
+    return result;
+}
+
+#[inline(always)]
+/// Packs integers 64 bits use unsigned saturation
+pub unsafe fn _mm_packus_epi64(a: __m128i, b: __m128i) -> __m128i {
+    let i32_max = _mm_set1_epi64x(u32::MAX as i64);
+    let a = _mm_select_epi64(_mm_cmpgt_epi64(a, i32_max), i32_max, a);
+    let b = _mm_select_epi64(_mm_cmpgt_epi64(b, i32_max), i32_max, b);
+    const SHUFFLE_MASK: i32 = _mm_shuffle(3, 1, 2, 0);
+    let a = _mm_shuffle_epi32::<SHUFFLE_MASK>(a);
+    let b1 = _mm_shuffle_epi32::<SHUFFLE_MASK>(b);
+    let moved = _mm_castps_si128(_mm_movelh_ps(_mm_castsi128_ps(a), _mm_castsi128_ps(b1)));
+    moved
+}
+
+#[inline(always)]
+/// Packs integers 64 bits use truncating, only lower half of i64 will be used
+pub unsafe fn _mm_packts_epi64(a: __m128i, b: __m128i) -> __m128i {
+    const SHUFFLE_MASK: i32 = _mm_shuffle(3, 1, 2, 0);
+    let a = _mm_shuffle_epi32::<SHUFFLE_MASK>(a);
+    let b1 = _mm_shuffle_epi32::<SHUFFLE_MASK>(b);
+    let moved = _mm_castps_si128(_mm_movelh_ps(_mm_castsi128_ps(a), _mm_castsi128_ps(b1)));
+    moved
 }
 
 #[cfg(test)]

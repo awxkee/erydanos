@@ -5,7 +5,6 @@
  * // license that can be found in the LICENSE file.
  */
 
-use crate::_mm_shuffle;
 #[cfg(target_arch = "x86")]
 use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
@@ -128,16 +127,6 @@ pub unsafe fn _mm_copysign_ps(x: __m128, y: __m128) -> __m128 {
         _mm_andnot_si128(_mm_castps_si128(_mm_set1_ps(-0.0f32)), _mm_castps_si128(x)),
         _mm_and_si128(_mm_castps_si128(_mm_set1_ps(-0.0f32)), _mm_castps_si128(y)),
     ))
-}
-
-#[inline(always)]
-/// Packs integers 64 bits use unsigned saturation
-pub unsafe fn _mm_packus_epi64(a: __m128i, b: __m128i) -> __m128i {
-    const SHUFFLE_MASK: i32 = _mm_shuffle(3, 1, 2, 0);
-    let a = _mm_shuffle_epi32::<SHUFFLE_MASK>(a);
-    let b1 = _mm_shuffle_epi32::<SHUFFLE_MASK>(b);
-    let moved = _mm_castps_si128(_mm_movelh_ps(_mm_castsi128_ps(a), _mm_castsi128_ps(b1)));
-    moved
 }
 
 #[inline(always)]

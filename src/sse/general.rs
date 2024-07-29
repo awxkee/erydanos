@@ -4,13 +4,12 @@
  * // Use of this source code is governed by a BSD-style
  * // license that can be found in the LICENSE file.
  */
+use crate::shuffle::_mm_shuffle;
+use crate::sse::epi64::{_mm_sllv_epi64x, _mm_srlv_epi64x};
 #[cfg(target_arch = "x86")]
 use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
-
-use crate::_mm_shuffle;
-use crate::sse::epi64::{_mm_sllv_epi64x, _mm_srlv_epi64x};
 
 #[inline(always)]
 /// Founds n in x=a+𝑛ln(2), |a| <= 1

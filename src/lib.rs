@@ -14,6 +14,11 @@ pub mod atan;
 pub mod atan2;
 pub mod atan2f;
 pub mod atanf;
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "avx"
+))]
+mod avx;
 pub mod cbrt;
 pub mod cbrtf;
 pub mod ceil;
@@ -44,6 +49,7 @@ mod lnf;
 mod neon;
 mod pow;
 mod powf;
+mod shuffle;
 mod sin;
 mod sinf;
 mod sqrt;
@@ -106,6 +112,12 @@ use crate::hypot3::ehypot3;
     target_feature = "sse4.1"
 ))]
 pub use sse::*;
+
+#[cfg(all(
+    any(target_arch = "x86_64", target_arch = "x86"),
+    target_feature = "avx"
+))]
+pub use avx::*;
 
 pub trait Sqrtf {
     /// Computes square root

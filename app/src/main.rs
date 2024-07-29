@@ -1,13 +1,13 @@
 use std::ops::{Add, Mul, Shr};
 
-use rug::Assign;
+// use rug::Assign;
 
 use erydanos::{
     eabs, eexp, eln, epow, esin, ArcCos, ArcSin, ArcTan, ArcTan2, Cosine, CubeRoot, Exponential,
     Logarithmic, Power, Sine, Tangent,
 };
 
-use crate::ulp::count_ulp_f64;
+use crate::ulp::{count_ulp, count_ulp_f64};
 
 mod random_coeffs;
 mod search_optimized_coeffs;
@@ -238,7 +238,6 @@ fn main() {
     let y = 32f32;
     let z = 12f32;
     let ag = esin(-2.70752239);
-    let rg = rug::Float::sin(rug::Float::with_val(53, -2.70752239));
     // println!("{:?}", multiply_ui64(2, 4));
     println!("{:?}", multiply_ui64(u64::MAX, 2));
     println!("{}", u64::MAX as i128 * 2);
@@ -281,61 +280,62 @@ fn main() {
 
     let mut max_ulp: f64 = 0.;
 
-    // for i in -200..200 {
-    //     let scale = 0.005f32;
-    //     let x = 1f32;
-    //     let ap = (i as f32 * scale).eexp();
+    for i in -200..200 {
+        let scale = 0.005f32;
+        let x = 1f32;
+        let ap = (i as f32 * scale).eexp();
+
+        // let ax = rug::Float::with_val(100, i as f32 * scale);
+        // let rg = rug::Float::exp(ax);
+        // let lm = rg.to_f32();
+        let rg = (i as f32 * scale).exp();
+        let ulp = count_ulp(ap, rg) as f64;
+        /*  if ulp > 1. {
+            println!(
+                "ULP {} error {}, approx {}, expected {}",
+                ulp,
+                (i as f32 * scale),
+                ap,
+                lm
+            );
+        }*/
+        if ulp > max_ulp {
+            if max_ulp > 10. {
+                println!("ULP {} error {}", ulp, (i as f32 * scale));
+            }
+            max_ulp = ulp as f64;
+        }
+
+        // println!("value {}, app rempif {}, {}", i as f32 * scale, ap, lm,)
+    }
     //
-    //     let ax = rug::Float::with_val(100, i as f32 * scale);
-    //     let rg = rug::Float::exp(ax);
-    //     let lm = rg.to_f32();
-    //
-    //     let ulp = count_ulp(ap, &rg) as f64;
-    //     /*  if ulp > 1. {
-    //         println!(
-    //             "ULP {} error {}, approx {}, expected {}",
-    //             ulp,
-    //             (i as f32 * scale),
-    //             ap,
-    //             lm
-    //         );
-    //     }*/
-    //     if ulp > max_ulp {
-    //         if max_ulp > 10. {
-    //             println!("ULP {} error {}", ulp, (i as f32 * scale));
-    //         }
-    //         max_ulp = ulp as f64;
+    // for i in -3000..3000 {
+    //     let scale = 0.005f64;
+    //     // let counted = rug::Float::exp(rug::Float::with_val(100, i as f64 * scale));
+    //     let coun
+    //     let ap = (i as f64 * scale).eexp();
+    //     let lm = counted.to_f64();
+    //     if !ap.is_nan() {
+    //         let diff = eabs(eabs(ap) - eabs(lm));
+    //         cumulative_error += diff;
     //     }
     //
-    //     // println!("value {}, app rempif {}, {}", i as f32 * scale, ap, lm,)
-    // }
+    //     let ulp = count_ulp_f64(ap, &counted);
+    //     if ulp > max_ulp {
+    //         if max_ulp > 1. {
+    //             println!("ULP error {} for value {}", ulp, (i as f64 * scale));
+    //         }
+    //         max_ulp = ulp;
+    //     }
     //
-    for i in -3000..3000 {
-        let scale = 0.005f64;
-        let counted = rug::Float::exp(rug::Float::with_val(100, i as f64 * scale));
-        let ap = (i as f64 * scale).eexp();
-        let lm = counted.to_f64();
-        if !ap.is_nan() {
-            let diff = eabs(eabs(ap) - eabs(lm));
-            cumulative_error += diff;
-        }
-
-        let ulp = count_ulp_f64(ap, &counted);
-        if ulp > max_ulp {
-            if max_ulp > 1. {
-                println!("ULP error {} for value {}", ulp, (i as f64 * scale));
-            }
-            max_ulp = ulp;
-        }
-
-        // println!(
-        //     "value {}, ulp {}, app rempif {}, {}",
-        //     i as f64 * scale,
-        //     ulp,
-        //     ap,
-        //     lm,
-        // )
-    }
+    //     // println!(
+    //     //     "value {}, ulp {}, app rempif {}, {}",
+    //     //     i as f64 * scale,
+    //     //     ulp,
+    //     //     ap,
+    //     //     lm,
+    //     // )
+    // }
     println!("Worst ULP {}", max_ulp);
     // search_coeffs_f32();
     // search_coeffs_f64();

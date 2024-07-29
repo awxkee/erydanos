@@ -68,9 +68,12 @@ pub use epi64::_mm_mul_epi64;
 pub use epi64::_mm_mul_epu64;
 pub use epi64::_mm_neg_epi64;
 pub use epi64::_mm_not_epi64;
+pub use epi64::_mm_packts_epi64;
+pub use epi64::_mm_packus_epi64;
 pub use epi64::_mm_select_epi64;
 pub use epi64::_mm_setr_epi64x;
 pub use epi64::_mm_sllv_epi64x;
+pub use epi64::_mm_srai_epi64x;
 pub use epi64::_mm_srlv_epi64x;
 pub use exp::_mm_exp_pd;
 pub use exp::_mm_expq_fast_pd;
@@ -107,7 +110,6 @@ pub use generalf::_mm_ldexp3kq_ps;
 pub use generalf::_mm_ltzero_ps;
 pub use generalf::_mm_mlaf_ps;
 pub use generalf::_mm_neg_ps;
-pub use generalf::_mm_packus_epi64;
 pub use generalf::_mm_pow2if_epi32;
 pub use generalf::_mm_prefer_fma_ps;
 pub use generalf::_mm_rint_ps;
@@ -179,7 +181,3 @@ pub use unsigned::_mm_cmplt_epu64;
 pub use unsigned::_mm_cmplt_epu8;
 pub use unsigned::_mm_max_epi64x;
 pub use unsigned::_mm_min_epi64x;
-
-pub const fn _mm_shuffle(z: u32, y: u32, x: u32, w: u32) -> i32 {
-    ((z << 6) | (y << 4) | (x << 2) | w) as i32
-}

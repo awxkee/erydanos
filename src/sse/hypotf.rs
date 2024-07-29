@@ -32,6 +32,7 @@ pub unsafe fn _mm_hypot_ps(x: __m128, y: __m128) -> __m128 {
 /// Method that computes 2D Euclidian distance *ULP 0.5*, skipping Inf, Nan checks
 #[inline]
 pub unsafe fn _mm_hypot_fast_ps(x: __m128, y: __m128) -> __m128 {
+    let x = _mm_abs_ps(x);
     let y = _mm_abs_ps(y);
     let max = _mm_max_ps(x, y);
     let min = _mm_min_ps(x, y);
