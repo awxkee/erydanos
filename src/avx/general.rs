@@ -210,3 +210,58 @@ pub unsafe fn _mm256_extract_pd<const IMM: i32>(d: __m256d) -> f64 {
         return f64::from_bits(((high as u64) << 32) | low as u64);
     }
 }
+
+#[inline(always)]
+/// Founds n in x=a+𝑛ln(2), |a| <= 1
+pub unsafe fn _mm256_ilogb2k_pd(d: __m256d) -> __m256i {
+    _mm256_sub_epi64(
+        _mm256_and_si256(
+            _mm256_srli_epi64::<52>(_mm256_castpd_si256(d)),
+            _mm256_set1_epi64x(0x7ff),
+        ),
+        _mm256_set1_epi64x(0x3ff),
+    )
+}
+
+#[inline(always)]
+/// Founds a in x=a+𝑛ln(2), |a| <= 1
+pub unsafe fn _mm256_ldexp3k_pd(x: __m256d, n: __m256i) -> __m256d {
+    _mm256_castsi256_pd(_mm256_add_epi64(
+        _mm256_castpd_si256(x),
+        _mm256_slli_epi64::<52>(n),
+    ))
+}
+
+#[inline(always)]
+/// Computes 2^n in f64 form for signed 64 bits integers, returns f64 in bits
+pub unsafe fn _mm256_pow2i_epi64(n: __m256i) -> __m256i {
+    let j = _mm256_slli_epi64::<52>(_mm256_add_epi64(n, _mm256_set1_epi32(0x3ff)));
+    j
+}
+
+#[inline(always)]
+/// Copies sign from `y` to `x`
+pub unsafe fn _mm256_copysign_pd(x: __m256d, y: __m256d) -> __m256d {
+    _mm256_castsi256_pd(_mm256_xor_si256(
+        _mm256_andnot_si256(
+            _mm256_castpd_si256(_mm256_set1_pd(-0.0f64)),
+            _mm256_castpd_si256(x),
+        ),
+        _mm256_and_si256(
+            _mm256_castpd_si256(_mm256_set1_pd(-0.0f64)),
+            _mm256_castpd_si256(y),
+        ),
+    ))
+}
+
+#[inline(always)]
+/// Returns flag value is Neg Infinity
+pub unsafe fn _mm256_isneginf_pd(d: __m256d) -> __m256d {
+    return _mm256_cmp_pd::<_CMP_EQ_OS>(d, _mm256_set1_pd(f64::NEG_INFINITY));
+}
+
+#[inline(always)]
+/// Checks if arguments is not integral value
+pub unsafe fn _mm256_isnotintegral_pd(d: __m256d) -> __m256d {
+    return _mm256_cmp_pd::<_CMP_NEQ_OS>(d, _mm256_floor_pd(d));
+}

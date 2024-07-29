@@ -117,3 +117,10 @@ pub unsafe fn _mm256_mul_epu64(ab: __m256i, cd: __m256i) -> __m256i {
 pub unsafe fn _mm256_mul_epi64(ab: __m256i, cd: __m256i) -> __m256i {
     _mm256_mul_epu64(ab, cd)
 }
+
+#[inline(always)]
+/// Negates i64
+pub unsafe fn _mm256_neg_epi64(a: __m256i) -> __m256i {
+    let k = _mm256_setzero_si256();
+    _mm256_sub_epi64(k, a)
+}
