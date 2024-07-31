@@ -68,7 +68,7 @@ pub unsafe fn _mm256_packs_epi64(a: __m256i, b: __m256i) -> __m256i {
     let i32_max = _mm256_set1_epi64x(i32::MAX as i64);
     let i32_min = _mm256_set1_epi64x(i32::MIN as i64);
     let a = _mm256_max_epi64x(_mm256_min_epi64x(a, i32_max), i32_min);
-    let b = _mm256_max_epi64x(_mm256_min_epi64x(a, i32_max), i32_min);
+    let b = _mm256_max_epi64x(_mm256_min_epi64x(b, i32_max), i32_min);
     const SHUFFLE_1: i32 = _mm_shuffle(2, 0, 2, 0);
     let combined = _mm256_shuffle_ps::<SHUFFLE_1>(_mm256_castsi256_ps(a), _mm256_castsi256_ps(b));
     const SHUFFLE_2: i32 = _mm_shuffle(3, 1, 2, 0);

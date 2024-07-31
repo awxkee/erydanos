@@ -33,8 +33,6 @@ pub(crate) const PI_B_F: f32 = 0.000_967_025_756_835_937_5;
 pub(crate) const PI_C_F: f32 = 6.277_114_152_908_325_195_3_e-7;
 pub(crate) const PI_D_F: f32 = 1.215_420_125_655_342_076_2_e-10;
 
-pub static mut MAX_REDUCTED: f32 = 0f32;
-
 #[inline]
 fn do_cos(d: f32) -> f32 {
     let q = 1 + 2 * rintfk(std::f32::consts::FRAC_1_PI * d - 0.5) as i32;

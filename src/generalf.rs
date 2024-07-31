@@ -63,6 +63,7 @@ pub fn rintk(x: f64) -> f64 {
 
 /// Computes `x*y + z` using `fma` when available
 #[inline]
+#[cfg(not(target_feature = "fma"))]
 pub fn mlaf<T: Copy + Add<Output = T> + MulAdd + Mul<Output = T>>(x: T, y: T, z: T) -> T {
     return x * y + z;
 }
@@ -70,7 +71,11 @@ pub fn mlaf<T: Copy + Add<Output = T> + MulAdd + Mul<Output = T>>(x: T, y: T, z:
 /// Computes `x*y + z` using `fma` when available
 #[inline]
 #[cfg(target_feature = "fma")]
-pub fn mlaf<T: Copy + Add<Output = T> + MulAdd + Mul<Output = T>>(x: T, y: T, z: T) -> T {
+pub fn mlaf<T: Copy + Add<Output = T> + MulAdd<Output = T> + Mul<Output = T>>(
+    x: T,
+    y: T,
+    z: T,
+) -> T {
     x.mul_add(y, z)
 }
 
