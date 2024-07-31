@@ -12,5 +12,5 @@ use std::arch::x86_64::*;
 #[inline(always)]
 /// Negates signed 32 bytes integer
 pub unsafe fn _mm256_neg_epi32(d: __m256i) -> __m256i {
-    _mm256_sub_epi32(_mm256_set1_epi32(0), d)
+    _mm256_sub_epi32(_mm256_setzero_si256(), d)
 }

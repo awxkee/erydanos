@@ -19,20 +19,20 @@ pub unsafe fn _mm256_rint_ps(f: __m256) -> __m256i {
 
 #[cfg(not(target_feature = "fma"))]
 #[inline]
-/// Computes b*c + a using fma when available
+/// Computes `b*c + a` using fma when available
 pub unsafe fn _mm256_prefer_fma_ps(a: __m256, b: __m256, c: __m256) -> __m256 {
     return _mm256_add_ps(_mm256_mul_ps(b, c), a);
 }
 
 #[cfg(target_feature = "fma")]
 #[inline]
-/// Computes b*c + a using fma when available
+/// Computes `b*c + a` using fma when available
 pub unsafe fn _mm256_prefer_fma_ps(a: __m256, b: __m256, c: __m256) -> __m256 {
     return _mm256_fmadd_ps(b, c, a);
 }
 
 #[inline(always)]
-/// Computes a*b + c
+/// Computes `a*b + c`
 pub unsafe fn _mm256_mlaf_ps(a: __m256, b: __m256, c: __m256) -> __m256 {
     _mm256_prefer_fma_ps(c, b, a)
 }

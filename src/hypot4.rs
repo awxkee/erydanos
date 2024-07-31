@@ -29,10 +29,12 @@ fn do_hypot4(x: f64, y: f64, z: f64, w: f64) -> f64 {
         return 0.0;
     }
 
-    let norm_x = x / max;
-    let norm_y = y / max;
-    let norm_z = z / max;
-    let norm_w = w / max;
+    let recip_max = 1. / max;
+
+    let norm_x = x * recip_max;
+    let norm_y = y * recip_max;
+    let norm_z = z * recip_max;
+    let norm_w = w * recip_max;
 
     let ret = max * (norm_x * norm_x + norm_y * norm_y + norm_z * norm_z + norm_w * norm_w).sqrt();
 

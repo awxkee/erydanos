@@ -406,3 +406,20 @@ impl Euclidean4DDistance for f64 {
         ehypot4(self, y, z, w)
     }
 }
+
+pub trait FusedMultiplyAdd {
+    /// Computes `self * b + c`
+    fn mla(self, b: Self, c: Self) -> Self;
+}
+
+impl FusedMultiplyAdd for f32 {
+    fn mla(self, b: Self, c: Self) -> Self {
+        mlaf(self, b, c)
+    }
+}
+
+impl FusedMultiplyAdd for f64 {
+    fn mla(self, b: Self, c: Self) -> Self {
+        mlaf(self, b, c)
+    }
+}

@@ -16,6 +16,7 @@ use crate::asinf::{
 use crate::avx::generalf::_mm256_copysign_ps;
 use crate::{_mm256_abs_ps, _mm256_mlaf_ps, _mm256_select_ps};
 
+/// Computes arcsin, error bound *ULP 2.0*
 #[inline]
 pub unsafe fn _mm256_asin_ps(d: __m256) -> __m256 {
     let ones = _mm256_set1_ps(1f32);

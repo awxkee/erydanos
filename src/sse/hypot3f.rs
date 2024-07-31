@@ -12,15 +12,16 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 #[inline]
-/// Method that computes 3D Euclidian distance *ULP 0.5*
+/// Method that computes 3D Euclidian distance *ULP 0.6667*
 pub unsafe fn _mm_hypot3_ps(x: __m128, y: __m128, z: __m128) -> __m128 {
     let x = _mm_abs_ps(x);
     let y = _mm_abs_ps(y);
     let z = _mm_abs_ps(z);
     let max = _mm_max_ps(_mm_max_ps(x, y), z);
-    let norm_x = _mm_div_ps(x, max);
-    let norm_y = _mm_div_ps(y, max);
-    let norm_z = _mm_div_ps(z, max);
+    let recip_max = _mm_div_ps(_mm_set1_ps(1.), max);
+    let norm_x = _mm_mul_ps(x, recip_max);
+    let norm_y = _mm_mul_ps(y, recip_max);
+    let norm_z = _mm_mul_ps(z, recip_max);
 
     let accumulator = _mm_mlaf_ps(
         norm_x,
@@ -32,9 +33,9 @@ pub unsafe fn _mm_hypot3_ps(x: __m128, y: __m128, z: __m128) -> __m128 {
     let mut is_any_nan = _mm_or_ps(_mm_or_ps(_mm_isnan_ps(x), _mm_isnan_ps(y)), _mm_isnan_ps(z));
     let is_max_zero = _mm_eqzero_ps(max);
     is_any_nan = _mm_or_ps(_mm_isnan_ps(ret), is_any_nan);
-    ret = _mm_select_ps(is_any_infinite, _mm_set1_ps(f32::INFINITY), ret);
     ret = _mm_select_ps(is_any_nan, _mm_set1_ps(f32::NAN), ret);
-    ret = _mm_select_ps(is_max_zero, _mm_set1_ps(0f32), ret);
+    ret = _mm_select_ps(is_any_infinite, _mm_set1_ps(f32::INFINITY), ret);
+    ret = _mm_select_ps(is_max_zero, _mm_setzero_ps(), ret);
     ret
 }
 
@@ -45,9 +46,11 @@ pub unsafe fn _mm_hypot3_fast_ps(x: __m128, y: __m128, z: __m128) -> __m128 {
     let y = _mm_abs_ps(y);
     let z = _mm_abs_ps(z);
     let max = _mm_max_ps(_mm_max_ps(x, y), z);
-    let norm_x = _mm_div_ps(x, max);
-    let norm_y = _mm_div_ps(y, max);
-    let norm_z = _mm_div_ps(z, max);
+    let recip_max = _mm_div_ps(_mm_set1_ps(1.), max);
+    let norm_x = _mm_mul_ps(x, recip_max);
+    let norm_y = _mm_mul_ps(y, recip_max);
+    let norm_z = _mm_mul_ps(z, recip_max);
+
     let accumulator = _mm_mlaf_ps(
         norm_x,
         norm_x,

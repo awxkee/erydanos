@@ -116,7 +116,7 @@ fn do_asin_sse(d: f64) -> f64 {
 }
 
 #[inline]
-/// Computes asin with *ULP 1.5*
+/// Computes arcsin, error bound *ULP 2.0*
 pub fn easin(d: f64) -> f64 {
     let mut _dispatcher: fn(f64) -> f64 = do_asin;
     #[cfg(all(

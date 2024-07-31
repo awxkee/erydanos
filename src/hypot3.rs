@@ -38,9 +38,11 @@ fn do_hypot3(x: f64, y: f64, z: f64) -> f64 {
         return 0.0;
     }
 
-    let norm_x = x / max;
-    let norm_y = y / max;
-    let norm_z = z / max;
+    let recip_max = 1. / max;
+
+    let norm_x = x * recip_max;
+    let norm_y = y * recip_max;
+    let norm_z = z * recip_max;
 
     let ret = max * (norm_x * norm_x + norm_y * norm_y + norm_z * norm_z).sqrt();
 
@@ -112,7 +114,7 @@ mod tests {
         let x = 2.0f64;
         let y = 32f64;
         let z = 12f64;
-        let ag = ehypot3(x, y, z);
+        let ag = do_hypot3(x, y, z);
         assert_eq!(ag, 34.2344855372473795263059045f64);
     }
 }

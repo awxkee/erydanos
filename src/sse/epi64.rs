@@ -10,8 +10,8 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
-use crate::_mm_cmplt_epi64;
 use crate::shuffle::_mm_shuffle;
+use crate::{_mm_cmplt_epi64, _mm_max_epi64x, _mm_min_epi64x};
 
 #[inline(always)]
 /// Mod function for i64
@@ -176,6 +176,20 @@ pub unsafe fn _mm_packus_epi64(a: __m128i, b: __m128i) -> __m128i {
     let i32_max = _mm_set1_epi64x(u32::MAX as i64);
     let a = _mm_select_epi64(_mm_cmpgt_epi64(a, i32_max), i32_max, a);
     let b = _mm_select_epi64(_mm_cmpgt_epi64(b, i32_max), i32_max, b);
+    const SHUFFLE_MASK: i32 = _mm_shuffle(3, 1, 2, 0);
+    let a = _mm_shuffle_epi32::<SHUFFLE_MASK>(a);
+    let b1 = _mm_shuffle_epi32::<SHUFFLE_MASK>(b);
+    let moved = _mm_castps_si128(_mm_movelh_ps(_mm_castsi128_ps(a), _mm_castsi128_ps(b1)));
+    moved
+}
+
+#[inline(always)]
+/// Packs integers 64 bits use signed saturation
+pub unsafe fn _mm_packs_epi64(a: __m128i, b: __m128i) -> __m128i {
+    let i32_max = _mm_set1_epi64x(i32::MAX as i64);
+    let i32_min = _mm_set1_epi64x(i32::MIN as i64);
+    let a = _mm_max_epi64x(_mm_min_epi64x(a, i32_max), i32_min);
+    let b = _mm_max_epi64x(_mm_min_epi64x(b, i32_max), i32_min);
     const SHUFFLE_MASK: i32 = _mm_shuffle(3, 1, 2, 0);
     let a = _mm_shuffle_epi32::<SHUFFLE_MASK>(a);
     let b1 = _mm_shuffle_epi32::<SHUFFLE_MASK>(b);

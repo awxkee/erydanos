@@ -75,6 +75,7 @@ fn do_pow_sse(d: f64, n: f64) -> f64 {
     }
 }
 
+/// Computes power function, error bound *ULP 2.0*
 #[inline]
 pub fn epow(d: f64, n: f64) -> f64 {
     let mut _dispatcher: fn(f64, f64) -> f64 = do_pow;

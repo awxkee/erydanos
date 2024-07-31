@@ -44,8 +44,8 @@ pub unsafe fn _mm_mull_epu64(a: __m128i, b: __m128i) -> __m128x2i {
     let hi = hh;
     let mut rs = __m128x2i(lo, hi);
 
-    let carry1 = _mm_slli_epi128x::<32>(__m128x2i(lh, _mm_set1_epi64x(0)));
-    let carry2 = _mm_slli_epi128x::<32>(__m128x2i(hl, _mm_set1_epi64x(0)));
+    let carry1 = _mm_slli_epi128x::<32>(__m128x2i(lh, _mm_setzero_si128()));
+    let carry2 = _mm_slli_epi128x::<32>(__m128x2i(hl, _mm_setzero_si128()));
 
     rs = _mm_add_epu128(rs, carry1);
     rs = _mm_add_epu128(rs, carry2);
@@ -197,7 +197,7 @@ pub unsafe fn _mm_add_epu128(a: __m128x2i, b: __m128x2i) -> __m128x2i {
     let carry = _mm_select_epi64(
         _mm_cmplt_epu64(lo, a.0),
         _mm_set1_epi64x(1),
-        _mm_set1_epi64x(0),
+        _mm_setzero_si128(),
     );
     __m128x2i(lo, _mm_add_epi64(_mm_add_epi64(a.1, b.1), carry))
 }

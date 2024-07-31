@@ -5,7 +5,9 @@
  * // license that can be found in the LICENSE file.
  */
 
+mod acos;
 mod acosf;
+mod asin;
 mod asinf;
 mod atan;
 mod atan2;
@@ -36,9 +38,9 @@ mod sin;
 mod sinf;
 mod tan;
 mod tanf;
-mod asin;
-mod acos;
+mod poly128;
 
+pub use acos::_mm256_acos_pd;
 pub use acosf::_mm256_acos_ps;
 pub use asinf::_mm256_asin_ps;
 pub use atan::_mm256_atan_pd;
@@ -56,6 +58,7 @@ pub use epi64::_mm256_min_epi64x;
 pub use epi64::_mm256_mul_epi64;
 pub use epi64::_mm256_mul_epu64;
 pub use epi64::_mm256_neg_epi64;
+pub use epi64::_mm256_packs_epi64;
 pub use epi64::_mm256_packts_epi64;
 pub use epi64::_mm256_packus_epi64;
 pub use epi64::_mm256_srai_epi64x;
@@ -123,4 +126,3 @@ pub use sin::_mm256_sin_pd;
 pub use sinf::_mm256_sin_ps;
 pub use tan::_mm256_tan_pd;
 pub use tanf::_mm256_tan_ps;
-pub use acos::_mm256_acos_pd;

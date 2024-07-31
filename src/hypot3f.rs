@@ -38,9 +38,11 @@ fn do_hypot3f(x: f32, y: f32, z: f32) -> f32 {
         return 0.0;
     }
 
-    let norm_x = x / max;
-    let norm_y = y / max;
-    let norm_z = z / max;
+    let recip_max = 1. / max;
+
+    let norm_x = x * recip_max;
+    let norm_y = y * recip_max;
+    let norm_z = z * recip_max;
 
     let ret = max * (norm_x * norm_x + norm_y * norm_y + norm_z * norm_z).sqrt();
 
@@ -112,7 +114,7 @@ mod tests {
         let x = 2.0f32;
         let y = 32f32;
         let z = 12f32;
-        let ag = ehypot3f(x, y, z);
+        let ag = do_hypot3f(x, y, z);
         assert_eq!(ag, 34.234486);
     }
 }

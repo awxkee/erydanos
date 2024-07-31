@@ -68,6 +68,7 @@ pub use epi64::_mm_mul_epi64;
 pub use epi64::_mm_mul_epu64;
 pub use epi64::_mm_neg_epi64;
 pub use epi64::_mm_not_epi64;
+pub use epi64::_mm_packs_epi64;
 pub use epi64::_mm_packts_epi64;
 pub use epi64::_mm_packus_epi64;
 pub use epi64::_mm_select_epi64;

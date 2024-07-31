@@ -7,6 +7,7 @@
 
 use crate::vector::{dadd_2_s_v, dmul_2, dmul_2_s, drec_2_s};
 
+/// Computes square root, error bound *ULP 1.0*
 pub fn esqrt(d: f64) -> f64 {
     let mut q = 0.5;
 

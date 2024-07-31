@@ -10,6 +10,7 @@ use std::arch::aarch64::*;
 use crate::exp::*;
 use crate::neon::general::{vmlafq_f64, vpow2ifq_s64};
 
+/// Computes exp for an argument *ULP 2.0*
 #[inline]
 pub unsafe fn vexpq_f64(d: float64x2_t) -> float64x2_t {
     let q = vcvtaq_s64_f64(vmulq_n_f64(d, R_LN2));

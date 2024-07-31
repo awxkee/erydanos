@@ -13,7 +13,7 @@ use std::arch::x86_64::*;
 use crate::avx::asin::_mm256_asin_pd;
 use crate::{_mm256_abs_pd, _mm256_select_pd};
 
-/// Computes Acos function with *ULP 1.0* error
+/// Computes arccos, error bound *ULP 2.0*
 #[inline(always)]
 pub unsafe fn _mm256_acos_pd(x: __m256d) -> __m256d {
     let gt_zero = _mm256_cmp_pd::<_CMP_GT_OS>(x, _mm256_setzero_pd());

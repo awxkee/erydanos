@@ -15,15 +15,16 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 #[inline]
-/// Method that computes 3D Euclidian distance *ULP 0.5*
+/// Method that computes 3D Euclidian distance *ULP 0.6667*
 pub unsafe fn _mm256_hypot3_ps(x: __m256, y: __m256, z: __m256) -> __m256 {
     let x = _mm256_abs_ps(x);
     let y = _mm256_abs_ps(y);
     let z = _mm256_abs_ps(z);
     let max = _mm256_max_ps(_mm256_max_ps(x, y), z);
-    let norm_x = _mm256_div_ps(x, max);
-    let norm_y = _mm256_div_ps(y, max);
-    let norm_z = _mm256_div_ps(z, max);
+    let recip_max = _mm256_div_ps(_mm256_set1_ps(1.), max);
+    let norm_x = _mm256_mul_ps(x, recip_max);
+    let norm_y = _mm256_mul_ps(y, recip_max);
+    let norm_z = _mm256_mul_ps(z, recip_max);
 
     let accumulator = _mm256_mlaf_ps(
         norm_x,
@@ -41,9 +42,9 @@ pub unsafe fn _mm256_hypot3_ps(x: __m256, y: __m256, z: __m256) -> __m256 {
     );
     let is_max_zero = _mm256_eqzero_ps(max);
     is_any_nan = _mm256_or_ps(_mm256_isnan_ps(ret), is_any_nan);
-    ret = _mm256_select_ps(is_any_infinite, _mm256_set1_ps(f32::INFINITY), ret);
     ret = _mm256_select_ps(is_any_nan, _mm256_set1_ps(f32::NAN), ret);
-    ret = _mm256_select_ps(is_max_zero, _mm256_set1_ps(0f32), ret);
+    ret = _mm256_select_ps(is_any_infinite, _mm256_set1_ps(f32::INFINITY), ret);
+    ret = _mm256_select_ps(is_max_zero, _mm256_setzero_ps(), ret);
     ret
 }
 
@@ -54,9 +55,11 @@ pub unsafe fn _mm256_hypot3_fast_ps(x: __m256, y: __m256, z: __m256) -> __m256 {
     let y = _mm256_abs_ps(y);
     let z = _mm256_abs_ps(z);
     let max = _mm256_max_ps(_mm256_max_ps(x, y), z);
-    let norm_x = _mm256_div_ps(x, max);
-    let norm_y = _mm256_div_ps(y, max);
-    let norm_z = _mm256_div_ps(z, max);
+    let recip_max = _mm256_div_ps(_mm256_set1_ps(1.), max);
+    let norm_x = _mm256_mul_ps(x, recip_max);
+    let norm_y = _mm256_mul_ps(y, recip_max);
+    let norm_z = _mm256_mul_ps(z, recip_max);
+
     let accumulator = _mm256_mlaf_ps(
         norm_x,
         norm_x,

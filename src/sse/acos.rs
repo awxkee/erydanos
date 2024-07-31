@@ -12,7 +12,7 @@ use std::arch::x86_64::*;
 
 use crate::{_mm_abs_pd, _mm_asin_pd, _mm_select_pd};
 
-/// Computes Acos function with *ULP 1.0* error
+/// Computes arccos, error bound *ULP 2.0*
 #[inline(always)]
 pub unsafe fn _mm_acos_pd(x: __m128d) -> __m128d {
     let gt_zero = _mm_cmpgt_pd(x, _mm_setzero_pd());

@@ -15,9 +15,10 @@ pub unsafe fn vhypot3q_f32(x: float32x4_t, y: float32x4_t, z: float32x4_t) -> fl
     let y = vabsq_f32(y);
     let z = vabsq_f32(z);
     let max = vmaxq_f32(vmaxq_f32(x, y), z);
-    let norm_x = vdivq_f32(x, max);
-    let norm_y = vdivq_f32(y, max);
-    let norm_z = vdivq_f32(z, max);
+    let recip_max = vdivq_f32(vdupq_n_f32(1.), max);
+    let norm_x = vmulq_f32(x, recip_max);
+    let norm_y = vmulq_f32(y, recip_max);
+    let norm_z = vmulq_f32(z, recip_max);
 
     let accumulator = vmlafq_f32(
         norm_x,
@@ -43,9 +44,10 @@ pub unsafe fn vhypot3q_fast_f32(x: float32x4_t, y: float32x4_t, z: float32x4_t) 
     let y = vabsq_f32(y);
     let z = vabsq_f32(z);
     let max = vmaxq_f32(vmaxq_f32(x, y), z);
-    let norm_x = vdivq_f32(x, max);
-    let norm_y = vdivq_f32(y, max);
-    let norm_z = vdivq_f32(z, max);
+    let recip_max = vdivq_f32(vdupq_n_f32(1.), max);
+    let norm_x = vmulq_f32(x, recip_max);
+    let norm_y = vmulq_f32(y, recip_max);
+    let norm_z = vmulq_f32(z, recip_max);
 
     let accumulator = vmlafq_f32(
         norm_x,

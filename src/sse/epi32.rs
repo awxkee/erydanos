@@ -28,5 +28,5 @@ pub unsafe fn _mm_select_epi32(mask: __m128i, true_vals: __m128i, false_vals: __
 #[inline(always)]
 /// Negates signed 32 bytes integer
 pub unsafe fn _mm_neg_epi32(d: __m128i) -> __m128i {
-    _mm_sub_epi32(_mm_set1_epi32(0), d)
+    _mm_sub_epi32(_mm_setzero_si128(), d)
 }

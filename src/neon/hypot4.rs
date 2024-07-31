@@ -21,10 +21,11 @@ pub unsafe fn vhypot4q_f64(
     let z = vabsq_f64(z);
     let w = vabsq_f64(w);
     let max = vmaxq_f64(vmaxq_f64(vmaxq_f64(x, y), z), w);
-    let norm_x = vdivq_f64(x, max);
-    let norm_y = vdivq_f64(y, max);
-    let norm_z = vdivq_f64(z, max);
-    let norm_w = vdivq_f64(w, max);
+    let recip_max = vdivq_f64(vdupq_n_f64(1.), max);
+    let norm_x = vmulq_f64(x, recip_max);
+    let norm_y = vmulq_f64(y, recip_max);
+    let norm_z = vmulq_f64(z, recip_max);
+    let norm_w = vmulq_f64(w, recip_max);
 
     let accumulator = vmlafq_f64(
         norm_x,
@@ -47,8 +48,8 @@ pub unsafe fn vhypot4q_f64(
     );
     let is_max_zero = vceqzq_f64(max);
     is_any_nan = vorrq_u64(visnanq_f64(ret), is_any_nan);
-    ret = vbslq_f64(is_any_infinite, vdupq_n_f64(f64::INFINITY), ret);
     ret = vbslq_f64(is_any_nan, vdupq_n_f64(f64::NAN), ret);
+    ret = vbslq_f64(is_any_infinite, vdupq_n_f64(f64::INFINITY), ret);
     ret = vbslq_f64(is_max_zero, vdupq_n_f64(0.), ret);
     ret
 }
@@ -66,10 +67,11 @@ pub unsafe fn vhypot4q_fast_f64(
     let z = vabsq_f64(z);
     let w = vabsq_f64(w);
     let max = vmaxq_f64(vmaxq_f64(vmaxq_f64(x, y), z), w);
-    let norm_x = vdivq_f64(x, max);
-    let norm_y = vdivq_f64(y, max);
-    let norm_z = vdivq_f64(z, max);
-    let norm_w = vdivq_f64(w, max);
+    let recip_max = vdivq_f64(vdupq_n_f64(1.), max);
+    let norm_x = vmulq_f64(x, recip_max);
+    let norm_y = vmulq_f64(y, recip_max);
+    let norm_z = vmulq_f64(z, recip_max);
+    let norm_w = vmulq_f64(w, recip_max);
 
     let accumulator = vmlafq_f64(
         norm_x,

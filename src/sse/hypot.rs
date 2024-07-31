@@ -13,7 +13,7 @@ use std::arch::x86_64::*;
 use crate::{_mm_abs_pd, _mm_eqzero_pd, _mm_isinf_pd, _mm_isnan_pd, _mm_mlaf_pd, _mm_select_pd};
 
 #[inline]
-/// Method that computes 2D Euclidian distance *ULP 0.5*
+/// Method that computes 2D Euclidian distance *ULP 0.6667*
 pub unsafe fn _mm_hypot_pd(x: __m128d, y: __m128d) -> __m128d {
     let x = _mm_abs_pd(x);
     let y = _mm_abs_pd(y);
@@ -25,13 +25,13 @@ pub unsafe fn _mm_hypot_pd(x: __m128d, y: __m128d) -> __m128d {
     let mut is_any_nan = _mm_or_pd(_mm_isnan_pd(x), _mm_isnan_pd(y));
     let is_min_zero = _mm_eqzero_pd(min);
     is_any_nan = _mm_or_pd(_mm_isnan_pd(ret), is_any_nan);
-    ret = _mm_select_pd(is_any_infinite, _mm_set1_pd(f64::INFINITY), ret);
     ret = _mm_select_pd(is_any_nan, _mm_set1_pd(f64::NAN), ret);
-    ret = _mm_select_pd(is_min_zero, _mm_set1_pd(0.), ret);
+    ret = _mm_select_pd(is_any_infinite, _mm_set1_pd(f64::INFINITY), ret);
+    ret = _mm_select_pd(is_min_zero, _mm_setzero_pd(), ret);
     ret
 }
 
-/// Method that computes 2D Euclidian distance *ULP 0.5*, skipping Inf, Nan checks
+/// Method that computes 2D Euclidian distance *ULP 0.6667*, skipping Inf, Nan checks
 #[inline]
 pub unsafe fn _mm_hypot_fast_pd(x: __m128d, y: __m128d) -> __m128d {
     let x = _mm_abs_pd(x);

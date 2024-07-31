@@ -19,9 +19,10 @@ pub unsafe fn _mm256_hypot3_pd(x: __m256d, y: __m256d, z: __m256d) -> __m256d {
     let y = _mm256_abs_pd(y);
     let z = _mm256_abs_pd(z);
     let max = _mm256_max_pd(_mm256_max_pd(x, y), z);
-    let norm_x = _mm256_div_pd(x, max);
-    let norm_y = _mm256_div_pd(y, max);
-    let norm_z = _mm256_div_pd(z, max);
+    let recip_max = _mm256_div_pd(_mm256_set1_pd(1.), max);
+    let norm_x = _mm256_mul_pd(x, recip_max);
+    let norm_y = _mm256_mul_pd(y, recip_max);
+    let norm_z = _mm256_mul_pd(z, recip_max);
 
     let accumulator = _mm256_mlaf_pd(
         norm_x,
@@ -39,9 +40,9 @@ pub unsafe fn _mm256_hypot3_pd(x: __m256d, y: __m256d, z: __m256d) -> __m256d {
     );
     let is_max_zero = _mm256_cmp_pd::<_CMP_EQ_OS>(max, _mm256_setzero_pd());
     is_any_nan = _mm256_or_pd(_mm256_isnan_pd(ret), is_any_nan);
-    ret = _mm256_select_pd(is_any_infinite, _mm256_set1_pd(f64::INFINITY), ret);
     ret = _mm256_select_pd(is_any_nan, _mm256_set1_pd(f64::NAN), ret);
-    ret = _mm256_select_pd(is_max_zero, _mm256_set1_pd(0.), ret);
+    ret = _mm256_select_pd(is_any_infinite, _mm256_set1_pd(f64::INFINITY), ret);
+    ret = _mm256_select_pd(is_max_zero, _mm256_setzero_pd(), ret);
     ret
 }
 
@@ -52,9 +53,10 @@ pub unsafe fn _mm256_hypot3_fast_pd(x: __m256d, y: __m256d, z: __m256d) -> __m25
     let y = _mm256_abs_pd(y);
     let z = _mm256_abs_pd(z);
     let max = _mm256_max_pd(_mm256_max_pd(x, y), z);
-    let norm_x = _mm256_div_pd(x, max);
-    let norm_y = _mm256_div_pd(y, max);
-    let norm_z = _mm256_div_pd(z, max);
+    let recip_max = _mm256_div_pd(_mm256_set1_pd(1.), max);
+    let norm_x = _mm256_mul_pd(x, recip_max);
+    let norm_y = _mm256_mul_pd(y, recip_max);
+    let norm_z = _mm256_mul_pd(z, recip_max);
 
     let accumulator = _mm256_mlaf_pd(
         norm_x,

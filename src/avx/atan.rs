@@ -10,15 +10,13 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
-use crate::{
-    _mm256_abs_pd, _mm256_mlaf_pd, _mm256_neg_pd, _mm256_select_pd,
-};
 use crate::atan::{
     ATAN_POLY_10_D, ATAN_POLY_11_D, ATAN_POLY_12_D, ATAN_POLY_13_D, ATAN_POLY_14_D, ATAN_POLY_15_D,
     ATAN_POLY_16_D, ATAN_POLY_17_D, ATAN_POLY_18_D, ATAN_POLY_19_D, ATAN_POLY_1_D, ATAN_POLY_20_D,
     ATAN_POLY_21_D, ATAN_POLY_2_D, ATAN_POLY_3_D, ATAN_POLY_4_D, ATAN_POLY_5_D, ATAN_POLY_6_D,
     ATAN_POLY_7_D, ATAN_POLY_8_D, ATAN_POLY_9_D,
 };
+use crate::{_mm256_abs_pd, _mm256_mlaf_pd, _mm256_neg_pd, _mm256_select_pd};
 
 /// Computes Atan function with *ULP 2.0* error
 #[inline(always)]

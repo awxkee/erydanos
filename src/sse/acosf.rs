@@ -11,7 +11,7 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
-/// Computes Acos function with *ULP 1.0* error
+/// Computes arccos, error bound *ULP 2.0*
 #[inline(always)]
 pub unsafe fn _mm_acos_ps(x: __m128) -> __m128 {
     let gt_zero = _mm_cmpgt_ps(x, _mm_setzero_ps());

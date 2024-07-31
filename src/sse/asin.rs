@@ -18,6 +18,7 @@ use crate::asin::{
 };
 use crate::{_mm_abs_pd, _mm_copysign_pd, _mm_mlaf_pd, _mm_select_pd};
 
+/// Computes arcsin, error bound *ULP 2.0*
 #[inline]
 pub unsafe fn _mm_asin_pd(d: __m128d) -> __m128d {
     let ones = _mm_set1_pd(1.);

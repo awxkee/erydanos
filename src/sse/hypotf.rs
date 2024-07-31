@@ -11,7 +11,7 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 #[inline]
-/// Method that computes 2D Euclidian distance *ULP 0.5*
+/// Method that computes 2D Euclidian distance *ULP 0.6667*
 pub unsafe fn _mm_hypot_ps(x: __m128, y: __m128) -> __m128 {
     let x = _mm_abs_ps(x);
     let y = _mm_abs_ps(y);
@@ -23,13 +23,13 @@ pub unsafe fn _mm_hypot_ps(x: __m128, y: __m128) -> __m128 {
     let mut is_any_nan = _mm_or_ps(_mm_isnan_ps(x), _mm_isnan_ps(y));
     let is_min_zero = _mm_eqzero_ps(min);
     is_any_nan = _mm_or_ps(_mm_isnan_ps(ret), is_any_nan);
-    ret = _mm_select_ps(is_any_infinite, _mm_set1_ps(f32::INFINITY), ret);
     ret = _mm_select_ps(is_any_nan, _mm_set1_ps(f32::NAN), ret);
-    ret = _mm_select_ps(is_min_zero, _mm_set1_ps(0f32), ret);
+    ret = _mm_select_ps(is_any_infinite, _mm_set1_ps(f32::INFINITY), ret);
+    ret = _mm_select_ps(is_min_zero, _mm_setzero_ps(), ret);
     ret
 }
 
-/// Method that computes 2D Euclidian distance *ULP 0.5*, skipping Inf, Nan checks
+/// Method that computes 2D Euclidian distance *ULP 0.6667*, skipping Inf, Nan checks
 #[inline]
 pub unsafe fn _mm_hypot_fast_ps(x: __m128, y: __m128) -> __m128 {
     let x = _mm_abs_ps(x);

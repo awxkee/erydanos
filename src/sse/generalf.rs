@@ -30,20 +30,20 @@ pub unsafe fn _mm_ldexp3kq_ps(x: __m128, n: __m128i) -> __m128 {
 
 #[cfg(not(target_feature = "fma"))]
 #[inline]
-/// Computes b*c + a using fma when available
+/// Computes `b*c + a` using fma when available
 pub unsafe fn _mm_prefer_fma_ps(a: __m128, b: __m128, c: __m128) -> __m128 {
     return _mm_add_ps(_mm_mul_ps(b, c), a);
 }
 
 #[cfg(target_feature = "fma")]
 #[inline]
-/// Computes b*c + a using fma when available
+/// Computes `b*c + a` using fma when available
 pub unsafe fn _mm_prefer_fma_ps(a: __m128, b: __m128, c: __m128) -> __m128 {
     return _mm_fmadd_ps(b, c, a);
 }
 
 #[inline(always)]
-/// Computes a*b + c
+/// Computes `a*b + c`
 pub unsafe fn _mm_mlaf_ps(a: __m128, b: __m128, c: __m128) -> __m128 {
     _mm_prefer_fma_ps(c, b, a)
 }

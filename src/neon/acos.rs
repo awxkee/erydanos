@@ -9,7 +9,7 @@ use std::arch::aarch64::*;
 
 use crate::vasinq_f64;
 
-/// Computes Acos function with *ULP 1.0* error
+/// Computes arccos, error bound *ULP 2.0*
 #[inline(always)]
 pub unsafe fn vacosq_f64(x: float64x2_t) -> float64x2_t {
     let gt_zero = vcgtzq_f64(x);

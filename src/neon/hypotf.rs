@@ -9,7 +9,7 @@ use crate::neon::general::{visinfq_f32, visnanq_f32, vmlafq_f32};
 use std::arch::aarch64::*;
 
 #[inline]
-/// Method that computes 2D Euclidian distance *ULP 0.5*
+/// Method that computes 2D Euclidian distance *ULP 0.6667*
 pub unsafe fn vhypotq_f32(x: float32x4_t, y: float32x4_t) -> float32x4_t {
     let x = vabsq_f32(x);
     let y = vabsq_f32(y);
@@ -21,13 +21,13 @@ pub unsafe fn vhypotq_f32(x: float32x4_t, y: float32x4_t) -> float32x4_t {
     let mut is_any_nan = vorrq_u32(visnanq_f32(x), visnanq_f32(y));
     let is_min_zero = vceqzq_f32(min);
     is_any_nan = vorrq_u32(visnanq_f32(ret), is_any_nan);
-    ret = vbslq_f32(is_any_infinite, vdupq_n_f32(f32::INFINITY), ret);
     ret = vbslq_f32(is_any_nan, vdupq_n_f32(f32::NAN), ret);
+    ret = vbslq_f32(is_any_infinite, vdupq_n_f32(f32::INFINITY), ret);
     ret = vbslq_f32(is_min_zero, vdupq_n_f32(0f32), ret);
     ret
 }
 
-/// Method that computes 2D Euclidian distance *ULP 0.5*, skipping Inf, Nan checks
+/// Method that computes 2D Euclidian distance *ULP 0.6667*, skipping Inf, Nan checks
 #[inline]
 pub unsafe fn vhypotq_fast_f32(x: float32x4_t, y: float32x4_t) -> float32x4_t {
     let x = vabsq_f32(x);

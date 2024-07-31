@@ -6,20 +6,20 @@ use std::arch::x86_64::*;
 
 #[cfg(not(target_feature = "fma"))]
 #[inline]
-/// Computes b*c + a using fma when available
+/// Computes `b*c + a` using fma when available
 pub unsafe fn _mm256_prefer_fma_pd(a: __m256d, b: __m256d, c: __m256d) -> __m256d {
     return _mm256_add_pd(_mm256_mul_pd(b, c), a);
 }
 
 #[cfg(target_feature = "fma")]
 #[inline]
-/// Computes b*c + a using fma when available
+/// Computes `b*c + a` using fma when available
 pub unsafe fn _mm256_prefer_fma_pd(a: __m256d, b: __m256d, c: __m256d) -> __m256d {
     return _mm256_fmadd_pd(b, c, a);
 }
 
 #[inline(always)]
-/// Computes a*b + c
+/// Computes `a*b + c`
 pub unsafe fn _mm256_mlaf_pd(a: __m256d, b: __m256d, c: __m256d) -> __m256d {
     _mm256_prefer_fma_pd(c, b, a)
 }

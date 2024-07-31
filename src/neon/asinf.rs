@@ -12,6 +12,7 @@ use crate::asinf::{
 use crate::neon::general::{vcopysignq_f32, vmlafq_f32};
 use std::arch::aarch64::*;
 
+/// Computes arcsin, error bound *ULP 2.0*
 #[inline]
 pub unsafe fn vasinq_f32(d: float32x4_t) -> float32x4_t {
     let ones = vdupq_n_f32(1f32);

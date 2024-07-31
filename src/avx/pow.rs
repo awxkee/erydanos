@@ -9,11 +9,11 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
+use crate::avx::general::_mm256_isnotintegral_pd;
 use crate::{
     _mm256_abs_pd, _mm256_copysign_pd, _mm256_exp_pd, _mm256_expq_fast_pd, _mm256_isinf_pd,
-    _mm256_isnan_pd, _mm256_isneginf_pd, _mm256_ln_fast_pd, _mm256_ln_pd, _mm256_select_pd
+    _mm256_isnan_pd, _mm256_isneginf_pd, _mm256_ln_fast_pd, _mm256_ln_pd, _mm256_select_pd,
 };
-use crate::avx::general::_mm256_isnotintegral_pd;
 
 #[inline]
 /// Computes pow function *ULP 2.0*

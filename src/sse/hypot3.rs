@@ -19,9 +19,10 @@ pub unsafe fn _mm_hypot3_pd(x: __m128d, y: __m128d, z: __m128d) -> __m128d {
     let y = _mm_abs_pd(y);
     let z = _mm_abs_pd(z);
     let max = _mm_max_pd(_mm_max_pd(x, y), z);
-    let norm_x = _mm_div_pd(x, max);
-    let norm_y = _mm_div_pd(y, max);
-    let norm_z = _mm_div_pd(z, max);
+    let recip_max = _mm_div_pd(_mm_set1_pd(1.), max);
+    let norm_x = _mm_mul_pd(x, recip_max);
+    let norm_y = _mm_mul_pd(y, recip_max);
+    let norm_z = _mm_mul_pd(z, recip_max);
 
     let accumulator = _mm_mlaf_pd(
         norm_x,
@@ -33,9 +34,9 @@ pub unsafe fn _mm_hypot3_pd(x: __m128d, y: __m128d, z: __m128d) -> __m128d {
     let mut is_any_nan = _mm_or_pd(_mm_or_pd(_mm_isnan_pd(x), _mm_isnan_pd(y)), _mm_isnan_pd(z));
     let is_max_zero = _mm_eqzero_pd(max);
     is_any_nan = _mm_or_pd(_mm_isnan_pd(ret), is_any_nan);
-    ret = _mm_select_pd(is_any_infinite, _mm_set1_pd(f64::INFINITY), ret);
     ret = _mm_select_pd(is_any_nan, _mm_set1_pd(f64::NAN), ret);
-    ret = _mm_select_pd(is_max_zero, _mm_set1_pd(0.), ret);
+    ret = _mm_select_pd(is_any_infinite, _mm_set1_pd(f64::INFINITY), ret);
+    ret = _mm_select_pd(is_max_zero, _mm_setzero_pd(), ret);
     ret
 }
 
@@ -46,9 +47,10 @@ pub unsafe fn _mm_hypot3_fast_pd(x: __m128d, y: __m128d, z: __m128d) -> __m128d 
     let y = _mm_abs_pd(y);
     let z = _mm_abs_pd(z);
     let max = _mm_max_pd(_mm_max_pd(x, y), z);
-    let norm_x = _mm_div_pd(x, max);
-    let norm_y = _mm_div_pd(y, max);
-    let norm_z = _mm_div_pd(z, max);
+    let recip_max = _mm_div_pd(_mm_set1_pd(1.), max);
+    let norm_x = _mm_mul_pd(x, recip_max);
+    let norm_y = _mm_mul_pd(y, recip_max);
+    let norm_z = _mm_mul_pd(z, recip_max);
 
     let accumulator = _mm_mlaf_pd(
         norm_x,

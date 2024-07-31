@@ -15,7 +15,7 @@ use crate::neon::general::{vcopysignq_f64, vmlafq_f64};
 use std::arch::aarch64::*;
 
 #[inline]
-/// Computes asin with *ULP 1.5*
+/// Computes arcsin, error bound *ULP 2.0*
 pub unsafe fn vasinq_f64(d: float64x2_t) -> float64x2_t {
     let ones = vdupq_n_f64(1f64);
     let v = vabsq_f64(d);

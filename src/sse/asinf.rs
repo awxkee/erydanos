@@ -14,6 +14,7 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
+/// Computes arcsin, error bound *ULP 2.0*
 #[inline]
 pub unsafe fn _mm_asin_ps(d: __m128) -> __m128 {
     let ones = _mm_set1_ps(1f32);

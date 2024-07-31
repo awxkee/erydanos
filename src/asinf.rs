@@ -103,7 +103,7 @@ fn do_asinf_sse(d: f32) -> f32 {
     }
 }
 
-/// Computes asin for an argument *ULP 2.0*
+/// Computes arcsin, error bound *ULP 2.0*
 #[inline]
 pub fn easinf(d: f32) -> f32 {
     let mut _dispatcher: fn(f32) -> f32 = do_asinf;

@@ -15,9 +15,10 @@ pub unsafe fn vhypot3q_f64(x: float64x2_t, y: float64x2_t, z: float64x2_t) -> fl
     let y = vabsq_f64(y);
     let z = vabsq_f64(z);
     let max = vmaxq_f64(vmaxq_f64(x, y), z);
-    let norm_x = vdivq_f64(x, max);
-    let norm_y = vdivq_f64(y, max);
-    let norm_z = vdivq_f64(z, max);
+    let recip_max = vdivq_f64(vdupq_n_f64(1.), max);
+    let norm_x = vmulq_f64(x, recip_max);
+    let norm_y = vmulq_f64(y, recip_max);
+    let norm_z = vmulq_f64(z, recip_max);
 
     let accumulator = vmlafq_f64(
         norm_x,
@@ -43,9 +44,10 @@ pub unsafe fn vhypot3q_fast_f64(x: float64x2_t, y: float64x2_t, z: float64x2_t) 
     let y = vabsq_f64(y);
     let z = vabsq_f64(z);
     let max = vmaxq_f64(vmaxq_f64(x, y), z);
-    let norm_x = vdivq_f64(x, max);
-    let norm_y = vdivq_f64(y, max);
-    let norm_z = vdivq_f64(z, max);
+    let recip_max = vdivq_f64(vdupq_n_f64(1.), max);
+    let norm_x = vmulq_f64(x, recip_max);
+    let norm_y = vmulq_f64(y, recip_max);
+    let norm_z = vmulq_f64(z, recip_max);
 
     let accumulator = vmlafq_f64(
         norm_x,
