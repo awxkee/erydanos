@@ -16,6 +16,7 @@ fn upperf(o: f32) -> f32 {
     f32::from_bits(o.to_bits() & 0x_ffff_f000)
 }
 
+#[inline]
 fn upper(o: f64) -> f64 {
     f64::from_bits(o.to_bits() & 0x_ffff_ffff_f800_0000)
 }
