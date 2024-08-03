@@ -115,7 +115,7 @@ pub use sse::*;
 
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
-    target_feature = "avx"
+    target_feature = "avx2"
 ))]
 pub use avx::*;
 
