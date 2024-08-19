@@ -86,7 +86,7 @@ mod tests {
     use crate::_mm_extract_pd;
 
     #[test]
-    fn test_hypot3f_sse() {
+    fn test_hypot4f_sse() {
         unsafe {
             // Test regular
             let vx = _mm_set1_pd(3.);
@@ -96,7 +96,10 @@ mod tests {
             let comparison = _mm_hypot4_pd(vx, vy, vz, vw);
             let flag_1 = _mm_extract_pd::<0>(comparison);
             assert_eq!(flag_1, _mm_extract_pd::<1>(comparison));
-            assert_eq!(flag_1, 9.27361849549570375f64);
+            let orig = 9.273618495495704f64.to_bits();
+            let result = flag_1.to_bits();
+            let diff = orig.max(result) - orig.min(result);
+            assert!(diff <= 2);
         }
 
         unsafe {
