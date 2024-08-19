@@ -10,7 +10,6 @@ use std::arch::aarch64::*;
 
 /// Computes 2D Euclidian Distance *ULP 0.6667*
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vhypotq_f64(x: float64x2_t, y: float64x2_t) -> float64x2_t {
     let x = vabsq_f64(x);
     let y = vabsq_f64(y);

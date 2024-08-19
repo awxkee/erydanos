@@ -13,7 +13,6 @@ use crate::sinf::{SIN_POLY_1_S, SIN_POLY_2_S, SIN_POLY_3_S, SIN_POLY_4_S, SIN_PO
 
 /// Computes sine function with error bound *ULP 1.5*
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vsinq_f32(d: float32x4_t) -> float32x4_t {
     let q = vcvtaq_s32_f32(vmulq_n_f32(d, std::f32::consts::FRAC_1_PI));
     let qf = vcvtq_f32_s32(q);

@@ -18,14 +18,12 @@ use crate::neon::general::{vmlafq_f64, vmlsfq_f64};
 pub struct float128x2_t(float64x2_t, float64x2_t);
 
 #[inline]
-#[target_feature(enable = "neon")]
 unsafe fn vupperpartq_f64(a: float64x2_t) -> float64x2_t {
     let mask = vdupq_n_u64(0x_ffff_ffff_f800_0000);
     vreinterpretq_f64_u64(vandq_u64(vreinterpretq_u64_f64(a), mask))
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Performs multiplication for f128
 pub unsafe fn vmulq_f128(a: float128x2_t, b: float128x2_t) -> float128x2_t {
     let xh = vupperpartq_f64(a.0);
@@ -40,7 +38,6 @@ pub unsafe fn vmulq_f128(a: float128x2_t, b: float128x2_t) -> float128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Widens f64 into f128 and performs multiplication
 pub unsafe fn vmullq_f64(a: float64x2_t, b: float64x2_t) -> float128x2_t {
     let xh = vupperpartq_f64(a);
@@ -59,7 +56,6 @@ pub unsafe fn vmullq_f64(a: float64x2_t, b: float64x2_t) -> float128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Adds f64 with widening to f128
 pub unsafe fn vaddl_f64(a: float64x2_t, b: float64x2_t) -> float128x2_t {
     let r0 = vaddq_f64(a, b);
@@ -72,7 +68,6 @@ pub unsafe fn vaddl_f64(a: float64x2_t, b: float64x2_t) -> float128x2_t {
 
 /// Adds f128 to another f128
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vaddq_f128(a: float128x2_t, b: float128x2_t) -> float128x2_t {
     let r0 = vaddq_f64(a.0, b.0);
     float128x2_t(
@@ -83,14 +78,12 @@ pub unsafe fn vaddq_f128(a: float128x2_t, b: float128x2_t) -> float128x2_t {
 
 /// Negates f128
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vnegq_f128(a: float128x2_t) -> float128x2_t {
     float128x2_t(vnegq_f64(a.0), vnegq_f64(a.1))
 }
 
 /// Adds f64 with widening to f128
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vaddw_f64(a: float128x2_t, b: float64x2_t) -> float128x2_t {
     let r0 = vaddq_f64(a.0, b);
     let v = vsubq_f64(r0, a.0);
@@ -104,7 +97,6 @@ pub unsafe fn vaddw_f64(a: float128x2_t, b: float64x2_t) -> float128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vdivq_f128(a: float128x2_t, b: float128x2_t) -> float128x2_t {
     let t = vdivq_f64(vdupq_n_f64(1.), b.0);
     let dh = vupperpartq_f64(b.0);
@@ -133,7 +125,6 @@ pub unsafe fn vdivq_f128(a: float128x2_t, b: float128x2_t) -> float128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Converts f128 into f64
 pub unsafe fn vcvtq_f64_f128(d: float128x2_t) -> float64x2_t {
     let j0 = vaddq_f64(d.0, d.1);
@@ -141,14 +132,12 @@ pub unsafe fn vcvtq_f64_f128(d: float128x2_t) -> float64x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Converts f64 into f128
 pub unsafe fn vcvtq_f128_f64(d: float64x2_t) -> float128x2_t {
     float128x2_t(d, vdupq_n_f64(0f64))
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Converts f64 into f128
 pub unsafe fn vdupq_n_f128(d: f64) -> float128x2_t {
     float128x2_t(vdupq_n_f64(d), vdupq_n_f64(0f64))
@@ -156,14 +145,12 @@ pub unsafe fn vdupq_n_f128(d: f64) -> float128x2_t {
 
 /// Computes f128 as f64 and extracts in general register
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vextractq_f128<const LANE: i32>(d: float128x2_t) -> f64 {
     let product = vaddq_f64(d.0, d.1);
     vgetq_lane_f64::<LANE>(product)
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Fused multiply add for f128
 pub unsafe fn vmlafq_f128(a: float128x2_t, b: float128x2_t, c: float128x2_t) -> float128x2_t {
     vaddq_f128(vmulq_f128(a, b), c)

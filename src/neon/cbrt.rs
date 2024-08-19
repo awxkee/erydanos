@@ -31,7 +31,6 @@ unsafe fn integer_pow_1_3(hx: uint64x2_t) -> uint64x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vcbrtq_f64(x: float64x2_t) -> float64x2_t {
     let mut v = vcbrtq_fast_f64(x);
     v = vbslq_f64(visinfq_f64(x), vdupq_n_f64(f64::INFINITY), v);
@@ -40,7 +39,6 @@ pub unsafe fn vcbrtq_f64(x: float64x2_t) -> float64x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vcbrtq_fast_f64(x: float64x2_t) -> float64x2_t {
     let mut ui = vreinterpretq_u64_f64(x);
     let hx = vandq_u64(vshrq_n_u64::<32>(ui), vdupq_n_u64(0x7fffffff));

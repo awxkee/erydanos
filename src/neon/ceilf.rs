@@ -10,7 +10,6 @@ use std::arch::aarch64::*;
 
 /// Shorter and significantly faster reach skipping Inf checks
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vceilq_f32(x: float32x4_t) -> float32x4_t {
     let mut fr = vsubq_f32(x, vcvtq_f32_s32(vcvtq_s32_f32(x)));
     let ones = vdupq_n_f32(1f32);
@@ -20,7 +19,6 @@ pub unsafe fn vceilq_f32(x: float32x4_t) -> float32x4_t {
 
 /// Ceil's complaints with f32 specification with infinity checks
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vceilq_ie_f32(x: float32x4_t) -> float32x4_t {
     let mut fr = vsubq_f32(x, vcvtq_f32_s32(vcvtq_s32_f32(x)));
     let ones = vdupq_n_f32(1f32);

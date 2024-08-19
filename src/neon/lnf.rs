@@ -11,7 +11,6 @@ use std::arch::aarch64::*;
 
 /// Computes natural logarithm for an argument *ULP 1.5*
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vlnq_f32(d: float32x4_t) -> float32x4_t {
     let mut res = vlnq_fast_f32(d);
     // d == 0 -> -Inf
@@ -29,7 +28,6 @@ pub unsafe fn vlnq_f32(d: float32x4_t) -> float32x4_t {
 
 /// Method that computes ln skipping Inf, Nan checks
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vlnq_fast_f32(d: float32x4_t) -> float32x4_t {
     let n = vilogb2kq_f32(vmulq_n_f32(d, 1f32 / 0.75f32));
     let a = vldexp3kq_f32(d, vnegq_s32(n));

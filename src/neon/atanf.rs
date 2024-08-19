@@ -14,7 +14,6 @@ use std::arch::aarch64::*;
 
 /// Computes Atan function with *ULP 1.0* error
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vatanq_f32(x: float32x4_t) -> float32x4_t {
     let negative_mask = vcltzq_f32(x);
     let d = vabsq_f32(x);

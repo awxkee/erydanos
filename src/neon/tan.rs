@@ -13,7 +13,6 @@ use crate::tan::{
 use std::arch::aarch64::*;
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Computes tan with error bound *ULP 2.0*
 pub unsafe fn vtanq_f64(d: float64x2_t) -> float64x2_t {
     let q = vcvtaq_s64_f64(vmulq_n_f64(d, std::f64::consts::FRAC_2_PI));

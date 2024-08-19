@@ -13,7 +13,6 @@ use std::arch::aarch64::*;
 
 /// Computes exp for an argument *ULP 1.0*
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vexpq_f32(d: float32x4_t) -> float32x4_t {
     let mut r = vexpq_fast_f32(d);
     r = vbslq_f32(vcltq_f32(d, vdupq_n_f32(-87f32)), vdupq_n_f32(0f32), r);
@@ -27,7 +26,6 @@ pub unsafe fn vexpq_f32(d: float32x4_t) -> float32x4_t {
 
 /// Method that computes exp skipping Inf, Nan checks error bound *ULP 1.0*
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vexpq_fast_f32(d: float32x4_t) -> float32x4_t {
     let q = vcvtaq_s32_f32(vmulq_n_f32(d, std::f32::consts::LOG2_E));
     let qf = vcvtq_f32_s32(q);

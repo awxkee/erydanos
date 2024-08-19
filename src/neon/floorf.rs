@@ -10,7 +10,6 @@ use std::arch::aarch64::*;
 
 /// Shorter and significantly faster reach skipping Inf checks
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vfloorq_f32(x: float32x4_t) -> float32x4_t {
     let ones = vdupq_n_f32(1f32);
     let z = vcvtq_s32_f32(x);
@@ -21,7 +20,6 @@ pub unsafe fn vfloorq_f32(x: float32x4_t) -> float32x4_t {
 
 /// Floor method complaints with f32 specification with infinity checks
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vfloorq_ie_f32(x: float32x4_t) -> float32x4_t {
     let mut fr = vsubq_f32(x, vcvtq_f32_s32(vcvtq_s32_f32(x)));
     fr = vbslq_f32(vcltzq_f32(fr), vaddq_f32(fr, vdupq_n_f32(1f32)), fr);

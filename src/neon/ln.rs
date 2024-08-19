@@ -13,7 +13,6 @@ use crate::neon::general::{vilogb2kq_f64, visinfq_f64, visnanq_f64, vldexp3kq_f6
 use std::arch::aarch64::*;
 
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vlnq_f64(d: float64x2_t) -> float64x2_t {
     let n = vilogb2kq_f64(vmulq_n_f64(d, 1f64 / 0.75f64));
     let a = vldexp3kq_f64(d, vnegq_s64(n));

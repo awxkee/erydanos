@@ -8,7 +8,6 @@
 use std::arch::aarch64::*;
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Compute fmod for f64
 pub unsafe fn vfmodq_f64(a: float64x2_t, b: float64x2_t) -> float64x2_t {
     let dividend_vec = a;

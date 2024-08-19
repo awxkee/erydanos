@@ -36,7 +36,6 @@ pub struct s128x2_t(int64x2_t, int64x2_t);
 
 /// Computes i128 as i64 and extracts in general register
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vextract_s128(d: s128x1_t) -> i64 {
     let product = vadd_s64(d.0, d.1);
     vget_lane_s64::<0>(product)
@@ -44,7 +43,6 @@ pub unsafe fn vextract_s128(d: s128x1_t) -> i64 {
 
 /// Computes u128 as u64 and extracts in general register
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vextract_u128(d: u128x1_t) -> u64 {
     let product = vadd_u64(d.0, d.1);
     vget_lane_u64::<0>(product)
@@ -52,20 +50,17 @@ pub unsafe fn vextract_u128(d: u128x1_t) -> u64 {
 
 /// Computes i128 as i64 and extracts in general register
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vextractq_lo_s128<const IMM: i32>(d: s128x2_t) -> i64 {
     vgetq_lane_s64::<IMM>(d.0)
 }
 
 /// Computes i128 as u64 and extracts in general register
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vextractq_lo_u128<const IMM: i32>(d: u128x2_t) -> u64 {
     vgetq_lane_u64::<IMM>(d.0)
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Computes i128 as u128 and extracts in general register
 pub unsafe fn vextractq_q_u128<const IMM: i32>(d: u128x2_t) -> u128 {
     let v0 = vgetq_lane_u64::<IMM>(d.0) as u128;
@@ -74,7 +69,6 @@ pub unsafe fn vextractq_q_u128<const IMM: i32>(d: u128x2_t) -> u128 {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Computes i128 as u128 and extracts in general register
 pub unsafe fn vextractq_q_s128<const IMM: i32>(d: s128x2_t) -> i128 {
     let v0 = vgetq_lane_s64::<IMM>(d.0) as i128;
@@ -84,13 +78,11 @@ pub unsafe fn vextractq_q_s128<const IMM: i32>(d: s128x2_t) -> i128 {
 
 /// Casts uint128 to int128
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vreinterpret_u128_s128(d: u128x1_t) -> s128x1_t {
     s128x1_t(vreinterpret_s64_u64(d.0), vreinterpret_s64_u64(d.1))
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Casts uint128 to int128
 pub unsafe fn vreinterpretq_u128_s128(d: u128x2_t) -> s128x2_t {
     s128x2_t(vreinterpretq_s64_u64(d.0), vreinterpretq_s64_u64(d.1))
@@ -98,33 +90,28 @@ pub unsafe fn vreinterpretq_u128_s128(d: u128x2_t) -> s128x2_t {
 
 /// Broadcasts u64 into u128
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vmovl_u64(v: uint64x1_t) -> u128x1_t {
     u128x1_t(v, vdup_n_u64(0u64))
 }
 
 /// Broadcasts u64 into u128
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vmovl_s64(v: int64x1_t) -> s128x1_t {
     s128x1_t(v, vdup_n_s64(0i64))
 }
 
 /// Convert u64x2 low part as a low part of u128, and high as high of u128
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vcvtq_u128_u64(v: uint64x2_t) -> u128x1_t {
     u128x1_t(vget_low_u64(v), vget_high_u64(v))
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vmovnq_u128(v: u128x2_t) -> uint64x2_t {
     vaddq_u64(v.0, v.1)
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vmovn_u128(p: u128x1_t) -> uint64x1_t {
     let v0 = vadd_u64(p.0, p.1);
     v0
@@ -132,13 +119,11 @@ pub unsafe fn vmovn_u128(p: u128x1_t) -> uint64x1_t {
 
 /// Convert u64x2 low part as a low part of u128, and high as high of u128
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vcreate_u128(low: uint64x1_t, high: uint64x1_t) -> u128x1_t {
     u128x1_t(low, high)
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Widening multiplication u64 in u128
 pub unsafe fn vmull_s64(a: int64x1_t, b: int64x1_t) -> s128x1_t {
     let sign_ab = vshr_n_u64::<63>(vreinterpret_u64_s64(a));
@@ -168,7 +153,6 @@ pub unsafe fn vmull_s64(a: int64x1_t, b: int64x1_t) -> s128x1_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Widening multiplication u64 in u128
 pub unsafe fn vmullq_s64(a: int64x2_t, b: int64x2_t) -> s128x2_t {
     let sign_ab = vshrq_n_u64::<63>(vreinterpretq_u64_s64(a));
@@ -198,7 +182,6 @@ pub unsafe fn vmullq_s64(a: int64x2_t, b: int64x2_t) -> s128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Widening multiplication u64 in u128
 pub unsafe fn vmull_u64(a: uint64x1_t, b: uint64x1_t) -> u128x1_t {
     let ah = vcombine_u64(a, a);
@@ -208,7 +191,6 @@ pub unsafe fn vmull_u64(a: uint64x1_t, b: uint64x1_t) -> u128x1_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Widening multiplication u64 in u128
 pub unsafe fn vmullq_u64(a: uint64x2_t, b: uint64x2_t) -> u128x2_t {
     let erase_high = vdupq_n_u64(0xFFFFFFFF);
@@ -235,7 +217,6 @@ pub unsafe fn vmullq_u64(a: uint64x2_t, b: uint64x2_t) -> u128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Widening add u64 to u128
 pub unsafe fn vaddw_u64(a: u128x1_t, b: uint64x1_t) -> u128x1_t {
     let r0 = vadd_u64(a.0, b);
@@ -250,7 +231,6 @@ pub unsafe fn vaddw_u64(a: u128x1_t, b: uint64x1_t) -> u128x1_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Widening add i64 to i128
 pub unsafe fn vaddw_s64(a: s128x1_t, b: int64x1_t) -> s128x1_t {
     let j0 = vadd_s64(a.0, b);
@@ -266,7 +246,7 @@ pub unsafe fn vaddw_s64(a: s128x1_t, b: int64x1_t) -> s128x1_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
+
 /// Widening add u64 to u128
 pub unsafe fn vaddwq_u64(a: u128x2_t, b: uint64x2_t) -> u128x2_t {
     let j0 = vaddq_u64(a.0, b);
@@ -276,7 +256,6 @@ pub unsafe fn vaddwq_u64(a: u128x2_t, b: uint64x2_t) -> u128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Adds u128 to u128
 pub unsafe fn vaddq_u128(a: u128x2_t, b: u128x2_t) -> u128x2_t {
     let lo = vaddq_u64(a.0, b.0);
@@ -285,7 +264,6 @@ pub unsafe fn vaddq_u128(a: u128x2_t, b: u128x2_t) -> u128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Adds s128 to s128
 pub unsafe fn vaddq_s128(a: s128x2_t, b: s128x2_t) -> s128x2_t {
     let lo = vaddq_s64(a.0, b.0);
@@ -301,7 +279,6 @@ pub unsafe fn vaddq_s128(a: s128x2_t, b: s128x2_t) -> s128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Widening add i64 to i128
 pub unsafe fn vaddwq_s64(a: s128x2_t, b: int64x2_t) -> s128x2_t {
     let j0 = vaddq_s64(a.0, b);
@@ -317,7 +294,6 @@ pub unsafe fn vaddwq_s64(a: s128x2_t, b: int64x2_t) -> s128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Shifts right u128 immediate
 pub unsafe fn vshr_n_u128<const IMM: i32>(a: u128x1_t) -> u128x1_t {
     return if IMM <= 0 {
@@ -334,7 +310,6 @@ pub unsafe fn vshr_n_u128<const IMM: i32>(a: u128x1_t) -> u128x1_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Shifts right u128 immediate
 pub unsafe fn vshrq_n_u128<const IMM: i32>(a: u128x2_t) -> u128x2_t {
     return if IMM <= 0 {
@@ -351,7 +326,6 @@ pub unsafe fn vshrq_n_u128<const IMM: i32>(a: u128x2_t) -> u128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Shifts right s128 immediate
 pub unsafe fn vshr_n_s128<const IMM: i32>(a: s128x1_t) -> s128x1_t {
     return if IMM <= 0 {
@@ -368,7 +342,6 @@ pub unsafe fn vshr_n_s128<const IMM: i32>(a: s128x1_t) -> s128x1_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Shifts right s128 immediate
 pub unsafe fn vshrq_n_s128<const IMM: i32>(a: s128x2_t) -> s128x2_t {
     return if IMM <= 0 {
@@ -385,7 +358,6 @@ pub unsafe fn vshrq_n_s128<const IMM: i32>(a: s128x2_t) -> s128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Shifts left u128 immediate
 pub unsafe fn vshl_n_u128<const IMM: i32>(a: u128x1_t) -> u128x1_t {
     if IMM >= 64 {
@@ -402,7 +374,6 @@ pub unsafe fn vshl_n_u128<const IMM: i32>(a: u128x1_t) -> u128x1_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Shifts left u128 immediate
 pub unsafe fn vshlq_n_u128<const IMM: i32>(a: u128x2_t) -> u128x2_t {
     if IMM >= 64 {
@@ -419,7 +390,7 @@ pub unsafe fn vshlq_n_u128<const IMM: i32>(a: u128x2_t) -> u128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
+
 /// Shifts left s128 immediate
 pub unsafe fn vshl_n_s128<const IMM: i32>(a: s128x1_t) -> s128x1_t {
     if IMM >= 64 {
@@ -436,7 +407,6 @@ pub unsafe fn vshl_n_s128<const IMM: i32>(a: s128x1_t) -> s128x1_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Shifts right s128 immediate
 pub unsafe fn vshlq_n_s128<const IMM: i32>(a: s128x2_t) -> s128x2_t {
     if IMM >= 64 {
@@ -453,7 +423,6 @@ pub unsafe fn vshlq_n_s128<const IMM: i32>(a: s128x2_t) -> s128x2_t {
 }
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Absolute value for i128
 pub unsafe fn vabsq_s128(a: s128x2_t) -> s128x2_t {
     let is_neg = vcltzq_s64(a.1);

@@ -14,7 +14,6 @@ use crate::sin::{
 };
 
 #[inline]
-#[target_feature(enable = "neon")]
 /// Computes sine function with *ULP 1.5* on range [-15; 15]
 pub unsafe fn vsinq_f64(d: float64x2_t) -> float64x2_t {
     let q = vcvtaq_s64_f64(vmulq_n_f64(d, std::f64::consts::FRAC_1_PI));

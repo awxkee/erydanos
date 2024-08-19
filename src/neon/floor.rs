@@ -10,7 +10,6 @@ use std::arch::aarch64::*;
 
 /// Shorter and significantly faster reach skipping Inf checks
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vfloorq_f64(x: float64x2_t) -> float64x2_t {
     let ones = vdupq_n_f64(1f64);
     let z = vcvtq_s64_f64(x);
@@ -21,7 +20,6 @@ pub unsafe fn vfloorq_f64(x: float64x2_t) -> float64x2_t {
 
 /// Floor method complaints with f64 specification with infinity checks
 #[inline]
-#[target_feature(enable = "neon")]
 pub unsafe fn vfloorq_ie_f64(x: float64x2_t) -> float64x2_t {
     let mut fr = vsubq_f64(x, vcvtq_f64_s64(vcvtq_s64_f64(x)));
     fr = vbslq_f64(vcltzq_f64(fr), vaddq_f64(fr, vdupq_n_f64(1f64)), fr);
