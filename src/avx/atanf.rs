@@ -16,7 +16,8 @@ use crate::atanf::{
 use crate::{_mm256_abs_ps, _mm256_ltzero_ps, _mm256_mlaf_ps, _mm256_neg_ps, _mm256_select_ps};
 
 /// Computes Atan function with *ULP 1.0* error
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_atan_ps(x: __m256) -> __m256 {
     let negative_mask = _mm256_ltzero_ps(x);
     let d = _mm256_abs_ps(x);

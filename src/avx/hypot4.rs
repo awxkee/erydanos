@@ -13,6 +13,7 @@ use std::arch::x86_64::*;
 use crate::{_mm256_abs_pd, _mm256_isinf_pd, _mm256_isnan_pd, _mm256_mlaf_pd, _mm256_select_pd};
 
 #[inline]
+#[target_feature(enable = "avx2")]
 /// Method that computes 4D Euclidian distance *ULP 0.6666*
 pub unsafe fn _mm256_hypot4_pd(x: __m256d, y: __m256d, z: __m256d, w: __m256d) -> __m256d {
     let x = _mm256_abs_pd(x);
@@ -60,6 +61,7 @@ pub unsafe fn _mm256_hypot4_pd(x: __m256d, y: __m256d, z: __m256d, w: __m256d) -
 
 /// Method that computes 4D Euclidian distance *ULP 0.6666*, skipping Inf, Nan checks
 #[inline]
+#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_hypot4_fast_pd(x: __m256d, y: __m256d, z: __m256d, w: __m256d) -> __m256d {
     let x = _mm256_abs_pd(x);
     let y = _mm256_abs_pd(y);

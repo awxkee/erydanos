@@ -13,7 +13,8 @@ use crate::sse::general::_mm_ltzero_pd;
 use crate::{_mm_atan_pd, _mm_eqzero_pd, _mm_select_pd};
 
 /// Computes atan for Y,X
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_atan2_pd(y: __m128d, x: __m128d) -> __m128d {
     let zero_x_mask = _mm_eqzero_pd(x);
     let yx = _mm_atan_pd(_mm_div_pd(y, x));

@@ -9,7 +9,8 @@ use crate::neon::atanf::vatanq_f32;
 use std::arch::aarch64::*;
 
 /// Computes atan for Y,X
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "neon")]
 pub unsafe fn vatan2q_f32(y: float32x4_t, x: float32x4_t) -> float32x4_t {
     let zero_x_mask = vceqzq_f32(x);
     let yx = vatanq_f32(vdivq_f32(y, x));

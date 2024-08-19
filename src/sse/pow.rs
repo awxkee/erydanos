@@ -10,11 +10,12 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 use crate::{
-    _mm_abs_pd, _mm_copysign_pd, _mm_exp_pd, _mm_expq_fast_pd, _mm_isinf_pd, _mm_isnan_pd,
+    _mm_abs_pd, _mm_copysign_pd, _mm_exp_pd, _mm_exp_fast_pd, _mm_isinf_pd, _mm_isnan_pd,
     _mm_isneginf_pd, _mm_isnotintegral_pd, _mm_ln_fast_pd, _mm_ln_pd, _mm_select_pd,
 };
 
 #[inline]
+#[target_feature(enable = "sse4.1")]
 /// Computes pow function *ULP 2.0*
 pub unsafe fn _mm_pow_pd(d: __m128d, n: __m128d) -> __m128d {
     let mut c = _mm_exp_pd(_mm_mul_pd(n, _mm_ln_pd(_mm_abs_pd(d))));
@@ -40,8 +41,9 @@ pub unsafe fn _mm_pow_pd(d: __m128d, n: __m128d) -> __m128d {
 
 /// Method that computes pow skipping Inf, Nan checks, *ULP 2.0*
 #[inline]
+#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_pow_fast_pd(d: __m128d, n: __m128d) -> __m128d {
-    let mut c = _mm_expq_fast_pd(_mm_mul_pd(n, _mm_ln_fast_pd(d)));
+    let mut c = _mm_exp_fast_pd(_mm_mul_pd(n, _mm_ln_fast_pd(d)));
     c = _mm_copysign_pd(c, d);
     c
 }

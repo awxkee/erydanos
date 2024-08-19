@@ -13,6 +13,7 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 #[inline]
+#[target_feature(enable = "sse4.1")]
 /// Computes cosine function with error bound *ULP 1.5*
 pub unsafe fn _mm_cos_ps(d: __m128) -> __m128 {
     let q = _mm_add_epi32(

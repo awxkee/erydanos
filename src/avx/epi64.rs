@@ -11,15 +11,17 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 #[inline]
+#[target_feature(enable = "avx2")]
 /// Arithmetic shift for i64, shifting with sign bits
 pub unsafe fn _mm256_srai_epi64x<const IMM8: i32>(a: __m256i) -> __m256i {
     let m = _mm256_set1_epi64x(1 << (64 - 1));
     let x = _mm256_srli_epi64::<IMM8>(a);
     let result = _mm256_sub_epi64(_mm256_xor_si256(x, m), m); //result = x^m - m
-    return result;
+    result
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "avx2")]
 /// Select true or false values based on masks for i64
 pub unsafe fn _mm256_select_epi64(
     mask: __m256i,
@@ -33,14 +35,16 @@ pub unsafe fn _mm256_select_epi64(
     ))
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "avx2")]
 /// Takes max for epi64
 pub unsafe fn _mm256_max_epi64x(a: __m256i, b: __m256i) -> __m256i {
     let mask = _mm256_cmpgt_epi64(a, b);
     _mm256_blendv_epi8(b, a, mask)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "avx2")]
 /// Takes min for epi64
 pub unsafe fn _mm256_min_epi64x(a: __m256i, b: __m256i) -> __m256i {
     let mut mask = _mm256_cmpgt_epi64(a, b);
@@ -50,6 +54,7 @@ pub unsafe fn _mm256_min_epi64x(a: __m256i, b: __m256i) -> __m256i {
 }
 
 #[inline]
+#[target_feature(enable = "avx2")]
 /// Pack 64bytes integers into 32 bytes using unsigned saturation
 pub unsafe fn _mm256_packus_epi64(a: __m256i, b: __m256i) -> __m256i {
     let i32_max = _mm256_set1_epi64x(u32::MAX as i64);
@@ -63,6 +68,7 @@ pub unsafe fn _mm256_packus_epi64(a: __m256i, b: __m256i) -> __m256i {
 }
 
 #[inline]
+#[target_feature(enable = "avx2")]
 /// Pack 64bytes integers into 32 bytes using signed saturation
 pub unsafe fn _mm256_packs_epi64(a: __m256i, b: __m256i) -> __m256i {
     let i32_max = _mm256_set1_epi64x(i32::MAX as i64);
@@ -77,6 +83,7 @@ pub unsafe fn _mm256_packs_epi64(a: __m256i, b: __m256i) -> __m256i {
 }
 
 #[inline]
+#[target_feature(enable = "avx2")]
 /// Pack 64bytes integers into 32 bytes using truncation
 pub unsafe fn _mm256_packts_epi64(a: __m256i, b: __m256i) -> __m256i {
     const SHUFFLE_1: i32 = _mm_shuffle(2, 0, 2, 0);
@@ -88,6 +95,7 @@ pub unsafe fn _mm256_packts_epi64(a: __m256i, b: __m256i) -> __m256i {
 
 #[inline]
 #[allow(dead_code)]
+#[target_feature(enable = "avx2")]
 /// Pack 64bytes integers into 32 bytes
 pub unsafe fn _mm256_cvtepi64_epi32x(v: __m256i) -> __m128i {
     let vf = _mm256_castsi256_ps(v);
@@ -98,7 +106,8 @@ pub unsafe fn _mm256_cvtepi64_epi32x(v: __m256i) -> __m128i {
     return _mm_castps_si128(packed);
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "avx2")]
 /// Multiplies unsigned 64 bytes integers, takes only lower half after multiplication, do not care about overflow
 /// Formally it is *_mm256_mullo_epu64*
 pub unsafe fn _mm256_mul_epu64(ab: __m256i, cd: __m256i) -> __m256i {
@@ -125,14 +134,16 @@ pub unsafe fn _mm256_mul_epu64(ab: __m256i, cd: __m256i) -> __m256i {
     return _mm256_add_epi64(high, ac);
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "avx2")]
 /// Multiplies unsigned 64 bytes integers, takes only lower half after multiplication, do not care about overflow
 /// Formally it is *_mm_mullo_epi64*
 pub unsafe fn _mm256_mul_epi64(ab: __m256i, cd: __m256i) -> __m256i {
     _mm256_mul_epu64(ab, cd)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "avx2")]
 /// Negates i64
 pub unsafe fn _mm256_neg_epi64(a: __m256i) -> __m256i {
     let k = _mm256_setzero_si256();

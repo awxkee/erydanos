@@ -20,6 +20,7 @@ use crate::{
 };
 
 #[inline]
+#[target_feature(enable = "avx2")]
 /// Computes tan function with error bound *ULP 1.5*
 pub unsafe fn _mm256_tan_pd(d: __m256d) -> __m256d {
     let q = _mm256_rint_pd(_mm256_mul_pd(

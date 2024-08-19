@@ -9,7 +9,8 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Computes fmod for f32
 pub unsafe fn _mm_fmod_ps(a: __m128, b: __m128) -> __m128 {
     let dividend_vec = a;

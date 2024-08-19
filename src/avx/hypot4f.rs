@@ -14,6 +14,7 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 #[inline]
+#[target_feature(enable = "avx2")]
 /// Method that computes 4D Euclidian distance *ULP 0.6666*
 pub unsafe fn _mm256_hypot4_ps(x: __m256, y: __m256, z: __m256, w: __m256) -> __m256 {
     let x = _mm256_abs_ps(x);
@@ -61,6 +62,7 @@ pub unsafe fn _mm256_hypot4_ps(x: __m256, y: __m256, z: __m256, w: __m256) -> __
 
 /// Method that computes 4D Euclidian distance *ULP 0.6666*, skipping Inf, Nan checks
 #[inline]
+#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_hypot4_fast_ps(x: __m256, y: __m256, z: __m256, w: __m256) -> __m256 {
     let x = _mm256_abs_ps(x);
     let y = _mm256_abs_ps(y);

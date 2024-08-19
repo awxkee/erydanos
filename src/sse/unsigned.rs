@@ -10,86 +10,100 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *greater than or equal to* unsigned 8,
 pub unsafe fn _mm_cmpge_epu8(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpeq_epi8(_mm_max_epu8(a, b), a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *less than or equal to* unsigned 8,
 pub unsafe fn _mm_cmple_epu8(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpge_epu8(b, a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *greater than* unsigned 8,
 pub unsafe fn _mm_cmpgt_epu8(a: __m128i, b: __m128i) -> __m128i {
     _mm_xor_si128(_mm_cmple_epu8(a, b), _mm_set1_epi8(-1))
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *less than* unsigned 8,
 pub unsafe fn _mm_cmplt_epu8(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpgt_epu8(b, a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *greater than or equal to* unsigned 16,
 pub unsafe fn _mm_cmpge_epu16(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpeq_epi16(_mm_max_epu16(a, b), a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *less than or equal to* unsigned 16,
 pub unsafe fn _mm_cmple_epu16(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpge_epu16(b, a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *greater than* unsigned 16,
 pub unsafe fn _mm_cmpgt_epu16(a: __m128i, b: __m128i) -> __m128i {
     _mm_xor_si128(_mm_cmple_epu16(a, b), _mm_set1_epi16(-1))
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *less than* unsigned 16,
 pub unsafe fn _mm_cmplt_epu16(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpgt_epu16(b, a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *greater than or equal to* unsigned 32,
 pub unsafe fn _mm_cmpge_epu32(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpeq_epi32(_mm_max_epu32(a, b), a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *less than or equal to* unsigned 32,
 pub unsafe fn _mm_cmple_epu32(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpge_epu16(b, a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *greater than* unsigned 32,
 pub unsafe fn _mm_cmpgt_epu32(a: __m128i, b: __m128i) -> __m128i {
     _mm_xor_si128(_mm_cmple_epu32(a, b), _mm_set1_epi32(-1))
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *less than* unsigned 16,
 pub unsafe fn _mm_cmplt_epu32(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpgt_epu32(b, a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Takes max for epi64
 pub unsafe fn _mm_max_epi64x(a: __m128i, b: __m128i) -> __m128i {
     let mask = _mm_cmpgt_epi64(a, b);
     _mm_blendv_epi8(b, a, mask)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Takes min for epi64
 pub unsafe fn _mm_min_epi64x(a: __m128i, b: __m128i) -> __m128i {
     let mut mask = _mm_cmpgt_epi64(a, b);
@@ -98,19 +112,22 @@ pub unsafe fn _mm_min_epi64x(a: __m128i, b: __m128i) -> __m128i {
     _mm_blendv_epi8(b, a, mask)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *greater than or equal to* unsigned 64 bytes integers,
 pub unsafe fn _mm_cmpge_epu64(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpeq_epi64(_mm_max_epi64x(a, b), a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *less than or equal to* unsigned 64 bytes integers,
 pub unsafe fn _mm_cmple_epu64(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpge_epu64(b, a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *greater than* unsigned 64 bytes integers,
 pub unsafe fn _mm_cmpgt_epu64(a: __m128i, b: __m128i) -> __m128i {
     let b = _mm_xor_si128(b, a);
@@ -120,25 +137,29 @@ pub unsafe fn _mm_cmpgt_epu64(a: __m128i, b: __m128i) -> __m128i {
     _mm_shuffle_epi32::<SHUFFLE_FLAG>(_mm_srai_epi32::<31>(b))
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *less than* unsigned 64 bytes integers,
 pub unsafe fn _mm_cmplt_epu64(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpgt_epu64(b, a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *greater than or equal to* signed 64 bytes integers,
 pub unsafe fn _mm_cmpge_epi64(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpeq_epi64(_mm_max_epi64x(a, b), a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *less than or equal to* signed 64 bytes integers,
 pub unsafe fn _mm_cmple_epi64(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpge_epi64(b, a)
 }
 
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 /// Compare *less than* signed 64 bytes integers,
 pub unsafe fn _mm_cmplt_epi64(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpgt_epi64(b, a)

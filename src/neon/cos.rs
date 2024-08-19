@@ -14,6 +14,7 @@ use crate::sin::{
 };
 
 #[inline]
+#[target_feature(enable = "neon")]
 pub unsafe fn vcosq_f64(d: float64x2_t) -> float64x2_t {
     let half_1 = vdupq_n_f64(0.5f64);
     let pt = vcvtaq_s64_f64(vsubq_f64(

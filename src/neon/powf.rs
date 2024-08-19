@@ -12,6 +12,7 @@ use crate::visnotintegralq_f32;
 use std::arch::aarch64::*;
 
 #[inline]
+#[target_feature(enable = "neon")]
 /// Computes pow function *ULP 2.0*
 pub unsafe fn vpowq_f32(d: float32x4_t, n: float32x4_t) -> float32x4_t {
     let mut c = vexpq_f32(vmulq_f32(n, vlnq_f32(vabsq_f32(d))));
@@ -31,6 +32,7 @@ pub unsafe fn vpowq_f32(d: float32x4_t, n: float32x4_t) -> float32x4_t {
 
 /// Method that computes pow skipping Inf, Nan checks, *ULP 2.0*
 #[inline]
+#[target_feature(enable = "neon")]
 pub unsafe fn vpowq_fast_f32(d: float32x4_t, n: float32x4_t) -> float32x4_t {
     let mut c = vexpq_fast_f32(vmulq_f32(n, vlnq_fast_f32(d)));
     c = vcopysignq_f32(c, d);

@@ -16,6 +16,7 @@ use crate::{
 };
 
 #[inline]
+#[target_feature(enable = "avx2")]
 /// Computes pow function *ULP 2.0*
 pub unsafe fn _mm256_pow_pd(d: __m256d, n: __m256d) -> __m256d {
     let mut c = _mm256_exp_pd(_mm256_mul_pd(n, _mm256_ln_pd(_mm256_abs_pd(d))));
@@ -43,6 +44,7 @@ pub unsafe fn _mm256_pow_pd(d: __m256d, n: __m256d) -> __m256d {
 
 /// Method that computes pow skipping Inf, Nan checks, *ULP 2.0*
 #[inline]
+#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_pow_fast_pd(d: __m256d, n: __m256d) -> __m256d {
     let mut c = _mm256_expq_fast_pd(_mm256_mul_pd(n, _mm256_ln_fast_pd(d)));
     c = _mm256_copysign_pd(c, d);

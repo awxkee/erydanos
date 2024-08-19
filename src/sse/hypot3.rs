@@ -13,6 +13,7 @@ use std::arch::x86_64::*;
 use crate::{_mm_abs_pd, _mm_eqzero_pd, _mm_isinf_pd, _mm_isnan_pd, _mm_mlaf_pd, _mm_select_pd};
 
 #[inline]
+#[target_feature(enable = "sse4.1")]
 /// Method that computes 3D Euclidian distance *ULP 0.66667*
 pub unsafe fn _mm_hypot3_pd(x: __m128d, y: __m128d, z: __m128d) -> __m128d {
     let x = _mm_abs_pd(x);
@@ -40,8 +41,9 @@ pub unsafe fn _mm_hypot3_pd(x: __m128d, y: __m128d, z: __m128d) -> __m128d {
     ret
 }
 
-/// Method that computes 3D Euclidian distance *ULP 0.66667*, skipping Inf, Nan checks
 #[inline]
+#[target_feature(enable = "sse4.1")]
+/// Method that computes 3D Euclidian distance *ULP 0.66667*, skipping Inf, Nan checks
 pub unsafe fn _mm_hypot3_fast_pd(x: __m128d, y: __m128d, z: __m128d) -> __m128d {
     let x = _mm_abs_pd(x);
     let y = _mm_abs_pd(y);

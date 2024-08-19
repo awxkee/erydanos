@@ -27,7 +27,8 @@ unsafe fn integer_pow_1_3(hx: uint32x4_t) -> uint32x4_t {
 }
 
 /// Takes cube root from value *ULP 1.5*, Skipping Nan, Inf checks
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "neon")]
 pub unsafe fn vcbrtq_fast_f32(x: float32x4_t) -> float32x4_t {
     let mut ui = vreinterpretq_u32_f32(x);
     let hx = vandq_u32(ui, vdupq_n_u32(0x7fffffff));
@@ -46,7 +47,8 @@ pub unsafe fn vcbrtq_fast_f32(x: float32x4_t) -> float32x4_t {
 }
 
 /// Takes cube root from value *ULP 1.5*
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "neon")]
 pub unsafe fn vcbrtq_f32(x: float32x4_t) -> float32x4_t {
     let c1 = vcbrtq_fast_f32(x);
     let mut v = vbslq_f32(visinfq_f32(x), vdupq_n_f32(f32::INFINITY), c1);

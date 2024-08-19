@@ -9,6 +9,7 @@ use crate::neon::general::{visinfq_f32, visnanq_f32, vmlafq_f32};
 use std::arch::aarch64::*;
 
 #[inline]
+#[target_feature(enable = "neon")]
 /// Method that computes 2D Euclidian distance *ULP 0.6667*
 pub unsafe fn vhypotq_f32(x: float32x4_t, y: float32x4_t) -> float32x4_t {
     let x = vabsq_f32(x);
@@ -29,6 +30,7 @@ pub unsafe fn vhypotq_f32(x: float32x4_t, y: float32x4_t) -> float32x4_t {
 
 /// Method that computes 2D Euclidian distance *ULP 0.6667*, skipping Inf, Nan checks
 #[inline]
+#[target_feature(enable = "neon")]
 pub unsafe fn vhypotq_fast_f32(x: float32x4_t, y: float32x4_t) -> float32x4_t {
     let x = vabsq_f32(x);
     let y = vabsq_f32(y);

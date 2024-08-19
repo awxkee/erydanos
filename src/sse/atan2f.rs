@@ -12,7 +12,8 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 /// Computes atan for Y,X
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_atan2_ps(y: __m128, x: __m128) -> __m128 {
     let zero_x_mask = _mm_eqzero_ps(x);
     let yx = _mm_atan_ps(_mm_div_ps(y, x));

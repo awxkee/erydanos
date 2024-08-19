@@ -9,7 +9,8 @@ use crate::neon::general::{vcopysignq_f64, visinfq_f64};
 use std::arch::aarch64::*;
 
 /// Shorter and significantly faster reach skipping Inf checks
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "neon")]
 pub unsafe fn vceilq_f64(x: float64x2_t) -> float64x2_t {
     let mut fr = vsubq_f64(x, vcvtq_f64_s64(vcvtq_s64_f64(x)));
     let ones = vdupq_n_f64(1f64);
@@ -18,7 +19,8 @@ pub unsafe fn vceilq_f64(x: float64x2_t) -> float64x2_t {
 }
 
 /// Ceil's complaints with f64 specification with infinity checks
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "neon")]
 pub unsafe fn vceilq_ie_f64(x: float64x2_t) -> float64x2_t {
     let mut fr = vsubq_f64(x, vcvtq_f64_s64(vcvtq_s64_f64(x)));
     let ones = vdupq_n_f64(1f64);

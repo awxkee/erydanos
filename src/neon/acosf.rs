@@ -9,7 +9,8 @@ use std::arch::aarch64::*;
 use crate::vasinq_f32;
 
 /// Computes arccos, error bound *ULP 2.0*
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "neon")]
 pub unsafe fn vacosq_f32(x: float32x4_t) -> float32x4_t {
     let gt_zero = vcgtzq_f32(x);
     let x_a = vabsq_f32(x);

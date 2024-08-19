@@ -13,17 +13,18 @@ use std::arch::x86_64::*;
 use crate::{_mm256_abs_ps, _mm256_asin_ps, _mm256_select_ps};
 
 /// Computes arccos, error bound *ULP 2.0*
-#[inline(always)]
+#[inline]
+#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_acos_ps(x: __m256) -> __m256 {
     let gt_zero = _mm256_cmp_ps::<_CMP_GT_OS>(x, _mm256_setzero_ps());
     let x_a = _mm256_abs_ps(x);
     let x_asin = _mm256_asin_ps(x_a);
     let v_pi = _mm256_set1_ps(std::f32::consts::FRAC_PI_2);
-    return _mm256_select_ps(
+    _mm256_select_ps(
         gt_zero,
         _mm256_sub_ps(v_pi, x_asin),
         _mm256_add_ps(v_pi, x_asin),
-    );
+    )
 }
 
 #[cfg(test)]

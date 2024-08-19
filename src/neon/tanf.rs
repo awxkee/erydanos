@@ -14,6 +14,7 @@ use crate::tanf::{
 };
 
 #[inline]
+#[target_feature(enable = "neon")]
 /// Computes tan with error bound *ULP 2.0*
 pub unsafe fn vtanq_f32(d: float32x4_t) -> float32x4_t {
     let q = vcvtaq_s32_f32(vmulq_n_f32(d, std::f32::consts::FRAC_2_PI));

@@ -14,10 +14,7 @@ pub mod atan;
 pub mod atan2;
 pub mod atan2f;
 pub mod atanf;
-#[cfg(all(
-    any(target_arch = "x86_64", target_arch = "x86"),
-    target_feature = "avx2"
-))]
+#[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
 mod avx;
 pub mod cbrt;
 pub mod cbrtf;
@@ -42,10 +39,7 @@ mod hypot4f;
 mod hypotf;
 mod ln;
 mod lnf;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(any(target_arch = "aarch64", target_arch = "arm"))]
 mod neon;
 mod pow;
 mod powf;
@@ -54,10 +48,7 @@ mod sin;
 mod sinf;
 mod sqrt;
 mod sqrtf;
-#[cfg(all(
-    any(target_arch = "x86_64", target_arch = "x86"),
-    target_feature = "sse4.1"
-))]
+#[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
 mod sse;
 mod tan;
 mod tanf;
@@ -100,23 +91,14 @@ pub use sqrtf::esqrtf;
 pub use tan::etan;
 pub use tanf::etanf;
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(any(target_arch = "aarch64", target_arch = "arm"))]
 pub use neon::*;
 
 use crate::hypot3::ehypot3;
-#[cfg(all(
-    any(target_arch = "x86_64", target_arch = "x86"),
-    target_feature = "sse4.1"
-))]
+#[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
 pub use sse::*;
 
-#[cfg(all(
-    any(target_arch = "x86_64", target_arch = "x86"),
-    target_feature = "avx2"
-))]
+#[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
 pub use avx::*;
 
 pub trait Sqrtf {
