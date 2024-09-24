@@ -5,10 +5,7 @@
  * // license that can be found in the LICENSE file.
  */
 use crate::generalf::{mlaf, rintk};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vtanq_f64;
 use crate::sin::{PI_A2, PI_B2};
 #[cfg(all(
@@ -16,10 +13,7 @@ use crate::sin::{PI_A2, PI_B2};
     target_feature = "sse4.1"
 ))]
 use crate::{_mm_extract_pd, _mm_tan_pd};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f64, vgetq_lane_f64};
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
 use std::arch::x86::*;
@@ -70,10 +64,7 @@ fn do_tan(d: f64) -> f64 {
     c
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline(always)]
 fn do_tan_neon(d: f64) -> f64 {
     unsafe {
@@ -98,10 +89,7 @@ fn do_tan_sse(d: f64) -> f64 {
 /// Computes tan with error bound *ULP 2.0*
 pub fn etan(d: f64) -> f64 {
     let mut _dispatcher: fn(f64) -> f64 = do_tan;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_tan_neon;
     }

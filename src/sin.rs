@@ -6,20 +6,14 @@
  */
 
 use crate::generalf::{mlaf, rintk, IsNegZero};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vsinq_f64;
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
     target_feature = "sse4.1"
 ))]
 use crate::{_mm_extract_pd, _mm_sin_pd};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::*;
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
 use std::arch::x86::*;
@@ -67,10 +61,7 @@ fn do_sin(d: f64) -> f64 {
     u
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 fn do_sin_neon(d: f64) -> f64 {
     unsafe {
         let ld = vdupq_n_f64(d);
@@ -94,10 +85,7 @@ fn do_sin_sse(d: f64) -> f64 {
 #[inline]
 pub fn esin(d: f64) -> f64 {
     let mut _dispatcher: fn(f64) -> f64 = do_sin;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_sin_neon;
     }

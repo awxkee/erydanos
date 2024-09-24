@@ -4,10 +4,7 @@
  * // Use of this source code is governed by a BSD-style
  * // license that can be found in the LICENSE file.
  */
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::vhypot3q_f64;
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
@@ -15,10 +12,7 @@ use crate::vhypot3q_f64;
 ))]
 use crate::{_mm_extract_pd, _mm_hypot3_pd};
 use crate::{eabs, efmax};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::*;
 #[cfg(all(target_feature = "sse4.1", target_arch = "x86"))]
 use std::arch::x86::*;
@@ -55,10 +49,7 @@ fn do_hypot3(x: f64, y: f64, z: f64) -> f64 {
     }
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline]
 fn do_hypot3_neon(x: f64, y: f64, z: f64) -> f64 {
     unsafe {
@@ -87,10 +78,7 @@ fn do_hypot3_sse(x: f64, y: f64, z: f64) -> f64 {
 #[inline]
 pub fn ehypot3(x: f64, y: f64, z: f64) -> f64 {
     let mut _dispatcher: fn(f64, f64, f64) -> f64 = do_hypot3;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_hypot3_neon;
     }

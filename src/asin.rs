@@ -5,18 +5,12 @@
  * // license that can be found in the LICENSE file.
  */
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f64, vgetq_lane_f64};
 
 use crate::abs::eabs;
 use crate::generalf::{copysignk, mlaf};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vasinq_f64;
 use crate::sqrt::esqrt;
 #[cfg(all(
@@ -92,10 +86,7 @@ fn do_asin(c: f64) -> f64 {
 }
 
 #[inline]
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 fn do_asin_neon(d: f64) -> f64 {
     unsafe {
         let ld = vdupq_n_f64(d);
@@ -119,10 +110,7 @@ fn do_asin_sse(d: f64) -> f64 {
 /// Computes arcsin, error bound *ULP 2.0*
 pub fn easin(d: f64) -> f64 {
     let mut _dispatcher: fn(f64) -> f64 = do_asin;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_asin_neon;
     }

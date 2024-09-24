@@ -10,20 +10,14 @@ use crate::efloor;
 use crate::exp::eexp;
 use crate::generalf::{copysignk, is_neg_infinite, is_pos_infinite};
 use crate::ln::eln;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vpowq_f64;
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
     target_feature = "sse4.1"
 ))]
 use crate::{_mm_extract_pd, _mm_pow_pd};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f64, vgetq_lane_f64};
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
 use std::arch::x86::*;
@@ -49,10 +43,7 @@ fn do_pow(d: f64, n: f64) -> f64 {
     }
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline]
 fn do_pow_neon(d: f64, n: f64) -> f64 {
     unsafe {
@@ -79,10 +70,7 @@ fn do_pow_sse(d: f64, n: f64) -> f64 {
 #[inline]
 pub fn epow(d: f64, n: f64) -> f64 {
     let mut _dispatcher: fn(f64, f64) -> f64 = do_pow;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_pow_neon;
     }

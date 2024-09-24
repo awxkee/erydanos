@@ -4,16 +4,10 @@
  * // Use of this source code is governed by a BSD-style
  * // license that can be found in the LICENSE file.
  */
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::vhypot4q_f64;
 use crate::{eabs, efmax};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::*;
 
 #[inline]
@@ -47,10 +41,7 @@ fn do_hypot4(x: f64, y: f64, z: f64, w: f64) -> f64 {
     }
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline]
 fn do_hypot4_neon(x: f64, y: f64, z: f64, w: f64) -> f64 {
     unsafe {
@@ -66,10 +57,7 @@ fn do_hypot4_neon(x: f64, y: f64, z: f64, w: f64) -> f64 {
 #[inline]
 pub fn ehypot4(x: f64, y: f64, z: f64, w: f64) -> f64 {
     let mut _dispatcher: fn(f64, f64, f64, f64) -> f64 = do_hypot4;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_hypot4_neon;
     }

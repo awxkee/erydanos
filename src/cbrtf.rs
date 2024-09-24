@@ -5,10 +5,7 @@
  * // license that can be found in the LICENSE file.
  */
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
 use std::ops::{Add, Div, Mul};
 
@@ -17,10 +14,7 @@ use std::ops::{Add, Div, Mul};
     target_feature = "sse4.1"
 ))]
 use crate::_mm_cbrt_ps;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vcbrtq_f32;
 use num_traits::AsPrimitive;
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
@@ -68,10 +62,7 @@ fn do_cbrtf(x: f32) -> f32 {
     t
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline]
 fn do_cbrtf_neon(d: f32) -> f32 {
     unsafe {
@@ -98,10 +89,7 @@ fn do_cbrt_sse(d: f32) -> f32 {
 #[inline]
 pub fn ecbrtf(x: f32) -> f32 {
     let mut _dispatcher: fn(f32) -> f32 = do_cbrtf;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_cbrtf_neon;
     }

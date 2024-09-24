@@ -5,17 +5,11 @@
  * // license that can be found in the LICENSE file.
  */
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f64, vgetq_lane_f64};
 
 use crate::cbrtf::halley_cbrt;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vcbrtq_f64;
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
@@ -54,10 +48,7 @@ fn do_ecbrt(x: f64) -> f64 {
     c3
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 fn do_cbrt_neon(d: f64) -> f64 {
     unsafe {
         let ld = vdupq_n_f64(d);
@@ -79,10 +70,7 @@ fn do_cbrt_sse(d: f64) -> f64 {
 /// Computes Cube Root *ULP 2.0*
 pub fn ecbrt(x: f64) -> f64 {
     let mut _dispatcher: fn(f64) -> f64 = do_ecbrt;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_cbrt_neon;
     }

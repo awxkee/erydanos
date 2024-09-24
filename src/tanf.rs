@@ -11,15 +11,9 @@
 use crate::_mm_tan_ps;
 use crate::cosf::{PI_A_F, PI_B_F, PI_C_F, PI_D_F};
 use crate::generalf::{mlaf, rintfk, IsNegZero};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vtanq_f32;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
 use std::arch::x86::*;
@@ -74,10 +68,7 @@ fn do_tanf(d: f32) -> f32 {
     c
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline(always)]
 fn do_tanf_neon(d: f32) -> f32 {
     unsafe {
@@ -102,10 +93,7 @@ fn do_tanf_sse(d: f32) -> f32 {
 #[inline]
 pub fn etanf(d: f32) -> f32 {
     let mut _dispatcher: fn(f32) -> f32 = do_tanf;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_tanf_neon;
     }

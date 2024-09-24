@@ -10,7 +10,7 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 use crate::{
-    _mm_abs_pd, _mm_copysign_pd, _mm_exp_pd, _mm_exp_fast_pd, _mm_isinf_pd, _mm_isnan_pd,
+    _mm_abs_pd, _mm_copysign_pd, _mm_exp_fast_pd, _mm_exp_pd, _mm_isinf_pd, _mm_isnan_pd,
     _mm_isneginf_pd, _mm_isnotintegral_pd, _mm_ln_fast_pd, _mm_ln_pd, _mm_select_pd,
 };
 

@@ -12,16 +12,10 @@
 use crate::_mm_asin_ps;
 use crate::abs::eabsf;
 use crate::generalf::{copysignfk, mlaf};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vasinq_f32;
 use crate::sqrtf::esqrtf;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
 use std::arch::x86::*;
@@ -78,10 +72,7 @@ fn do_asinf(c: f32) -> f32 {
 }
 
 #[inline]
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 fn do_asinf_neon(d: f32) -> f32 {
     unsafe {
         let ld = vdupq_n_f32(d);
@@ -107,10 +98,7 @@ fn do_asinf_sse(d: f32) -> f32 {
 #[inline]
 pub fn easinf(d: f32) -> f32 {
     let mut _dispatcher: fn(f32) -> f32 = do_asinf;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_asinf_neon;
     }

@@ -6,20 +6,14 @@
  */
 use crate::abs::eabs;
 use crate::asin::easin;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::vacosq_f64;
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
     target_feature = "sse4.1"
 ))]
 use crate::{_mm_acos_pd, _mm_extract_pd};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::*;
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
 use std::arch::x86::*;
@@ -37,10 +31,7 @@ fn do_acos(x: f64) -> f64 {
 }
 
 #[inline]
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 fn do_acos_neon(d: f64) -> f64 {
     unsafe {
         let ld = vdupq_n_f64(d);
@@ -64,10 +55,7 @@ fn do_acos_sse(d: f64) -> f64 {
 /// Computes acos for an argument, *ULP 2.0*
 pub fn eacos(d: f64) -> f64 {
     let mut _dispatcher: fn(f64) -> f64 = do_acos;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_acos_neon;
     }

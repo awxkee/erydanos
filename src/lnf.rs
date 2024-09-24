@@ -11,15 +11,9 @@
 ))]
 use crate::_mm_ln_ps;
 use crate::generalf::{ilogb2kf, ldexp3kf, mlaf};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vlnq_f32;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
 use std::arch::x86::*;
@@ -56,10 +50,7 @@ fn do_ln(d: f32) -> f32 {
     };
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline]
 fn do_lnf_neon(x: f32) -> f32 {
     unsafe {
@@ -85,10 +76,7 @@ fn do_ln_sse(d: f32) -> f32 {
 /// Computes natural logarithm for an argument *ULP 1.0*
 pub fn elnf(d: f32) -> f32 {
     let mut _dispatcher: fn(f32) -> f32 = do_ln;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_lnf_neon;
     }

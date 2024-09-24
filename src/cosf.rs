@@ -5,10 +5,7 @@
  * // license that can be found in the LICENSE file.
  */
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
 
 #[cfg(all(
@@ -17,10 +14,7 @@ use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
 ))]
 use crate::_mm_cos_ps;
 use crate::generalf::{mlaf, rintfk, IsNegZero};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vcosq_f32;
 use crate::sinf::{SIN_POLY_1_S, SIN_POLY_2_S, SIN_POLY_3_S, SIN_POLY_4_S, SIN_POLY_5_S};
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
@@ -60,10 +54,7 @@ fn do_cos(d: f32) -> f32 {
     u
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline]
 fn do_cos_neon(d: f32) -> f32 {
     unsafe {
@@ -91,10 +82,7 @@ fn do_cos_sse(d: f32) -> f32 {
 /// The error bound of the returned value is `1.5 ULP`.
 pub fn ecosf(d: f32) -> f32 {
     let mut _dispatcher: fn(f32) -> f32 = do_cos;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_cos_neon;
     }

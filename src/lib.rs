@@ -39,10 +39,7 @@ mod hypot4f;
 mod hypotf;
 mod ln;
 mod lnf;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 mod neon;
 mod pow;
 mod powf;
@@ -94,10 +91,7 @@ pub use sqrtf::esqrtf;
 pub use tan::etan;
 pub use tanf::etanf;
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 pub use neon::*;
 
 use crate::hypot3::ehypot3;

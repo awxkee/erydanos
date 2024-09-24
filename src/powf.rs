@@ -15,15 +15,9 @@ use crate::efloorf;
 use crate::expf::eexpf;
 use crate::generalf::{copysignfk, is_neg_infinitef, is_pos_infinitef};
 use crate::lnf::elnf;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vpowq_f32;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
 use std::arch::x86::*;
@@ -49,10 +43,7 @@ fn do_pow(d: f32, n: f32) -> f32 {
     }
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline]
 pub fn do_pow_neon(d: f32, n: f32) -> f32 {
     unsafe {
@@ -80,10 +71,7 @@ pub fn do_pow_sse(d: f32, n: f32) -> f32 {
 #[inline]
 pub fn epowf(d: f32, n: f32) -> f32 {
     let mut _dispatcher: fn(f32, f32) -> f32 = do_pow;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_pow_neon;
     }

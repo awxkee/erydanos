@@ -8,10 +8,7 @@
 use crate::abs::eabs;
 use crate::fmax::efmax;
 use crate::fmin::efmin;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vhypotq_f64;
 use crate::sqrt::esqrt;
 #[cfg(all(
@@ -19,10 +16,7 @@ use crate::sqrt::esqrt;
     target_feature = "sse4.1"
 ))]
 use crate::{_mm_extract_pd, _mm_hypot_pd};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::*;
 #[cfg(all(target_feature = "sse4.1", target_arch = "x86"))]
 use std::arch::x86::*;
@@ -49,10 +43,7 @@ fn do_hypot(x: f64, y: f64) -> f64 {
     }
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline]
 fn do_hypot_neon(x: f64, y: f64) -> f64 {
     unsafe {
@@ -78,10 +69,7 @@ fn do_hypot_sse(x: f64, y: f64) -> f64 {
 /// Computes 2D Euclidian Distance *ULP 0.5*
 pub fn ehypot(x: f64, y: f64) -> f64 {
     let mut _dispatcher: fn(f64, f64) -> f64 = do_hypot;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_hypot_neon;
     }

@@ -6,15 +6,9 @@
  */
 
 use crate::generalf::mlaf;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vatanq_f32;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f32, vgetq_lane_f32};
 
 pub const ATAN_POLY_1_F: f32 = 0.999999871164f32;
@@ -62,10 +56,7 @@ fn do_atanf(d: f32) -> f32 {
     u
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline(always)]
 fn do_atanf_neon(y: f32) -> f32 {
     unsafe {
@@ -78,10 +69,7 @@ fn do_atanf_neon(y: f32) -> f32 {
 #[inline]
 pub fn eatanf(d: f32) -> f32 {
     let mut _dispatcher: fn(f32) -> f32 = do_atanf;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_atanf_neon;
     }

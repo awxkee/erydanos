@@ -6,20 +6,14 @@
  */
 
 use crate::generalf::{mlaf, pow2i, rintk};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vexpq_f64;
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
     target_feature = "sse4.1"
 ))]
 use crate::{_mm_exp_pd, _mm_extract_pd};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f64, vgetq_lane_f64};
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
 use std::arch::x86::*;
@@ -106,10 +100,7 @@ pub fn do_exp_coeff(d: f64, coeff: &Vec<f64>) -> f64 {
     r
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline]
 fn do_exp_neon(d: f64) -> f64 {
     unsafe {
@@ -134,10 +125,7 @@ fn do_exp_sse(d: f64) -> f64 {
 /// Computes exp with error bound *ULP 1.0*
 pub fn eexp(d: f64) -> f64 {
     let mut _dispatcher: fn(f64) -> f64 = do_exp;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_exp_neon;
     }

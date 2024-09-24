@@ -5,17 +5,11 @@
  * // license that can be found in the LICENSE file.
  */
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::{vdupq_n_f64, vgetq_lane_f64};
 
 use crate::generalf::{ilogb2k, ldexp3k, mlaf};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::neon::vlnq_f64;
 #[cfg(all(
     any(target_arch = "x86_64", target_arch = "x86"),
@@ -65,10 +59,7 @@ fn do_ln(d: f64) -> f64 {
     };
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline]
 fn do_ln_neon(x: f64) -> f64 {
     unsafe {
@@ -92,10 +83,7 @@ fn do_ln_sse(x: f64) -> f64 {
 /// Computes natural logarithm *ULP 3.5*
 pub fn eln(d: f64) -> f64 {
     let mut _dispatcher: fn(f64) -> f64 = do_ln;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_ln_neon;
     }

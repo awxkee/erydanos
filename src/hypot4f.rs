@@ -9,16 +9,10 @@
     target_feature = "sse4.1"
 ))]
 use crate::_mm_hypot4_ps;
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use crate::vhypot4q_f32;
 use crate::{eabsf, efmaxf};
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 use std::arch::aarch64::*;
 #[cfg(all(target_arch = "x86", target_feature = "sse4.1"))]
 use std::arch::x86::*;
@@ -56,10 +50,7 @@ fn do_hypot4f(x: f32, y: f32, z: f32, w: f32) -> f32 {
     }
 }
 
-#[cfg(all(
-    any(target_arch = "aarch64", target_arch = "arm"),
-    target_feature = "neon"
-))]
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
 #[inline]
 fn do_hypot4f_neon(x: f32, y: f32, z: f32, w: f32) -> f32 {
     unsafe {
@@ -90,10 +81,7 @@ fn do_hypot4f_sse(x: f32, y: f32, z: f32, w: f32) -> f32 {
 #[inline]
 pub fn ehypot4f(x: f32, y: f32, z: f32, w: f32) -> f32 {
     let mut _dispatcher: fn(f32, f32, f32, f32) -> f32 = do_hypot4f;
-    #[cfg(all(
-        any(target_arch = "aarch64", target_arch = "arm"),
-        target_feature = "neon"
-    ))]
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     {
         _dispatcher = do_hypot4f_neon;
     }
