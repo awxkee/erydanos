@@ -65,14 +65,12 @@ pub unsafe fn _mm_neg_pd(f: __m128d) -> __m128d {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Returns flag value is Infinity
 pub unsafe fn _mm_isinf_pd(d: __m128d) -> __m128d {
-    return _mm_cmpeq_pd(_mm_abs_pd(d), _mm_set1_pd(f64::INFINITY));
+    _mm_cmpeq_pd(_mm_abs_pd(d), _mm_set1_pd(f64::INFINITY))
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Extracts f64 value
 pub unsafe fn _mm_extract_pd<const IMM: i32>(d: __m128d) -> f64 {
     #[cfg(target_arch = "x86_64")]
@@ -99,42 +97,36 @@ pub unsafe fn _mm_extract_pd<const IMM: i32>(d: __m128d) -> f64 {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Returns true flag if value is NaN
 pub unsafe fn _mm_isnan_pd(d: __m128d) -> __m128d {
     return _mm_cmpneq_pd(d, d);
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Returns flag value is zero
 pub unsafe fn _mm_eqzero_pd(d: __m128d) -> __m128d {
     return _mm_cmpeq_pd(d, _mm_set1_pd(0.));
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// If mask then `true_vals` otherwise `false_val`
 pub unsafe fn _mm_select_pd(mask: __m128d, true_vals: __m128d, false_vals: __m128d) -> __m128d {
     _mm_blendv_pd(false_vals, true_vals, mask)
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// If mask then `true_vals` otherwise `false_val`
 pub unsafe fn _mm_selecti_pd(mask: __m128i, true_vals: __m128d, false_vals: __m128d) -> __m128d {
     _mm_blendv_pd(false_vals, true_vals, _mm_castsi128_pd(mask))
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Returns flag value is lower than zero
 pub unsafe fn _mm_ltzero_pd(d: __m128d) -> __m128d {
     return _mm_cmplt_pd(d, _mm_set1_pd(0.));
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Computes 2^n in f64 form for signed 64 bits integers, returns f64 in bits
 pub unsafe fn _mm_pow2i_epi64(n: __m128i) -> __m128i {
     let j = _mm_slli_epi64::<52>(_mm_add_epi64(n, _mm_set1_epi32(0x3ff)));
@@ -142,7 +134,6 @@ pub unsafe fn _mm_pow2i_epi64(n: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Converts double into signed 64 bytes int with truncation
 pub unsafe fn _mm_cvtpd_epi64(v: __m128d) -> __m128i {
     let k51 = _mm_set1_epi64x(51 + 0x3FF);
@@ -183,16 +174,13 @@ pub unsafe fn _mm_cvtpd_epi64(v: __m128d) -> __m128i {
         biased_exp,
     ));
     // Saturate overflow values to INT64_MIN.
-    let bounded = _mm_or_si128(
+    _mm_or_si128(
         _mm_and_si128(upper_bound_mask, sign_adjusted),
         _mm_andnot_si128(upper_bound_mask, _mm_set1_epi64x(i64::MAX)),
-    );
-
-    return bounded;
+    )
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Converts double into unsigned int 64 bytes with truncation
 pub unsafe fn _mm_cvtpd_epu64(v: __m128d) -> __m128i {
     let k51 = _mm_set1_epi64x(51 + 0x3FF);
@@ -240,7 +228,7 @@ pub unsafe fn _mm_cvtpd_epu64(v: __m128d) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
+
 /// Rounds and takes integral part 64 bytes from double
 pub unsafe fn _mm_rint_pd(f: __m128d) -> __m128i {
     const ROUNDING_FLAG: i32 = _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC;
@@ -249,7 +237,6 @@ pub unsafe fn _mm_rint_pd(f: __m128d) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Copies sign from `y` to `x`
 pub unsafe fn _mm_copysign_pd(x: __m128d, y: __m128d) -> __m128d {
     _mm_castsi128_pd(_mm_xor_si128(
@@ -259,21 +246,18 @@ pub unsafe fn _mm_copysign_pd(x: __m128d, y: __m128d) -> __m128d {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Returns flag value is Neg Infinity
 pub unsafe fn _mm_isneginf_pd(d: __m128d) -> __m128d {
     return _mm_cmpeq_pd(d, _mm_set1_pd(f64::NEG_INFINITY));
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Checks if arguments is integral value
 pub unsafe fn _mm_isintegral_pd(d: __m128d) -> __m128d {
     return _mm_cmpeq_pd(d, _mm_floor_pd(d));
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Checks if arguments is not integral value
 pub unsafe fn _mm_isnotintegral_pd(d: __m128d) -> __m128d {
     return _mm_cmpneq_pd(d, _mm_floor_pd(d));

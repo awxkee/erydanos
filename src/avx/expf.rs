@@ -17,7 +17,6 @@ use crate::{_mm256_mlaf_ps, _mm256_pow2if_epi32, _mm256_rint_ps, _mm256_select_p
 
 /// Computes exp for an argument *ULP 1.0*
 #[inline]
-#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_exp_ps(d: __m256) -> __m256 {
     let mut r = _mm256_expq_fast_ps(d);
     r = _mm256_select_ps(
@@ -35,7 +34,6 @@ pub unsafe fn _mm256_exp_ps(d: __m256) -> __m256 {
 
 /// Method that computes exp skipping Inf, Nan checks error bound *ULP 1.0*
 #[inline]
-#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_expq_fast_ps(d: __m256) -> __m256 {
     let q = _mm256_rint_ps(_mm256_mul_ps(d, _mm256_set1_ps(std::f32::consts::LOG2_E)));
     let qf = _mm256_cvtepi32_ps(q);

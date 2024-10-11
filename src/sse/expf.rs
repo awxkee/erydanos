@@ -17,7 +17,6 @@ use std::arch::x86_64::*;
 
 /// Computes exp for an argument *ULP 1.0*
 #[inline]
-#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_exp_ps(d: __m128) -> __m128 {
     let mut r = _mm_exp_fast_ps(d);
     r = _mm_select_ps(_mm_cmplt_ps(d, _mm_set1_ps(-87f32)), _mm_setzero_ps(), r);
@@ -31,7 +30,6 @@ pub unsafe fn _mm_exp_ps(d: __m128) -> __m128 {
 
 /// Method that computes exp skipping Inf, Nan checks error bound *ULP 1.0*
 #[inline]
-#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_exp_fast_ps(d: __m128) -> __m128 {
     let q = _mm_rint_ps(_mm_mul_ps(d, _mm_set1_ps(std::f32::consts::LOG2_E)));
     let qf = _mm_cvtepi32_ps(q);

@@ -14,14 +14,12 @@ use crate::shuffle::_mm_shuffle;
 use crate::{_mm_cmplt_epi64, _mm_max_epi64x, _mm_min_epi64x};
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Mod function for i64
 pub unsafe fn _mm_abs_epi64(a: __m128i) -> __m128i {
     _mm_select_epi64(_mm_cmplt_epi64(a, _mm_setzero_si128()), _mm_neg_epi64(a), a)
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Negates i64
 pub unsafe fn _mm_neg_epi64(a: __m128i) -> __m128i {
     let k = _mm_setzero_si128();
@@ -29,7 +27,6 @@ pub unsafe fn _mm_neg_epi64(a: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Select true or false values based on masks for i64
 pub unsafe fn _mm_select_epi64(mask: __m128i, true_vals: __m128i, false_vals: __m128i) -> __m128i {
     _mm_castpd_si128(_mm_blendv_pd(
@@ -40,7 +37,6 @@ pub unsafe fn _mm_select_epi64(mask: __m128i, true_vals: __m128i, false_vals: __
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Multiplies unsigned 64 bytes integers, takes only lower half after multiplication, do not care about overflow
 /// Formally it is *_mm_mullo_epu64*
 pub unsafe fn _mm_mul_epu64(ab: __m128i, cd: __m128i) -> __m128i {
@@ -68,7 +64,6 @@ pub unsafe fn _mm_mul_epu64(ab: __m128i, cd: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Multiplies unsigned 64 bytes integers, takes only lower half after multiplication, do not care about overflow
 /// Formally it is *_mm_mullo_epi64*
 pub unsafe fn _mm_mul_epi64(ab: __m128i, cd: __m128i) -> __m128i {
@@ -76,7 +71,6 @@ pub unsafe fn _mm_mul_epi64(ab: __m128i, cd: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_blendv_epi64(xmm0: __m128i, xmm1: __m128i, mask: __m128i) -> __m128i {
     _mm_castpd_si128(_mm_blendv_pd(
         _mm_castsi128_pd(xmm0),
@@ -86,13 +80,11 @@ pub unsafe fn _mm_blendv_epi64(xmm0: __m128i, xmm1: __m128i, mask: __m128i) -> _
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_setr_epi64x(a: i64, b: i64) -> __m128i {
     _mm_set_epi64x(b, a)
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 #[rustfmt::skip]
 /// Converts signed 64-bit integers into double
 pub unsafe fn _mm_cvtepi64_pd(v: __m128i) -> __m128d {
@@ -109,7 +101,6 @@ pub unsafe fn _mm_cvtepi64_pd(v: __m128i) -> __m128d {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Shifts packed 64-bit integers in a right by the amount specified by the corresponding element in count while shifting in zeros,
 pub unsafe fn _mm_srlv_epi64x(a: __m128i, count: __m128i) -> __m128i {
     let shift_low = _mm_srl_epi64(a, count); // high 64 is garbage
@@ -124,7 +115,6 @@ pub unsafe fn _mm_srlv_epi64x(a: __m128i, count: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Shifts packed 64-bit integers in a left by the amount specified by the corresponding element in count while shifting in zeros, and returns the result.
 pub unsafe fn _mm_sllv_epi64x(a: __m128i, count: __m128i) -> __m128i {
     let shift_low = _mm_sll_epi64(a, count); // high 64 is garbage
@@ -139,7 +129,6 @@ pub unsafe fn _mm_sllv_epi64x(a: __m128i, count: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Extracts i64 value
 pub unsafe fn _mm_extract_epi64x<const IMM: i32>(d: __m128i) -> i64 {
     #[cfg(target_arch = "x86_64")]
@@ -165,7 +154,6 @@ pub unsafe fn _mm_extract_epi64x<const IMM: i32>(d: __m128i) -> i64 {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Bitwise not epi64
 pub unsafe fn _mm_not_epi64(a: __m128i) -> __m128i {
     #[allow(overflowing_literals)]
@@ -174,17 +162,14 @@ pub unsafe fn _mm_not_epi64(a: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Arithmetic shift for i64, shifting with sign bits
 pub unsafe fn _mm_srai_epi64x<const IMM8: i32>(a: __m128i) -> __m128i {
     let m = _mm_set1_epi64x(1 << (64 - 1));
     let x = _mm_srli_epi64::<IMM8>(a);
-    let result = _mm_sub_epi64(_mm_xor_si128(x, m), m); //result = x^m - m
-    return result;
+    _mm_sub_epi64(_mm_xor_si128(x, m), m)
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Packs integers 64 bits use unsigned saturation
 pub unsafe fn _mm_packus_epi64(a: __m128i, b: __m128i) -> __m128i {
     let i32_max = _mm_set1_epi64x(u32::MAX as i64);
@@ -198,7 +183,6 @@ pub unsafe fn _mm_packus_epi64(a: __m128i, b: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Packs integers 64 bits use signed saturation
 pub unsafe fn _mm_packs_epi64(a: __m128i, b: __m128i) -> __m128i {
     let i32_max = _mm_set1_epi64x(i32::MAX as i64);
@@ -213,7 +197,6 @@ pub unsafe fn _mm_packs_epi64(a: __m128i, b: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Packs integers 64 bits use truncating, only lower half of i64 will be used
 pub unsafe fn _mm_packts_epi64(a: __m128i, b: __m128i) -> __m128i {
     const SHUFFLE_MASK: i32 = _mm_shuffle(3, 1, 2, 0);

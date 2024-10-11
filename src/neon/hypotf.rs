@@ -34,7 +34,9 @@ pub unsafe fn vhypotq_fast_f32(x: float32x4_t, y: float32x4_t) -> float32x4_t {
     let y = vabsq_f32(y);
     let max = vmaxq_f32(x, y);
     let min = vminq_f32(x, y);
+    let is_min_zero = vceqzq_f32(min);
     let r = vdivq_f32(min, max);
-    let ret = vmulq_f32(vsqrtq_f32(vmlafq_f32(r, r, vdupq_n_f32(1f32))), max);
+    let mut ret = vmulq_f32(vsqrtq_f32(vmlafq_f32(r, r, vdupq_n_f32(1f32))), max);
+    ret = vbslq_f32(is_min_zero, vdupq_n_f32(0f32), ret);
     ret
 }

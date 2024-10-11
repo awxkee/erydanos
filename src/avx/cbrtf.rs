@@ -40,7 +40,6 @@ unsafe fn integer_pow_1_3(hx: __m256i) -> __m256i {
 
 /// Takes cube root from value *ULP 1.5*, Skipping NaN, Inf checks
 #[inline]
-#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_cbrt_fast_ps(x: __m256) -> __m256 {
     let mut ui = _mm256_castps_si256(x);
     let hx = _mm256_and_si256(ui, _mm256_set1_epi32(0x7fffffff));
@@ -62,7 +61,6 @@ pub unsafe fn _mm256_cbrt_fast_ps(x: __m256) -> __m256 {
 
 /// Takes cube root from value *ULP 1.5*
 #[inline]
-#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_cbrt_ps(x: __m256) -> __m256 {
     let c1 = _mm256_cbrt_fast_ps(x);
     let mut v = _mm256_select_ps(_mm256_isinf_ps(x), _mm256_set1_ps(f32::INFINITY), c1);

@@ -11,7 +11,6 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Founds n in x=a+𝑛ln(2), |a| <= 1
 pub unsafe fn _mm_ilogb2kq_ps(d: __m128) -> __m128i {
     _mm_sub_epi32(
@@ -24,7 +23,6 @@ pub unsafe fn _mm_ilogb2kq_ps(d: __m128) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Founds a in x=a+𝑛ln(2), |a| <= 1
 pub unsafe fn _mm_ldexp3kq_ps(x: __m128, n: __m128i) -> __m128 {
     _mm_castsi128_ps(_mm_add_epi32(_mm_castps_si128(x), _mm_slli_epi32::<23>(n)))
@@ -32,7 +30,6 @@ pub unsafe fn _mm_ldexp3kq_ps(x: __m128, n: __m128i) -> __m128 {
 
 #[cfg(not(target_feature = "fma"))]
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Computes `b*c + a` using fma when available
 pub unsafe fn _mm_prefer_fma_ps(a: __m128, b: __m128, c: __m128) -> __m128 {
     return _mm_add_ps(_mm_mul_ps(b, c), a);
@@ -40,14 +37,12 @@ pub unsafe fn _mm_prefer_fma_ps(a: __m128, b: __m128, c: __m128) -> __m128 {
 
 #[cfg(target_feature = "fma")]
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Computes `b*c + a` using fma when available
 pub unsafe fn _mm_prefer_fma_ps(a: __m128, b: __m128, c: __m128) -> __m128 {
     return _mm_fmadd_ps(b, c, a);
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Computes `a*b + c`
 pub unsafe fn _mm_mlaf_ps(a: __m128, b: __m128, c: __m128) -> __m128 {
     _mm_prefer_fma_ps(c, b, a)
@@ -60,49 +55,42 @@ pub unsafe fn _mm_select_ps(mask: __m128, true_vals: __m128, false_vals: __m128)
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// If mask then `true_vals` otherwise `false_val`
 pub unsafe fn _mm_selecti_ps(mask: __m128i, true_vals: __m128, false_vals: __m128) -> __m128 {
     _mm_blendv_ps(false_vals, true_vals, _mm_castsi128_ps(mask))
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Returns flag value is Infinity
 pub unsafe fn _mm_isinf_ps(d: __m128) -> __m128 {
     _mm_cmpeq_ps(_mm_abs_ps(d), _mm_set1_ps(f32::INFINITY))
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Returns flag value is Neg Infinity
 pub unsafe fn _mm_isneginf_ps(d: __m128) -> __m128 {
     _mm_cmpeq_ps(d, _mm_set1_ps(f32::NEG_INFINITY))
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Returns flag value is zero
 pub unsafe fn _mm_eqzero_ps(d: __m128) -> __m128 {
     _mm_cmpeq_ps(d, _mm_set1_ps(0.))
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Returns flag value is lower than zero
 pub unsafe fn _mm_ltzero_ps(d: __m128) -> __m128 {
     _mm_cmplt_ps(d, _mm_set1_ps(0.))
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Returns true flag if value is NaN
 pub unsafe fn _mm_isnan_ps(d: __m128) -> __m128 {
     _mm_cmpneq_ps(d, d)
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Modulus operator for f32
 pub unsafe fn _mm_abs_ps(f: __m128) -> __m128 {
     _mm_castsi128_ps(_mm_andnot_si128(
@@ -112,14 +100,12 @@ pub unsafe fn _mm_abs_ps(f: __m128) -> __m128 {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Negates value
 pub unsafe fn _mm_neg_ps(f: __m128) -> __m128 {
     _mm_sub_ps(_mm_set1_ps(0.), f)
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Rounds and takes integral part from float
 pub unsafe fn _mm_rint_ps(f: __m128) -> __m128i {
     const ROUNDING_FLAG: i32 = _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC;
@@ -128,7 +114,6 @@ pub unsafe fn _mm_rint_ps(f: __m128) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Computes 2^n in f32 form for signed 32 bits integers, returns f32 in bits
 pub unsafe fn _mm_pow2if_epi32(n: __m128i) -> __m128i {
     let j = _mm_slli_epi32::<23>(_mm_add_epi32(n, _mm_set1_epi32(0x7f)));
@@ -136,7 +121,6 @@ pub unsafe fn _mm_pow2if_epi32(n: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Copies sign from `y` to `x`
 pub unsafe fn _mm_copysign_ps(x: __m128, y: __m128) -> __m128 {
     _mm_castsi128_ps(_mm_xor_si128(
@@ -146,14 +130,13 @@ pub unsafe fn _mm_copysign_ps(x: __m128, y: __m128) -> __m128 {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
+
 /// Checks if arguments is integral value
 pub unsafe fn _mm_isintegral_ps(d: __m128) -> __m128 {
     _mm_cmpeq_ps(d, _mm_floor_ps(d))
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Checks if arguments is not integral value
 pub unsafe fn _mm_isnotintegral_ps(d: __m128) -> __m128 {
     _mm_cmpneq_ps(d, _mm_floor_ps(d))

@@ -15,7 +15,6 @@ use crate::{
 };
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Method that computes 2D Euclidian distance *ULP 0.6667*
 pub unsafe fn _mm256_hypot_ps(x: __m256, y: __m256) -> __m256 {
     let x = _mm256_abs_ps(x);
@@ -39,17 +38,18 @@ pub unsafe fn _mm256_hypot_ps(x: __m256, y: __m256) -> __m256 {
 
 /// Method that computes 2D Euclidian distance *ULP 0.6667*, skipping Inf, Nan checks
 #[inline]
-#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_hypot_fast_ps(x: __m256, y: __m256) -> __m256 {
     let x = _mm256_abs_ps(x);
     let y = _mm256_abs_ps(y);
     let max = _mm256_max_ps(x, y);
     let min = _mm256_min_ps(x, y);
     let r = _mm256_div_ps(min, max);
-    let ret = _mm256_mul_ps(
+    let is_min_zero = _mm256_eqzero_ps(min);
+    let mut ret = _mm256_mul_ps(
         _mm256_sqrt_ps(_mm256_mlaf_ps(r, r, _mm256_set1_ps(1f32))),
         max,
     );
+    ret = _mm256_select_ps(is_min_zero, _mm256_setzero_ps(), ret);
     ret
 }
 

@@ -72,6 +72,8 @@ pub unsafe fn vhypot4q_fast_f32(
     let norm_z = vmulq_f32(z, recip_max);
     let norm_w = vmulq_f32(w, recip_max);
 
+    let is_max_zero = vceqzq_f32(max);
+
     let accumulator = vmlafq_f32(
         norm_x,
         norm_x,
@@ -82,7 +84,8 @@ pub unsafe fn vhypot4q_fast_f32(
         ),
     );
 
-    let ret = vmulq_f32(vsqrtq_f32(accumulator), max);
+    let mut ret = vmulq_f32(vsqrtq_f32(accumulator), max);
+    ret = vbslq_f32(is_max_zero, vdupq_n_f32(0f32), ret);
     ret
 }
 

@@ -2,7 +2,7 @@ workspace = { members = ["app"] }
 
 [package]
 name = "erydanos"
-version = "0.2.15"
+version = "0.2.16"
 edition = "2021"
 description = "Optimized routines for ARM NEON and SSE"
 readme = "README.md"

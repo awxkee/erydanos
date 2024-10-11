@@ -13,7 +13,6 @@ use std::arch::x86_64::*;
 use crate::{_mm_abs_pd, _mm_eqzero_pd, _mm_isinf_pd, _mm_isnan_pd, _mm_mlaf_pd, _mm_select_pd};
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Method that computes 2D Euclidian distance *ULP 0.6667*
 pub unsafe fn _mm_hypot_pd(x: __m128d, y: __m128d) -> __m128d {
     let x = _mm_abs_pd(x);
@@ -33,7 +32,6 @@ pub unsafe fn _mm_hypot_pd(x: __m128d, y: __m128d) -> __m128d {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Method that computes 2D Euclidian distance *ULP 0.6667*, skipping Inf, Nan checks
 pub unsafe fn _mm_hypot_fast_pd(x: __m128d, y: __m128d) -> __m128d {
     let x = _mm_abs_pd(x);
@@ -41,7 +39,9 @@ pub unsafe fn _mm_hypot_fast_pd(x: __m128d, y: __m128d) -> __m128d {
     let max = _mm_max_pd(x, y);
     let min = _mm_min_pd(x, y);
     let r = _mm_div_pd(min, max);
-    let ret = _mm_mul_pd(_mm_sqrt_pd(_mm_mlaf_pd(r, r, _mm_set1_pd(1.))), max);
+    let is_min_zero = _mm_eqzero_pd(min);
+    let mut ret = _mm_mul_pd(_mm_sqrt_pd(_mm_mlaf_pd(r, r, _mm_set1_pd(1.))), max);
+    ret = _mm_select_pd(is_min_zero, _mm_setzero_pd(), ret);
     ret
 }
 

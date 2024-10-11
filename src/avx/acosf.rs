@@ -14,7 +14,6 @@ use crate::{_mm256_abs_ps, _mm256_asin_ps, _mm256_select_ps};
 
 /// Computes arccos, error bound *ULP 2.0*
 #[inline]
-#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_acos_ps(x: __m256) -> __m256 {
     let gt_zero = _mm256_cmp_ps::<_CMP_GT_OS>(x, _mm256_setzero_ps());
     let x_a = _mm256_abs_ps(x);

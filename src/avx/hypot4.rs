@@ -13,7 +13,6 @@ use std::arch::x86_64::*;
 use crate::{_mm256_abs_pd, _mm256_isinf_pd, _mm256_isnan_pd, _mm256_mlaf_pd, _mm256_select_pd};
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Method that computes 4D Euclidian distance *ULP 0.6666*
 pub unsafe fn _mm256_hypot4_pd(x: __m256d, y: __m256d, z: __m256d, w: __m256d) -> __m256d {
     let x = _mm256_abs_pd(x);
@@ -61,7 +60,6 @@ pub unsafe fn _mm256_hypot4_pd(x: __m256d, y: __m256d, z: __m256d, w: __m256d) -
 
 /// Method that computes 4D Euclidian distance *ULP 0.6666*, skipping Inf, Nan checks
 #[inline]
-#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_hypot4_fast_pd(x: __m256d, y: __m256d, z: __m256d, w: __m256d) -> __m256d {
     let x = _mm256_abs_pd(x);
     let y = _mm256_abs_pd(y);
@@ -74,6 +72,8 @@ pub unsafe fn _mm256_hypot4_fast_pd(x: __m256d, y: __m256d, z: __m256d, w: __m25
     let norm_z = _mm256_mul_pd(z, recip_max);
     let norm_w = _mm256_mul_pd(w, recip_max);
 
+    let is_max_zero = _mm256_cmp_pd::<_CMP_EQ_OS>(max, _mm256_setzero_pd());
+
     let accumulator = _mm256_mlaf_pd(
         norm_x,
         norm_x,
@@ -83,7 +83,8 @@ pub unsafe fn _mm256_hypot4_fast_pd(x: __m256d, y: __m256d, z: __m256d, w: __m25
             _mm256_mlaf_pd(norm_z, norm_z, _mm256_mul_pd(norm_w, norm_w)),
         ),
     );
-    let ret = _mm256_mul_pd(_mm256_sqrt_pd(accumulator), max);
+    let mut ret = _mm256_mul_pd(_mm256_sqrt_pd(accumulator), max);
+    ret = _mm256_select_pd(is_max_zero, _mm256_setzero_pd(), ret);
     ret
 }
 

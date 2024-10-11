@@ -39,7 +39,6 @@ unsafe fn integer_pow_1_3(hx: __m128i) -> __m128i {
 
 /// Takes cube root from value *ULP 1.5*, Skipping NaN, Inf checks
 #[inline]
-#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_cbrt_fast_ps(x: __m128) -> __m128 {
     let mut ui = _mm_castps_si128(x);
     let hx = _mm_and_si128(ui, _mm_set1_epi32(0x7fffffff));
@@ -61,7 +60,6 @@ pub unsafe fn _mm_cbrt_fast_ps(x: __m128) -> __m128 {
 
 /// Takes cube root from value *ULP 1.5*
 #[inline]
-#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_cbrt_ps(x: __m128) -> __m128 {
     let c1 = _mm_cbrt_fast_ps(x);
     let mut v = _mm_select_ps(_mm_isinf_ps(x), _mm_set1_ps(f32::INFINITY), c1);

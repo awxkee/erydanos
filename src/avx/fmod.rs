@@ -11,7 +11,6 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Computes fmod for f64
 pub unsafe fn _mm256_fmod_pd(a: __m256d, b: __m256d) -> __m256d {
     let dividend_vec = a;

@@ -49,13 +49,16 @@ pub unsafe fn vhypot3q_fast_f64(x: float64x2_t, y: float64x2_t, z: float64x2_t) 
     let norm_y = vmulq_f64(y, recip_max);
     let norm_z = vmulq_f64(z, recip_max);
 
+    let is_max_zero = vceqzq_f64(max);
+
     let accumulator = vmlafq_f64(
         norm_x,
         norm_x,
         vmlafq_f64(norm_y, norm_y, vmulq_f64(norm_z, norm_z)),
     );
 
-    let ret = vmulq_f64(vsqrtq_f64(accumulator), max);
+    let mut ret = vmulq_f64(vsqrtq_f64(accumulator), max);
+    ret = vbslq_f64(is_max_zero, vdupq_n_f64(0f64), ret);
     ret
 }
 

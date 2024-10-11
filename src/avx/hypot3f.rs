@@ -15,7 +15,6 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Method that computes 3D Euclidian distance *ULP 0.6667*
 pub unsafe fn _mm256_hypot3_ps(x: __m256, y: __m256, z: __m256) -> __m256 {
     let x = _mm256_abs_ps(x);
@@ -51,7 +50,6 @@ pub unsafe fn _mm256_hypot3_ps(x: __m256, y: __m256, z: __m256) -> __m256 {
 
 /// Method that computes 3D Euclidian distance *ULP 0.6666*, skipping Inf, Nan checks
 #[inline]
-#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_hypot3_fast_ps(x: __m256, y: __m256, z: __m256) -> __m256 {
     let x = _mm256_abs_ps(x);
     let y = _mm256_abs_ps(y);
@@ -62,12 +60,15 @@ pub unsafe fn _mm256_hypot3_fast_ps(x: __m256, y: __m256, z: __m256) -> __m256 {
     let norm_y = _mm256_mul_ps(y, recip_max);
     let norm_z = _mm256_mul_ps(z, recip_max);
 
+    let is_max_zero = _mm256_eqzero_ps(max);
+
     let accumulator = _mm256_mlaf_ps(
         norm_x,
         norm_x,
         _mm256_mlaf_ps(norm_y, norm_y, _mm256_mul_ps(norm_z, norm_z)),
     );
-    let ret = _mm256_mul_ps(_mm256_sqrt_ps(accumulator), max);
+    let mut ret = _mm256_mul_ps(_mm256_sqrt_ps(accumulator), max);
+    ret = _mm256_select_ps(is_max_zero, _mm256_setzero_ps(), ret);
     ret
 }
 

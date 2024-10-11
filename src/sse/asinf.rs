@@ -16,7 +16,6 @@ use std::arch::x86_64::*;
 
 /// Computes arcsin, error bound *ULP 2.0*
 #[inline]
-#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_asin_ps(d: __m128) -> __m128 {
     let ones = _mm_set1_ps(1f32);
     let ca = _mm_abs_ps(d);

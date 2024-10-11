@@ -6,14 +6,12 @@ use std::arch::x86_64::*;
 
 #[cfg(not(target_feature = "fma"))]
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Computes `b*c + a` using fma when available
 pub unsafe fn _mm256_prefer_fma_pd(a: __m256d, b: __m256d, c: __m256d) -> __m256d {
     _mm256_add_pd(_mm256_mul_pd(b, c), a)
 }
 
 #[cfg(target_feature = "fma")]
-#[target_feature(enable = "avx2")]
 #[inline]
 /// Computes `b*c + a` using fma when available
 pub unsafe fn _mm256_prefer_fma_pd(a: __m256d, b: __m256d, c: __m256d) -> __m256d {
@@ -21,14 +19,12 @@ pub unsafe fn _mm256_prefer_fma_pd(a: __m256d, b: __m256d, c: __m256d) -> __m256
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Computes `a*b + c`
 pub unsafe fn _mm256_mlaf_pd(a: __m256d, b: __m256d, c: __m256d) -> __m256d {
     _mm256_prefer_fma_pd(c, b, a)
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Modulus operator for f64
 pub unsafe fn _mm256_abs_pd(f: __m256d) -> __m256d {
     _mm256_castsi256_pd(_mm256_andnot_si256(
@@ -38,14 +34,12 @@ pub unsafe fn _mm256_abs_pd(f: __m256d) -> __m256d {
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Negates value
 pub unsafe fn _mm256_neg_pd(f: __m256d) -> __m256d {
     _mm256_sub_pd(_mm256_set1_pd(0.), f)
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Rounds and takes integral part 64 bytes from double
 pub unsafe fn _mm256_rint_pd(f: __m256d) -> __m256i {
     let k = _mm256_round_pd::<0x00>(f);
@@ -53,7 +47,6 @@ pub unsafe fn _mm256_rint_pd(f: __m256d) -> __m256i {
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 // Converts double to integers 64
 pub unsafe fn _mm256_cvtpd_epu64x(v: __m256d) -> __m256i {
     let k_k513ff = _mm256_set1_epi64x(51 + 0x3FF);
@@ -100,7 +93,6 @@ pub unsafe fn _mm256_cvtpd_epu64x(v: __m256d) -> __m256i {
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 // Converts double to integers 64
 pub unsafe fn _mm256_cvtpd_epi64x(v: __m256d) -> __m256i {
     let k_513ff = _mm256_set1_epi64x(51 + 0x3FF);
@@ -153,21 +145,18 @@ pub unsafe fn _mm256_cvtpd_epi64x(v: __m256d) -> __m256i {
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Returns true flag if value is NaN
 pub unsafe fn _mm256_isnan_pd(d: __m256d) -> __m256d {
     _mm256_cmp_pd::<_CMP_NEQ_OS>(d, d)
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Returns flag value is Infinity
 pub unsafe fn _mm256_isinf_pd(d: __m256d) -> __m256d {
     _mm256_cmp_pd::<_CMP_EQ_OS>(_mm256_abs_pd(d), _mm256_set1_pd(f64::INFINITY))
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 // Converts integers 64 to double
 pub unsafe fn _mm256_cvtepi64_pdx(v: __m256i) -> __m256d {
     let magic_i_lo = _mm256_set1_epi64x(0x4330000000000000); // 2^52               encoded as floating-point
@@ -183,21 +172,18 @@ pub unsafe fn _mm256_cvtepi64_pdx(v: __m256i) -> __m256d {
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// If mask then `true_vals` otherwise `false_val`
 pub unsafe fn _mm256_select_pd(mask: __m256d, true_vals: __m256d, false_vals: __m256d) -> __m256d {
     _mm256_blendv_pd(false_vals, true_vals, mask)
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// If mask then `true_vals` otherwise `false_val`
 pub unsafe fn _mm256_selecti_pd(mask: __m256i, true_vals: __m256d, false_vals: __m256d) -> __m256d {
     _mm256_blendv_pd(false_vals, true_vals, _mm256_castsi256_pd(mask))
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Extracts f64 value
 pub unsafe fn _mm256_extract_pd<const IMM: i32>(d: __m256d) -> f64 {
     #[cfg(target_arch = "x86_64")]
@@ -226,7 +212,6 @@ pub unsafe fn _mm256_extract_pd<const IMM: i32>(d: __m256d) -> f64 {
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Founds n in x=a+𝑛ln(2), |a| <= 1
 pub unsafe fn _mm256_ilogb2k_pd(d: __m256d) -> __m256i {
     _mm256_sub_epi64(
@@ -239,7 +224,6 @@ pub unsafe fn _mm256_ilogb2k_pd(d: __m256d) -> __m256i {
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Founds a in x=a+𝑛ln(2), |a| <= 1
 pub unsafe fn _mm256_ldexp3k_pd(x: __m256d, n: __m256i) -> __m256d {
     _mm256_castsi256_pd(_mm256_add_epi64(
@@ -249,7 +233,6 @@ pub unsafe fn _mm256_ldexp3k_pd(x: __m256d, n: __m256i) -> __m256d {
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Computes 2^n in f64 form for signed 64 bits integers, returns f64 in bits
 pub unsafe fn _mm256_pow2i_epi64(n: __m256i) -> __m256i {
     let j = _mm256_slli_epi64::<52>(_mm256_add_epi64(n, _mm256_set1_epi32(0x3ff)));
@@ -257,7 +240,6 @@ pub unsafe fn _mm256_pow2i_epi64(n: __m256i) -> __m256i {
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Copies sign from `y` to `x`
 pub unsafe fn _mm256_copysign_pd(x: __m256d, y: __m256d) -> __m256d {
     _mm256_castsi256_pd(_mm256_xor_si256(
@@ -273,14 +255,12 @@ pub unsafe fn _mm256_copysign_pd(x: __m256d, y: __m256d) -> __m256d {
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Returns flag value is Neg Infinity
 pub unsafe fn _mm256_isneginf_pd(d: __m256d) -> __m256d {
     _mm256_cmp_pd::<_CMP_EQ_OS>(d, _mm256_set1_pd(f64::NEG_INFINITY))
 }
 
 #[inline]
-#[target_feature(enable = "avx2")]
 /// Checks if arguments is not integral value
 pub unsafe fn _mm256_isnotintegral_pd(d: __m256d) -> __m256d {
     _mm256_cmp_pd::<_CMP_NEQ_OS>(d, _mm256_floor_pd(d))

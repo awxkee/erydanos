@@ -18,7 +18,6 @@ use crate::{_mm_cvtepi64_pd, _mm_mlaf_pd, _mm_select_pd};
 
 /// Computes exp for an argument *ULP 2.0*
 #[inline]
-#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_exp_pd(d: __m128d) -> __m128d {
     let mut r = _mm_exp_fast_pd(d);
     r = _mm_select_pd(_mm_cmplt_pd(d, _mm_set1_pd(-964f64)), _mm_setzero_pd(), r);
@@ -32,7 +31,6 @@ pub unsafe fn _mm_exp_pd(d: __m128d) -> __m128d {
 
 /// Method that computes exp skipping Inf, Nan checks error bound *ULP 2.0*
 #[inline]
-#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_exp_fast_pd(d: __m128d) -> __m128d {
     let q = _mm_rint_pd(_mm_mul_pd(d, _mm_set1_pd(R_LN2)));
     let qf = _mm_cvtepi64_pd(q);

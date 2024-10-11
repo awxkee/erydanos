@@ -13,7 +13,6 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Add unsigned 32 bytes integers using saturation
 pub unsafe fn _mm_adds_epu64(a: __m128i, b: __m128i) -> __m128i {
     let result = _mm_add_epi64(a, b);
@@ -27,7 +26,6 @@ pub unsafe fn _mm_adds_epu64(a: __m128i, b: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Add signed 64 bytes integers usign saturation
 pub unsafe fn _mm_adds_epi64(lhs: __m128i, rhs: __m128i) -> __m128i {
     let res = _mm_add_epi64(lhs, rhs);
@@ -40,7 +38,6 @@ pub unsafe fn _mm_adds_epi64(lhs: __m128i, rhs: __m128i) -> __m128i {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// subtract signed integers 64 using saturation
 pub unsafe fn _mm_subs_epi64(lhs: __m128i, rhs: __m128i) -> __m128i {
     let res = _mm_sub_epi64(lhs, rhs);

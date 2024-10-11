@@ -13,7 +13,6 @@ use std::arch::x86_64::*;
 use crate::{_mm_abs_pd, _mm_eqzero_pd, _mm_isinf_pd, _mm_isnan_pd, _mm_mlaf_pd, _mm_select_pd};
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Method that computes 3D Euclidian distance *ULP 0.66667*
 pub unsafe fn _mm_hypot3_pd(x: __m128d, y: __m128d, z: __m128d) -> __m128d {
     let x = _mm_abs_pd(x);
@@ -42,7 +41,6 @@ pub unsafe fn _mm_hypot3_pd(x: __m128d, y: __m128d, z: __m128d) -> __m128d {
 }
 
 #[inline]
-#[target_feature(enable = "sse4.1")]
 /// Method that computes 3D Euclidian distance *ULP 0.66667*, skipping Inf, Nan checks
 pub unsafe fn _mm_hypot3_fast_pd(x: __m128d, y: __m128d, z: __m128d) -> __m128d {
     let x = _mm_abs_pd(x);
@@ -54,12 +52,15 @@ pub unsafe fn _mm_hypot3_fast_pd(x: __m128d, y: __m128d, z: __m128d) -> __m128d 
     let norm_y = _mm_mul_pd(y, recip_max);
     let norm_z = _mm_mul_pd(z, recip_max);
 
+    let is_max_zero = _mm_eqzero_pd(max);
+
     let accumulator = _mm_mlaf_pd(
         norm_x,
         norm_x,
         _mm_mlaf_pd(norm_y, norm_y, _mm_mul_pd(norm_z, norm_z)),
     );
-    let ret = _mm_mul_pd(_mm_sqrt_pd(accumulator), max);
+    let mut ret = _mm_mul_pd(_mm_sqrt_pd(accumulator), max);
+    ret = _mm_select_pd(is_max_zero, _mm_setzero_pd(), ret);
     ret
 }
 

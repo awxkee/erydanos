@@ -20,7 +20,6 @@ use crate::{_mm_abs_pd, _mm_mlaf_pd, _mm_neg_pd, _mm_select_pd};
 
 /// Computes Atan function with *ULP 2.0* error
 #[inline]
-#[target_feature(enable = "sse4.1")]
 pub unsafe fn _mm_atan_pd(x: __m128d) -> __m128d {
     let negative_mask = _mm_cmplt_pd(x, _mm_setzero_pd());
     let d = _mm_abs_pd(x);

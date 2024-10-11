@@ -13,7 +13,6 @@ use crate::{_mm256_atan_pd, _mm256_select_pd};
 
 /// Computes atan for Y,X
 #[inline]
-#[target_feature(enable = "avx2")]
 pub unsafe fn _mm256_atan2_pd(y: __m256d, x: __m256d) -> __m256d {
     let zero_x_mask = _mm256_cmp_pd::<_CMP_EQ_OS>(x, _mm256_setzero_pd());
     let yx = _mm256_atan_pd(_mm256_div_pd(y, x));
