@@ -10,9 +10,7 @@ use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
-use crate::expf::{
-    EXP_POLY_1_S, EXP_POLY_2_S, EXP_POLY_3_S, EXP_POLY_4_S, EXP_POLY_5_S, L2L_F, L2U_F,
-};
+use crate::expf::{EXP_POLY_1_S, EXP_POLY_2_S, EXP_POLY_3_S, L2L_F, L2U_F};
 use crate::{_mm256_mlaf_ps, _mm256_pow2if_epi32, _mm256_rint_ps, _mm256_select_ps};
 
 /// Computes exp for an argument *ULP 1.0*
@@ -41,9 +39,7 @@ pub unsafe fn _mm256_expq_fast_ps(d: __m256) -> __m256 {
     let mut r = _mm256_mlaf_ps(qf, _mm256_set1_ps(-L2U_F), d);
     r = _mm256_mlaf_ps(qf, _mm256_set1_ps(-L2L_F), r);
     let f = _mm256_mul_ps(r, r);
-    let mut u = _mm256_set1_ps(EXP_POLY_5_S);
-    u = _mm256_mlaf_ps(u, f, _mm256_set1_ps(EXP_POLY_4_S));
-    u = _mm256_mlaf_ps(u, f, _mm256_set1_ps(EXP_POLY_3_S));
+    let mut u = _mm256_set1_ps(EXP_POLY_3_S);
     u = _mm256_mlaf_ps(u, f, _mm256_set1_ps(EXP_POLY_2_S));
     u = _mm256_mlaf_ps(u, f, _mm256_set1_ps(EXP_POLY_1_S));
     let u = _mm256_add_ps(

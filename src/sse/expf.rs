@@ -5,9 +5,7 @@
  * // license that can be found in the LICENSE file.
  */
 
-use crate::expf::{
-    EXP_POLY_1_S, EXP_POLY_2_S, EXP_POLY_3_S, EXP_POLY_4_S, EXP_POLY_5_S, L2L_F, L2U_F,
-};
+use crate::expf::{EXP_POLY_1_S, EXP_POLY_2_S, EXP_POLY_3_S, L2L_F, L2U_F};
 use crate::sse::generalf::_mm_rint_ps;
 use crate::{_mm_mlaf_ps, _mm_pow2if_epi32, _mm_select_ps};
 #[cfg(target_arch = "x86")]
@@ -37,9 +35,7 @@ pub unsafe fn _mm_exp_fast_ps(d: __m128) -> __m128 {
     let mut r = _mm_mlaf_ps(qf, _mm_set1_ps(-L2U_F), d);
     r = _mm_mlaf_ps(qf, _mm_set1_ps(-L2L_F), r);
     let f = _mm_mul_ps(r, r);
-    let mut u = _mm_set1_ps(EXP_POLY_5_S);
-    u = _mm_mlaf_ps(u, f, _mm_set1_ps(EXP_POLY_4_S));
-    u = _mm_mlaf_ps(u, f, _mm_set1_ps(EXP_POLY_3_S));
+    let mut u = _mm_set1_ps(EXP_POLY_3_S);
     u = _mm_mlaf_ps(u, f, _mm_set1_ps(EXP_POLY_2_S));
     u = _mm_mlaf_ps(u, f, _mm_set1_ps(EXP_POLY_1_S));
     let u = _mm_add_ps(

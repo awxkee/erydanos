@@ -5,9 +5,7 @@
  * // license that can be found in the LICENSE file.
  */
 
-use crate::expf::{
-    EXP_POLY_1_S, EXP_POLY_2_S, EXP_POLY_3_S, EXP_POLY_4_S, EXP_POLY_5_S, L2L_F, L2U_F,
-};
+use crate::expf::{EXP_POLY_1_S, EXP_POLY_2_S, EXP_POLY_3_S, L2L_F, L2U_F};
 use crate::neon::general::{vmlafq_f32, vpow2ifq_s32};
 use std::arch::aarch64::*;
 
@@ -33,9 +31,7 @@ pub unsafe fn vexpq_fast_f32(d: float32x4_t) -> float32x4_t {
     let mut r = vmlafq_f32(qf, vdupq_n_f32(-L2U_F), d);
     r = vmlafq_f32(qf, vdupq_n_f32(-L2L_F), r);
     let f = vmulq_f32(r, r);
-    let mut u = vdupq_n_f32(EXP_POLY_5_S);
-    u = vmlafq_f32(u, f, vdupq_n_f32(EXP_POLY_4_S));
-    u = vmlafq_f32(u, f, vdupq_n_f32(EXP_POLY_3_S));
+    let mut u = vdupq_n_f32(EXP_POLY_3_S);
     u = vmlafq_f32(u, f, vdupq_n_f32(EXP_POLY_2_S));
     u = vmlafq_f32(u, f, vdupq_n_f32(EXP_POLY_1_S));
     let u = vaddq_f32(

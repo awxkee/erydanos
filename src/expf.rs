@@ -23,8 +23,6 @@ use std::arch::x86_64::*;
 pub(crate) const EXP_POLY_1_S: f32 = 2f32;
 pub(crate) const EXP_POLY_2_S: f32 = 0.16666707f32;
 pub(crate) const EXP_POLY_3_S: f32 = -0.002775669f32;
-pub(crate) const EXP_POLY_4_S: f32 = 6.6094115e-5f32;
-pub(crate) const EXP_POLY_5_S: f32 = 1.6546869e-6f32;
 
 pub const L2U_F: f32 = 0.693_145_751_953_125;
 pub const L2L_F: f32 = 1.428_606_765_330_187_045_e-6;
