@@ -19,11 +19,7 @@ pub unsafe fn vexpq_f64(d: float64x2_t) -> float64x2_t {
     let mut r = vmlafq_f64(qf, vdupq_n_f64(-L2_U), d);
     r = vmlafq_f64(qf, vdupq_n_f64(-L2_L), r);
     let f = vmulq_f64(r, r);
-    let mut u = vdupq_n_f64(EXP_POLY_10_D);
-    u = vmlafq_f64(u, f, vdupq_n_f64(EXP_POLY_9_D));
-    u = vmlafq_f64(u, f, vdupq_n_f64(EXP_POLY_8_D));
-    u = vmlafq_f64(u, f, vdupq_n_f64(EXP_POLY_7_D));
-    u = vmlafq_f64(u, f, vdupq_n_f64(EXP_POLY_6_D));
+    let mut u = vdupq_n_f64(EXP_POLY_6_D);
     u = vmlafq_f64(u, f, vdupq_n_f64(EXP_POLY_5_D));
     u = vmlafq_f64(u, f, vdupq_n_f64(EXP_POLY_4_D));
     u = vmlafq_f64(u, f, vdupq_n_f64(EXP_POLY_3_D));

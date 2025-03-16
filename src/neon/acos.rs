@@ -16,7 +16,7 @@ pub unsafe fn vacosq_f64(x: float64x2_t) -> float64x2_t {
     let x_a = vabsq_f64(x);
     let x_asin = vasinq_f64(x_a);
     let v_pi = vdupq_n_f64(std::f64::consts::FRAC_PI_2);
-    return vbslq_f64(gt_zero, vsubq_f64(v_pi, x_asin), vaddq_f64(v_pi, x_asin));
+    vbslq_f64(gt_zero, vsubq_f64(v_pi, x_asin), vaddq_f64(v_pi, x_asin))
 }
 
 #[cfg(test)]

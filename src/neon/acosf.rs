@@ -15,7 +15,7 @@ pub unsafe fn vacosq_f32(x: float32x4_t) -> float32x4_t {
     let x_a = vabsq_f32(x);
     let x_asin = vasinq_f32(x_a);
     let v_pi = vdupq_n_f32(std::f32::consts::FRAC_PI_2);
-    return vbslq_f32(gt_zero, vsubq_f32(v_pi, x_asin), vaddq_f32(v_pi, x_asin));
+    vbslq_f32(gt_zero, vsubq_f32(v_pi, x_asin), vaddq_f32(v_pi, x_asin))
 }
 
 #[cfg(test)]

@@ -76,7 +76,8 @@ fn do_atan(d: f64) -> f64 {
     u = mlaf(u, x2, ATAN_POLY_3_D);
     u = mlaf(u, x2, ATAN_POLY_2_D);
     u = mlaf(u, x2, ATAN_POLY_1_D);
-    u = u * x;
+    u *= x;
+
     u = if c > 1f64 {
         std::f64::consts::FRAC_PI_2 - u
     } else {

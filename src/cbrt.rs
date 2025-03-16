@@ -35,17 +35,15 @@ fn do_ecbrt(x: f64) -> f64 {
         return f64::NEG_INFINITY;
     }
     let mut ui: u64 = x.to_bits();
-    let t: f64;
     let mut hx: u32 = (ui >> 32) as u32 & 0x7fffffff;
 
     hx = hx / 3 + B1;
     ui &= 1 << 63;
     ui |= (hx as u64) << 32;
-    t = f64::from_bits(ui);
+    let t = f64::from_bits(ui);
     let c1 = halley_cbrt(t, x);
     let c2 = halley_cbrt(c1, x);
-    let c3 = halley_cbrt(c2, x);
-    c3
+    halley_cbrt(c2, x)
 }
 
 #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]

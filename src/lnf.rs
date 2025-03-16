@@ -39,7 +39,7 @@ fn do_ln(d: f32) -> f32 {
     u = mlaf(u, x2, LN_POLY_3_F);
     u = mlaf(u, x2, LN_POLY_2_F);
     u = mlaf(u, x2, LN_POLY_1_F);
-    return if d == 0f32 {
+    if d == 0f32 {
         f32::NEG_INFINITY
     } else if (d < 0.) || d.is_nan() {
         f32::NAN
@@ -47,7 +47,7 @@ fn do_ln(d: f32) -> f32 {
         f32::INFINITY
     } else {
         x * u + std::f32::consts::LN_2 * (n as f32)
-    };
+    }
 }
 
 #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]

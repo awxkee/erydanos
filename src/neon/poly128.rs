@@ -113,8 +113,7 @@ pub unsafe fn vmovnq_u128(v: u128x2_t) -> uint64x2_t {
 
 #[inline]
 pub unsafe fn vmovn_u128(p: u128x1_t) -> uint64x1_t {
-    let v0 = vadd_u64(p.0, p.1);
-    v0
+    vadd_u64(p.0, p.1)
 }
 
 /// Convert u64x2 low part as a low part of u128, and high as high of u128
@@ -246,7 +245,6 @@ pub unsafe fn vaddw_s64(a: s128x1_t, b: int64x1_t) -> s128x1_t {
 }
 
 #[inline]
-
 /// Widening add u64 to u128
 pub unsafe fn vaddwq_u64(a: u128x2_t, b: uint64x2_t) -> u128x2_t {
     let j0 = vaddq_u64(a.0, b);
@@ -296,7 +294,7 @@ pub unsafe fn vaddwq_s64(a: s128x2_t, b: int64x2_t) -> s128x2_t {
 #[inline]
 /// Shifts right u128 immediate
 pub unsafe fn vshr_n_u128<const IMM: i32>(a: u128x1_t) -> u128x1_t {
-    return if IMM <= 0 {
+    if IMM <= 0 {
         a
     } else if IMM < 64 {
         let upper_shift = vdup_n_s64(64i64 - IMM as i64);
@@ -306,13 +304,13 @@ pub unsafe fn vshr_n_u128<const IMM: i32>(a: u128x1_t) -> u128x1_t {
     } else {
         let shr_value = vdup_n_s64(-(64i64 - IMM as i64));
         u128x1_t(vshl_u64(a.1, shr_value), vdup_n_u64(0))
-    };
+    }
 }
 
 #[inline]
 /// Shifts right u128 immediate
 pub unsafe fn vshrq_n_u128<const IMM: i32>(a: u128x2_t) -> u128x2_t {
-    return if IMM <= 0 {
+    if IMM <= 0 {
         a
     } else if IMM < 64 {
         let upper_shift = vdupq_n_s64(64i64 - IMM as i64);
@@ -322,13 +320,13 @@ pub unsafe fn vshrq_n_u128<const IMM: i32>(a: u128x2_t) -> u128x2_t {
     } else {
         let shr_value = vdupq_n_s64(-(64i64 - IMM as i64));
         u128x2_t(vshlq_u64(a.1, shr_value), vdupq_n_u64(0))
-    };
+    }
 }
 
 #[inline]
 /// Shifts right s128 immediate
 pub unsafe fn vshr_n_s128<const IMM: i32>(a: s128x1_t) -> s128x1_t {
-    return if IMM <= 0 {
+    if IMM <= 0 {
         a
     } else if IMM < 64 {
         let upper_shift = vdup_n_s64(64i64 - IMM as i64);
@@ -338,13 +336,13 @@ pub unsafe fn vshr_n_s128<const IMM: i32>(a: s128x1_t) -> s128x1_t {
     } else {
         let shr_value = vdup_n_s64(-(64i64 - IMM as i64));
         s128x1_t(vshl_s64(a.1, shr_value), vdup_n_s64(0))
-    };
+    }
 }
 
 #[inline]
 /// Shifts right s128 immediate
 pub unsafe fn vshrq_n_s128<const IMM: i32>(a: s128x2_t) -> s128x2_t {
-    return if IMM <= 0 {
+    if IMM <= 0 {
         a
     } else if IMM < 64 {
         let upper_shift = vdupq_n_s64(64i64 - IMM as i64);
@@ -354,7 +352,7 @@ pub unsafe fn vshrq_n_s128<const IMM: i32>(a: s128x2_t) -> s128x2_t {
     } else {
         let shr_value = vdupq_n_s64(-(64i64 - IMM as i64));
         s128x2_t(vshlq_s64(a.1, shr_value), vdupq_n_s64(0))
-    };
+    }
 }
 
 #[inline]
@@ -390,7 +388,6 @@ pub unsafe fn vshlq_n_u128<const IMM: i32>(a: u128x2_t) -> u128x2_t {
 }
 
 #[inline]
-
 /// Shifts left s128 immediate
 pub unsafe fn vshl_n_s128<const IMM: i32>(a: s128x1_t) -> s128x1_t {
     if IMM >= 64 {

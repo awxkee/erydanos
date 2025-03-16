@@ -10,8 +10,8 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 use crate::exp::{
-    EXP_POLY_10_D, EXP_POLY_1_D, EXP_POLY_2_D, EXP_POLY_3_D, EXP_POLY_4_D, EXP_POLY_5_D,
-    EXP_POLY_6_D, EXP_POLY_7_D, EXP_POLY_8_D, EXP_POLY_9_D, L2_L, L2_U, R_LN2,
+    EXP_POLY_1_D, EXP_POLY_2_D, EXP_POLY_3_D, EXP_POLY_4_D, EXP_POLY_5_D, EXP_POLY_6_D, L2_L, L2_U,
+    R_LN2,
 };
 use crate::sse::general::{_mm_pow2i_epi64, _mm_rint_pd};
 use crate::{_mm_cvtepi64_pd, _mm_mlaf_pd, _mm_select_pd};
@@ -38,11 +38,7 @@ pub unsafe fn _mm_exp_fast_pd(d: __m128d) -> __m128d {
     let mut r = _mm_mlaf_pd(qf, _mm_set1_pd(-L2_U), d);
     r = _mm_mlaf_pd(qf, _mm_set1_pd(-L2_L), r);
     let f = _mm_mul_pd(r, r);
-    let mut u = _mm_set1_pd(EXP_POLY_10_D);
-    u = _mm_mlaf_pd(u, f, _mm_set1_pd(EXP_POLY_9_D));
-    u = _mm_mlaf_pd(u, f, _mm_set1_pd(EXP_POLY_8_D));
-    u = _mm_mlaf_pd(u, f, _mm_set1_pd(EXP_POLY_7_D));
-    u = _mm_mlaf_pd(u, f, _mm_set1_pd(EXP_POLY_6_D));
+    let mut u = _mm_set1_pd(EXP_POLY_6_D);
     u = _mm_mlaf_pd(u, f, _mm_set1_pd(EXP_POLY_5_D));
     u = _mm_mlaf_pd(u, f, _mm_set1_pd(EXP_POLY_4_D));
     u = _mm_mlaf_pd(u, f, _mm_set1_pd(EXP_POLY_3_D));

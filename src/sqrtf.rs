@@ -41,5 +41,5 @@ pub fn esqrtf(d: f32) -> f32 {
     };
     ret = if d == 0f32 { d } else { ret };
 
-    return ret;
+    ret
 }

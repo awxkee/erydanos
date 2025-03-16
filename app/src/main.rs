@@ -3,11 +3,11 @@ use std::ops::{Add, Mul, Shr};
 // use rug::Assign;
 
 use erydanos::{
-    eabs, eexp, eln, epow, esin, ArcCos, ArcSin, ArcTan, ArcTan2, Cosine, CubeRoot, Exponential,
-    Logarithmic, Power, Sine, Tangent,
+    eabs, ecos, ecosf, eexp, eln, epow, esin, esinf, ArcCos, ArcSin, ArcTan, ArcTan2, Cosine,
+    CubeRoot, Exponential, Logarithmic, Power, Sine, Tangent,
 };
 
-use crate::ulp::{count_ulp, count_ulp_f64};
+use crate::ulp::{count_ulp, count_ulp_d, count_ulp_f64};
 
 mod random_coeffs;
 mod search_optimized_coeffs;
@@ -237,8 +237,9 @@ fn main() {
     let x = 2.0f32;
     let y = 32f32;
     let z = 12f32;
-    let ag = esin(-2.70752239);
-    // println!("{:?}", multiply_ui64(2, 4));
+    println!("{:?}", 0f32.exp2());
+    println!("{:?}", 5f32.exp2());
+    println!("{:?}", esinf(0.5f32));
     println!("{:?}", multiply_ui64(u64::MAX, 2));
     println!("{}", u64::MAX as i128 * 2);
     let product = multiply_ui64((-4i64) as u64, (-2i64) as u64);
@@ -278,18 +279,18 @@ fn main() {
     // // original value 1.58, app rempif 4.854955802915181, 4.854955811237434
     let mut cumulative_error = 0f64;
 
-    let mut max_ulp: f64 = 0.;
+    let mut max_ulp: f32 = 0.;
 
-    for i in -200..200 {
-        let scale = 0.005f32;
+    for i in 0..15000 {
+        let scale = 0.000003f32;
         let x = 1f32;
-        let ap = (i as f32 * scale).eexp();
+        let ap = (i as f32 * scale).eatan();
 
         // let ax = rug::Float::with_val(100, i as f32 * scale);
         // let rg = rug::Float::exp(ax);
         // let lm = rg.to_f32();
-        let rg = (i as f32 * scale).exp();
-        let ulp = count_ulp(ap, rg) as f64;
+        let rg = (i as f32 * scale).atan();
+        let ulp = count_ulp(ap, rg) as f32;
         /*  if ulp > 1. {
             println!(
                 "ULP {} error {}, approx {}, expected {}",
@@ -301,9 +302,9 @@ fn main() {
         }*/
         if ulp > max_ulp {
             if max_ulp > 10. {
-                println!("ULP {} error {}", ulp, (i as f32 * scale));
+                println!("ULP {} error {}", ulp, i as f32 * scale);
             }
-            max_ulp = ulp as f64;
+            max_ulp = ulp as f32;
         }
 
         // println!("value {}, app rempif {}, {}", i as f32 * scale, ap, lm,)

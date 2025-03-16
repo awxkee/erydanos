@@ -30,6 +30,7 @@ pub(crate) const SIN_POLY_8_D: f64 = -7.647160846222341105455e-13;
 pub(crate) const SIN_POLY_9_D: f64 = 2.811227876145604544553e-15;
 pub(crate) const SIN_POLY_10_D: f64 = -8.118486649859753485496e-18;
 
+#[allow(clippy::approx_constant)]
 pub(crate) const PI_A2: f64 = 3.141_592_653_589_793_116;
 pub(crate) const PI_B2: f64 = 1.224_646_799_147_353_207_2_e-16;
 

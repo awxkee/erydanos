@@ -127,8 +127,7 @@ pub unsafe fn vdivq_f128(a: float128x2_t, b: float128x2_t) -> float128x2_t {
 #[inline]
 /// Converts f128 into f64
 pub unsafe fn vcvtq_f64_f128(d: float128x2_t) -> float64x2_t {
-    let j0 = vaddq_f64(d.0, d.1);
-    j0
+    vaddq_f64(d.0, d.1)
 }
 
 #[inline]

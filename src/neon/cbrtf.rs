@@ -41,8 +41,7 @@ pub unsafe fn vcbrtq_fast_f32(x: float32x4_t) -> float32x4_t {
 
     let c0 = halley_cbrt(t, x);
     let c1 = halley_cbrt(c0, x);
-    let v = vbslq_f32(vceqzq_f32(x), vdupq_n_f32(0f32), c1);
-    v
+    vbslq_f32(vceqzq_f32(x), vdupq_n_f32(0f32), c1)
 }
 
 /// Takes cube root from value *ULP 1.5*

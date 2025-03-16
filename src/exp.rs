@@ -26,10 +26,6 @@ pub(crate) const EXP_POLY_3_D: f64 = -0.0027777777777777614f64;
 pub(crate) const EXP_POLY_4_D: f64 = 6.613756613755705e-5f64;
 pub(crate) const EXP_POLY_5_D: f64 = -1.6534391534392554e-6f64;
 pub(crate) const EXP_POLY_6_D: f64 = 4.17535139757361979584e-8f64;
-pub(crate) const EXP_POLY_7_D: f64 = -1.05683802773749863697e-9f64;
-pub(crate) const EXP_POLY_8_D: f64 = 2.67650730613693576657e-11f64;
-pub(crate) const EXP_POLY_9_D: f64 = 1.71721241125556891283e-14;
-pub(crate) const EXP_POLY_10_D: f64 = -6.77936059264516573366e-13f64;
 
 pub(crate) const L2_U: f64 = 0.693_147_180_559_662_956_511_601_805_686_950_683_593_75;
 pub(crate) const L2_L: f64 = 0.282_352_905_630_315_771_225_884_481_750_134_360_255_254_120_68_e-12;
@@ -46,11 +42,7 @@ fn do_exp(d: f64) -> f64 {
 
     let f = r * r;
     // Poly for u = r*(exp(r)+1)/(exp(r)-1)
-    let mut u = EXP_POLY_10_D;
-    u = mlaf(u, f, EXP_POLY_9_D);
-    u = mlaf(u, f, EXP_POLY_8_D);
-    u = mlaf(u, f, EXP_POLY_7_D);
-    u = mlaf(u, f, EXP_POLY_6_D);
+    let mut u = EXP_POLY_6_D;
     u = mlaf(u, f, EXP_POLY_5_D);
     u = mlaf(u, f, EXP_POLY_4_D);
     u = mlaf(u, f, EXP_POLY_3_D);
@@ -69,7 +61,7 @@ fn do_exp(d: f64) -> f64 {
 }
 
 #[inline]
-pub fn do_exp_coeff(d: f64, coeff: &Vec<f64>) -> f64 {
+pub fn do_exp_coeff(d: f64, coeff: &[f64]) -> f64 {
     let qf = rintk(d * R_LN2);
     let q = qf as i32;
 
@@ -78,11 +70,7 @@ pub fn do_exp_coeff(d: f64, coeff: &Vec<f64>) -> f64 {
 
     let f = r * r;
     // Poly for u = r*(exp(r)+1)/(exp(r)-1)
-    let mut u = EXP_POLY_10_D;
-    u = mlaf(u, f, EXP_POLY_9_D);
-    u = mlaf(u, f, EXP_POLY_8_D);
-    u = mlaf(u, f, EXP_POLY_7_D);
-    u = mlaf(u, f, EXP_POLY_6_D);
+    let mut u = EXP_POLY_6_D;
     u = mlaf(u, f, coeff[3]);
     u = mlaf(u, f, coeff[2]);
     u = mlaf(u, f, coeff[1]);

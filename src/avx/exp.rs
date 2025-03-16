@@ -10,8 +10,8 @@ use std::arch::x86::*;
 use std::arch::x86_64::*;
 
 use crate::exp::{
-    EXP_POLY_10_D, EXP_POLY_1_D, EXP_POLY_2_D, EXP_POLY_3_D, EXP_POLY_4_D, EXP_POLY_5_D,
-    EXP_POLY_6_D, EXP_POLY_7_D, EXP_POLY_8_D, EXP_POLY_9_D, L2_L, L2_U, R_LN2,
+    EXP_POLY_1_D, EXP_POLY_2_D, EXP_POLY_3_D, EXP_POLY_4_D, EXP_POLY_5_D, EXP_POLY_6_D, L2_L, L2_U,
+    R_LN2,
 };
 use crate::{
     _mm256_cvtepi64_pdx, _mm256_mlaf_pd, _mm256_pow2i_epi64, _mm256_rint_pd, _mm256_select_pd,
@@ -43,11 +43,7 @@ pub unsafe fn _mm256_expq_fast_pd(d: __m256d) -> __m256d {
     let mut r = _mm256_mlaf_pd(qf, _mm256_set1_pd(-L2_U), d);
     r = _mm256_mlaf_pd(qf, _mm256_set1_pd(-L2_L), r);
     let f = _mm256_mul_pd(r, r);
-    let mut u = _mm256_set1_pd(EXP_POLY_10_D);
-    u = _mm256_mlaf_pd(u, f, _mm256_set1_pd(EXP_POLY_9_D));
-    u = _mm256_mlaf_pd(u, f, _mm256_set1_pd(EXP_POLY_8_D));
-    u = _mm256_mlaf_pd(u, f, _mm256_set1_pd(EXP_POLY_7_D));
-    u = _mm256_mlaf_pd(u, f, _mm256_set1_pd(EXP_POLY_6_D));
+    let mut u = _mm256_set1_pd(EXP_POLY_6_D);
     u = _mm256_mlaf_pd(u, f, _mm256_set1_pd(EXP_POLY_5_D));
     u = _mm256_mlaf_pd(u, f, _mm256_set1_pd(EXP_POLY_4_D));
     u = _mm256_mlaf_pd(u, f, _mm256_set1_pd(EXP_POLY_3_D));

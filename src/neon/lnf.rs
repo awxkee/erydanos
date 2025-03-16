@@ -39,10 +39,9 @@ pub unsafe fn vlnq_fast_f32(d: float32x4_t) -> float32x4_t {
     u = vmlafq_f32(u, x2, vdupq_n_f32(LN_POLY_3_F));
     u = vmlafq_f32(u, x2, vdupq_n_f32(LN_POLY_2_F));
     u = vmlafq_f32(u, x2, vdupq_n_f32(LN_POLY_1_F));
-    let res = vmlafq_f32(
+    vmlafq_f32(
         vdupq_n_f32(std::f32::consts::LN_2),
         vcvtq_f32_s32(n),
         vmulq_f32(x, u),
-    );
-    res
+    )
 }

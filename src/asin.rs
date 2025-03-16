@@ -76,7 +76,7 @@ fn do_asin(c: f64) -> f64 {
     u = mlaf(u, x, ASIN_POLY_3_D);
     u = mlaf(u, x, ASIN_POLY_2_D);
     u = mlaf(u, x, ASIN_POLY_1_D);
-    u = u * x;
+    u *= x;
     let v = if q & 1 != 0 {
         std::f64::consts::FRAC_PI_2 - 2f64 * u
     } else {

@@ -33,14 +33,14 @@ fn do_atan2f(y: f32, x: f32) -> f32 {
         }
     }
     let rad = eatanf(y / x);
-    return if x > 0f32 {
+    if x > 0f32 {
         rad
     } else if x < 0f32 && y >= 0f32 {
         std::f32::consts::PI + rad
     } else {
         // if x < 0. && y < 0.
         -std::f32::consts::PI + rad
-    };
+    }
 }
 
 #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]

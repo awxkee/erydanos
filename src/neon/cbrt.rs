@@ -54,8 +54,7 @@ pub unsafe fn vcbrtq_fast_f64(x: float64x2_t) -> float64x2_t {
     let c1 = halley_cbrt(c0, x);
     let c2 = halley_cbrt(c1, x);
 
-    let v = vbslq_f64(vceqzq_f64(x), vdupq_n_f64(0f64), c2);
-    v
+    vbslq_f64(vceqzq_f64(x), vdupq_n_f64(0f64), c2)
 }
 
 #[cfg(test)]

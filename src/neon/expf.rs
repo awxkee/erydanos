@@ -43,6 +43,5 @@ pub unsafe fn vexpq_fast_f32(d: float32x4_t) -> float32x4_t {
         vdupq_n_f32(1f32),
     );
     let i2 = vreinterpretq_f32_s32(vpow2ifq_s32(q));
-    let r = vmulq_f32(u, i2);
-    r
+    vmulq_f32(u, i2)
 }

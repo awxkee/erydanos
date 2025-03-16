@@ -44,7 +44,7 @@ fn do_atanf(d: f32) -> f32 {
     u = mlaf(u, x2, ATAN_POLY_3_F);
     u = mlaf(u, x2, ATAN_POLY_2_F);
     u = mlaf(u, x2, ATAN_POLY_1_F);
-    u = u * x;
+    u *= x;
     u = if c > 1f32 {
         std::f32::consts::FRAC_PI_2 - u
     } else {

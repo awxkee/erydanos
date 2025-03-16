@@ -31,11 +31,6 @@ pub(crate) const ASIN_POLY_7_F: u32 = 0x3dce28d2; // 0.10064352904194375
 pub(crate) const ASIN_POLY_8_F: u32 = 0xbe16c000; // -0.14719234953315127
 pub(crate) const ASIN_POLY_9_F: u32 = 0x3e292000; // 0.16517876838808404
 
-/**
-Best ULP 1.9091235399246216
-Best Coefficients [1.0, 7.3982183e-6, 0.1663863, 0.003995185, 0.047398783, 0.100653425]
-*/
-
 #[inline]
 fn do_asinf(c: f32) -> f32 {
     if eabsf(c) > 1f32 {
@@ -61,7 +56,7 @@ fn do_asinf(c: f32) -> f32 {
     u = mlaf(u, x, f32::from_bits(ASIN_POLY_4_F));
     u = mlaf(u, x, f32::from_bits(ASIN_POLY_3_F));
     u = mlaf(u, x, f32::from_bits(ASIN_POLY_2_F));
-    u = u * x;
+    u *= x;
     let j = u;
     let z = if q & 1 != 0 {
         std::f32::consts::FRAC_PI_2 - 2f32 * j

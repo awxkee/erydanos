@@ -31,14 +31,14 @@ fn do_atan2(y: f64, x: f64) -> f64 {
         }
     }
     let rad = eatan(y / x);
-    return if x > 0f64 {
+    if x > 0f64 {
         rad
     } else if x < 0f64 && y >= 0f64 {
         std::f64::consts::PI + rad
     } else {
         // if x < 0. && y < 0.
         -std::f64::consts::PI + rad
-    };
+    }
 }
 
 #[cfg(all(

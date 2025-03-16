@@ -15,7 +15,7 @@ pub unsafe fn vfloorq_f32(x: float32x4_t) -> float32x4_t {
     let z = vcvtq_s32_f32(x);
     let r = vcvtq_f32_s32(z);
 
-    return vbslq_f32(vcgtq_f32(r, x), vsubq_f32(r, ones), r);
+    vbslq_f32(vcgtq_f32(r, x), vsubq_f32(r, ones), r)
 }
 
 /// Floor method complaints with f32 specification with infinity checks

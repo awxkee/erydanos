@@ -98,3 +98,20 @@ pub fn count_ulp(d: f32, c2: f32) -> f32 {
     let mmm = d.min(c2);
     return (m.to_bits() - mmm.to_bits()) as f32;
 }
+
+pub fn count_ulp_d(d: f64, c2: f64) -> f64 {
+    if (c2 == 0. || c2.is_subnormal()) && (d == 0. || d.is_subnormal()) {
+        return 0.;
+    }
+
+    if (c2 == 0.) && (d != 0.) {
+        return 10000.;
+    }
+
+    if c2.is_infinite() && d.is_infinite() {
+        return 0.;
+    }
+    let m = d.max(c2);
+    let mmm = d.min(c2);
+    return (m.to_bits() - mmm.to_bits()) as f64;
+}

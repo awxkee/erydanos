@@ -39,9 +39,7 @@ fn do_exp(d: f32) -> f32 {
 
     let f = r * r;
     // Poly for u = r*(exp(r)+1)/(exp(r)-1)
-    let mut u = EXP_POLY_5_S;
-    u = mlaf(u, f, EXP_POLY_4_S);
-    u = mlaf(u, f, EXP_POLY_3_S);
+    let mut u = EXP_POLY_3_S;
     u = mlaf(u, f, EXP_POLY_2_S);
     u = mlaf(u, f, EXP_POLY_1_S);
     let u = 1f32 + 2f32 * r / (u - r);

@@ -15,7 +15,7 @@ pub unsafe fn vfloorq_f64(x: float64x2_t) -> float64x2_t {
     let z = vcvtq_s64_f64(x);
     let r = vcvtq_f64_s64(z);
 
-    return vbslq_f64(vcgtq_f64(r, x), vsubq_f64(r, ones), r);
+    vbslq_f64(vcgtq_f64(r, x), vsubq_f64(r, ones), r)
 }
 
 /// Floor method complaints with f64 specification with infinity checks

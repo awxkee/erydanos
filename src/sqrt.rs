@@ -40,5 +40,5 @@ pub fn esqrt(d: f64) -> f64 {
     };
     ret = if d == 0f64 { d } else { ret };
 
-    return ret;
+    ret
 }

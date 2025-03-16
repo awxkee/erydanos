@@ -11,11 +11,11 @@ use std::arch::aarch64::*;
 pub unsafe fn vmlafq_f32(a: float32x4_t, b: float32x4_t, c: float32x4_t) -> float32x4_t {
     #[cfg(target_arch = "aarch64")]
     {
-        return vfmaq_f32(c, b, a);
+        vfmaq_f32(c, b, a)
     }
     #[cfg(target_arch = "arm")]
     {
-        return vmlaq_f32(c, b, a);
+        vmlaq_f32(c, b, a)
     }
 }
 
@@ -33,11 +33,11 @@ pub unsafe fn vmlafq_nf_f32(a: float32x4_t, b: float32x4_t, c: float32x4_t) -> f
 pub unsafe fn vmlafq_f64(a: float64x2_t, b: float64x2_t, c: float64x2_t) -> float64x2_t {
     #[cfg(target_arch = "aarch64")]
     {
-        return vfmaq_f64(c, b, a);
+        vfmaq_f64(c, b, a)
     }
     #[cfg(target_arch = "arm")]
     {
-        return vmlaq_f64(c, b, a);
+        vmlaq_f64(c, b, a)
     }
 }
 
@@ -48,66 +48,64 @@ pub unsafe fn vmlsfq_f64(a: float64x2_t, b: float64x2_t, c: float64x2_t) -> floa
 
 #[inline]
 pub unsafe fn vpow2ifq_s32(q: int32x4_t) -> int32x4_t {
-    let j = vshlq_n_s32::<23>(vaddq_s32(q, vdupq_n_s32(0x7f)));
-    j
+    vshlq_n_s32::<23>(vaddq_s32(q, vdupq_n_s32(0x7f)))
 }
 
 #[inline]
 pub unsafe fn vpow2ifq_s64(q: int64x2_t) -> int64x2_t {
-    let j = vshlq_n_s64::<52>(vaddq_s64(q, vdupq_n_s64(0x3ff)));
-    j
+    vshlq_n_s64::<52>(vaddq_s64(q, vdupq_n_s64(0x3ff)))
 }
 
 #[inline]
 /// Returns true flag if value is Infinity
 pub unsafe fn visinfq_f32(d: float32x4_t) -> uint32x4_t {
-    return vceqq_f32(d, vdupq_n_f32(f32::INFINITY));
+    vceqq_f32(d, vdupq_n_f32(f32::INFINITY))
 }
 
 #[inline]
 /// Returns true flag if value is Neg Infinity
 pub unsafe fn visneginfq_f32(d: float32x4_t) -> uint32x4_t {
-    return vceqq_f32(d, vdupq_n_f32(f32::NEG_INFINITY));
+    vceqq_f32(d, vdupq_n_f32(f32::NEG_INFINITY))
 }
 
 #[inline]
 /// Returns true flag if value is Infinity
 pub unsafe fn visinfq_f64(d: float64x2_t) -> uint64x2_t {
-    return vceqq_f64(d, vdupq_n_f64(f64::INFINITY));
+    vceqq_f64(d, vdupq_n_f64(f64::INFINITY))
 }
 
 #[inline]
 /// Returns true flag if value is Neg Infinity
 pub unsafe fn visneginfq_f64(d: float64x2_t) -> uint64x2_t {
-    return vceqq_f64(d, vdupq_n_f64(f64::NEG_INFINITY));
+    vceqq_f64(d, vdupq_n_f64(f64::NEG_INFINITY))
 }
 
 #[inline]
 /// Returns true flag if value is NaN
 pub unsafe fn visnanq_f64(d: float64x2_t) -> uint64x2_t {
-    return vreinterpretq_u64_u32(vmvnq_u32(vreinterpretq_u32_u64(vceqq_f64(d, d))));
+    vreinterpretq_u64_u32(vmvnq_u32(vreinterpretq_u32_u64(vceqq_f64(d, d))))
 }
 
 #[inline]
 /// Returns true flag if value is NaN
 pub unsafe fn visnanq_f32(d: float32x4_t) -> uint32x4_t {
-    return vmvnq_u32(vceqq_f32(d, d));
+    vmvnq_u32(vceqq_f32(d, d))
 }
 
 #[inline]
 pub unsafe fn vsignbitq_f32(f: float32x4_t) -> uint32x4_t {
-    return vandq_u32(
+    vandq_u32(
         vreinterpretq_u32_f32(f),
         vreinterpretq_u32_f32(vdupq_n_f32(-0.0f32)),
-    );
+    )
 }
 
 #[inline]
 pub unsafe fn vsignbitq_f64(f: float64x2_t) -> uint64x2_t {
-    return vandq_u64(
+    vandq_u64(
         vreinterpretq_u64_f64(f),
         vreinterpretq_u64_f64(vdupq_n_f64(-0.0f64)),
-    );
+    )
 }
 
 #[inline]
@@ -122,12 +120,12 @@ pub unsafe fn vmulsignq_f64(va: float64x2_t, vb: float64x2_t) -> float64x2_t {
 
 #[inline]
 pub unsafe fn visnegzeroq_f32(d: float32x4_t) -> uint32x4_t {
-    return vceqq_f32(d, vdupq_n_f32(-0.0f32));
+    vceqq_f32(d, vdupq_n_f32(-0.0f32))
 }
 
 #[inline]
 pub unsafe fn visnegzeroq_f64(d: float64x2_t) -> uint64x2_t {
-    return vceqq_f64(d, vdupq_n_f64(-0.0f64));
+    vceqq_f64(d, vdupq_n_f64(-0.0f64))
 }
 
 #[inline]
@@ -206,7 +204,7 @@ pub unsafe fn vmul_u64(ab: uint64x1_t, cd: uint64x1_t) -> uint64x1_t {
     high = vshl_n_u64::<32>(high);
 
     /* return ac + high; */
-    return vadd_u64(high, vget_low_u64(ac));
+    vadd_u64(high, vget_low_u64(ac))
 }
 
 #[inline]
@@ -236,7 +234,7 @@ pub unsafe fn vmulq_u64(ab: uint64x2_t, cd: uint64x2_t) -> uint64x2_t {
     high = vshlq_n_u64::<32>(high);
 
     /* return ac + high; */
-    return vaddq_u64(high, ac);
+    vaddq_u64(high, ac)
 }
 
 #[inline]
@@ -252,7 +250,6 @@ pub unsafe fn vqshrn_n_u128<const SHIFT: i32>(a: uint64x2x2_t) -> uint64x2_t {
 }
 
 #[inline]
-
 pub unsafe fn vmulq_s64(ab: int64x2_t, cd: int64x2_t) -> int64x2_t {
     vreinterpretq_s64_u64(vmulq_u64(
         vreinterpretq_u64_s64(ab),
@@ -263,16 +260,16 @@ pub unsafe fn vmulq_s64(ab: int64x2_t, cd: int64x2_t) -> int64x2_t {
 #[inline]
 /// Returns true flag if value is not an integral value
 pub unsafe fn visnotintegralq_f32(d: float32x4_t) -> uint32x4_t {
-    return vmvnq_u32(vceqq_f32(d, vcvtq_f32_s32(vcvtq_s32_f32(d))));
+    vmvnq_u32(vceqq_f32(d, vcvtq_f32_s32(vcvtq_s32_f32(d))))
 }
 
 #[inline]
 /// Returns true flag if value is not an integral value
 pub unsafe fn visnotintegralq_f64(d: float64x2_t) -> uint64x2_t {
-    return vreinterpretq_u64_u32(vmvnq_u32(vreinterpretq_u32_u64(vceqq_f64(
+    vreinterpretq_u64_u32(vmvnq_u32(vreinterpretq_u32_u64(vceqq_f64(
         d,
         vcvtq_f64_s64(vcvtq_s64_f64(d)),
-    ))));
+    ))))
 }
 
 #[cfg(test)]

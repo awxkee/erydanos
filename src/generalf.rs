@@ -65,7 +65,7 @@ pub fn rintk(x: f64) -> f64 {
 #[inline]
 #[cfg(not(target_feature = "fma"))]
 pub fn mlaf<T: Copy + Add<Output = T> + MulAdd + Mul<Output = T>>(x: T, y: T, z: T) -> T {
-    return x * y + z;
+    x * y + z
 }
 
 /// Computes `x*y + z` using `fma` when available
@@ -138,7 +138,7 @@ pub fn ldexp3kf(d: f32, n: i32) -> f32 {
 
 pub fn rempif2(x: f32) -> f32 {
     let n = efloorf(x / std::f32::consts::PI);
-    return x - n * std::f32::consts::PI;
+    x - n * std::f32::consts::PI
 }
 
 /// Checks if values is negative zero

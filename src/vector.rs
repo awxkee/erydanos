@@ -42,7 +42,7 @@ impl<T: VectorFloat> Vector<T> {
     pub fn normalize(self) -> Vector<T> {
         let jx = self.x + self.y;
         let jy = self.x - jx + self.y;
-        return Vector::new(jx, jy);
+        Vector::new(jx, jy)
     }
 
     #[inline]
@@ -53,7 +53,7 @@ impl<T: VectorFloat> Vector<T> {
         let rx = self.x * self.x;
         let ry = xh * xh - rx + (xh + xh) * xl + xl * xl + self.x * (self.y + self.y);
 
-        return Vector::new(rx, ry);
+        Vector::new(rx, ry)
     }
 }
 
@@ -81,14 +81,14 @@ pub trait Upper {
 impl Upper for f32 {
     #[inline]
     fn upper(self) -> Self {
-        return f32::from_bits(self.to_bits() & 0xfffff000);
+        f32::from_bits(self.to_bits() & 0xfffff000)
     }
 }
 
 impl Upper for f64 {
     #[inline]
     fn upper(self) -> Self {
-        return f64::from_bits(self.to_bits() & 0xfffffffff8000000);
+        f64::from_bits(self.to_bits() & 0xfffffffff8000000)
     }
 }
 
@@ -109,7 +109,7 @@ where
     r.x = x * y;
     r.y = xh * yh - r.x + xl * yh + xh * yl + xl * yl;
 
-    return r;
+    r
 }
 
 #[inline]
@@ -126,7 +126,7 @@ where
     let v = r.x - x;
     r.y = (x - (r.x - v)) + (y.x - v) + y.y;
 
-    return r;
+    r
 }
 
 #[inline]
@@ -147,7 +147,7 @@ where
     q.x = t;
     q.y = t * (1f32.as_() - dh * th - dh * tl - dl * th - dl * tl);
 
-    return q;
+    q
 }
 
 #[inline]
@@ -166,8 +166,7 @@ where
 
     r.x = x.x * y.x;
     r.y = xh * yh - r.x + xl * yh + xh * yl + xl * yl + x.x * y.y + x.y * y.x;
-
-    return r;
+    r
 }
 
 impl From<Vector<f32>> for f32 {
