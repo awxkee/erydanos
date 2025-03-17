@@ -2,7 +2,7 @@ workspace = { members = ["app"] }
 
 [package]
 name = "erydanos"
-version = "0.2.16"
+version = "0.2.17"
 edition = "2021"
 description = "Optimized routines for ARM NEON and SSE"
 readme = "README.md"
@@ -16,4 +16,4 @@ repository = "https://github.com/awxkee/erydanos"
 exclude = ["*.jpg"]
 
 [dependencies]
-num-traits = "0.2.19"
+num-traits = "0.2"
