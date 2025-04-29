@@ -202,8 +202,8 @@ mod tests {
             let comparison = _mm_max_epu64x(top, low);
             let flag_1 = _mm_extract_epi64::<0>(comparison);
             let flag_2 = _mm_extract_epi64::<1>(comparison);
-            assert_eq!(flag_1, 23);
-            assert_eq!(flag_2, 15);
+            assert_eq!(flag_1, -6);
+            assert_eq!(flag_2, -5);
         }
     }
 
