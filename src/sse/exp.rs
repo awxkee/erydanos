@@ -49,8 +49,7 @@ pub unsafe fn _mm_exp_fast_pd(d: __m128d) -> __m128d {
         _mm_set1_pd(1.),
     );
     let i2 = _mm_castsi128_pd(_mm_pow2i_epi64(q));
-    let r = _mm_mul_pd(u, i2);
-    r
+    _mm_mul_pd(u, i2)
 }
 
 #[cfg(test)]

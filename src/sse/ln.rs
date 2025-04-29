@@ -36,12 +36,11 @@ pub unsafe fn _mm_ln_fast_pd(d: __m128d) -> __m128d {
     u = _mm_mlaf_pd(u, x2, _mm_set1_pd(LN_POLY_3_D));
     u = _mm_mlaf_pd(u, x2, _mm_set1_pd(LN_POLY_2_D));
     u = _mm_mlaf_pd(u, x2, _mm_set1_pd(LN_POLY_1_D));
-    let res = _mm_mlaf_pd(
+    _mm_mlaf_pd(
         _mm_set1_pd(std::f64::consts::LN_2),
         _mm_cvtepi64_pd(n),
         _mm_mul_pd(x, u),
-    );
-    res
+    )
 }
 
 /// Computes natural logarithm for an argument *ULP 1.5*

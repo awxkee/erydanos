@@ -39,7 +39,7 @@ pub unsafe fn _mm_prefer_fma_ps(a: __m128, b: __m128, c: __m128) -> __m128 {
 #[inline]
 /// Computes `b*c + a` using fma when available
 pub unsafe fn _mm_prefer_fma_ps(a: __m128, b: __m128, c: __m128) -> __m128 {
-    return _mm_fmadd_ps(b, c, a);
+    _mm_fmadd_ps(b, c, a)
 }
 
 #[inline]
@@ -116,8 +116,7 @@ pub unsafe fn _mm_rint_ps(f: __m128) -> __m128i {
 #[inline]
 /// Computes 2^n in f32 form for signed 32 bits integers, returns f32 in bits
 pub unsafe fn _mm_pow2if_epi32(n: __m128i) -> __m128i {
-    let j = _mm_slli_epi32::<23>(_mm_add_epi32(n, _mm_set1_epi32(0x7f)));
-    j
+    _mm_slli_epi32::<23>(_mm_add_epi32(n, _mm_set1_epi32(0x7f)))
 }
 
 #[inline]
@@ -130,7 +129,6 @@ pub unsafe fn _mm_copysign_ps(x: __m128, y: __m128) -> __m128 {
 }
 
 #[inline]
-
 /// Checks if arguments is integral value
 pub unsafe fn _mm_isintegral_ps(d: __m128) -> __m128 {
     _mm_cmpeq_ps(d, _mm_floor_ps(d))

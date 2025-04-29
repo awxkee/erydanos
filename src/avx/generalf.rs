@@ -28,7 +28,7 @@ pub unsafe fn _mm256_prefer_fma_ps(a: __m256, b: __m256, c: __m256) -> __m256 {
 #[inline]
 /// Computes `b*c + a` using fma when available
 pub unsafe fn _mm256_prefer_fma_ps(a: __m256, b: __m256, c: __m256) -> __m256 {
-    return _mm256_fmadd_ps(b, c, a);
+    _mm256_fmadd_ps(b, c, a)
 }
 
 #[inline]
@@ -40,8 +40,7 @@ pub unsafe fn _mm256_mlaf_ps(a: __m256, b: __m256, c: __m256) -> __m256 {
 #[inline]
 /// Computes 2^n in f32 form for signed 32 bits integers, returns f32 in bits
 pub unsafe fn _mm256_pow2if_epi32(n: __m256i) -> __m256i {
-    let j = _mm256_slli_epi32::<23>(_mm256_add_epi32(n, _mm256_set1_epi32(0x7f)));
-    j
+    _mm256_slli_epi32::<23>(_mm256_add_epi32(n, _mm256_set1_epi32(0x7f)))
 }
 
 #[inline]

@@ -90,6 +90,17 @@ pub unsafe fn _mm_max_epi64x(a: __m128i, b: __m128i) -> __m128i {
 }
 
 #[inline]
+/// Takes max for epu64
+pub unsafe fn _mm_max_epu64x(a: __m128i, b: __m128i) -> __m128i {
+    #[allow(overflowing_literals)]
+    let sign_mask = _mm_set1_epi64x(0x8000000000000000i64);
+    let ax = _mm_xor_si128(a, sign_mask);
+    let bx = _mm_xor_si128(b, sign_mask);
+    let b_cmp = _mm_cmpgt_epi64(ax, bx);
+    _mm_or_si128(_mm_and_si128(b_cmp, a), _mm_andnot_si128(b_cmp, b))
+}
+
+#[inline]
 /// Takes min for epi64
 pub unsafe fn _mm_min_epi64x(a: __m128i, b: __m128i) -> __m128i {
     let mut mask = _mm_cmpgt_epi64(a, b);
@@ -101,7 +112,7 @@ pub unsafe fn _mm_min_epi64x(a: __m128i, b: __m128i) -> __m128i {
 #[inline]
 /// Compare *greater than or equal to* unsigned 64 bytes integers,
 pub unsafe fn _mm_cmpge_epu64(a: __m128i, b: __m128i) -> __m128i {
-    _mm_cmpeq_epi64(_mm_max_epi64x(a, b), a)
+    _mm_cmpeq_epi64(_mm_max_epu64x(a, b), a)
 }
 
 #[inline]
@@ -144,10 +155,57 @@ pub unsafe fn _mm_cmplt_epi64(a: __m128i, b: __m128i) -> __m128i {
     _mm_cmpgt_epi64(b, a)
 }
 
+#[cfg(target_arch = "x86_64")]
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::sse::epi64::_mm_setr_epi64x;
+
+    #[test]
+    fn test_max_epi64() {
+        unsafe {
+            let top = _mm_setr_epi64x(23, 0);
+            let low = _mm_setr_epi64x(6, 15);
+            let comparison = _mm_max_epi64x(top, low);
+            let flag_1 = _mm_extract_epi64::<0>(comparison);
+            let flag_2 = _mm_extract_epi64::<1>(comparison);
+            assert_eq!(flag_1, 23);
+            assert_eq!(flag_2, 15);
+        }
+
+        unsafe {
+            let top = _mm_setr_epi64x(23, -5);
+            let low = _mm_setr_epi64x(-6, 15);
+            let comparison = _mm_max_epi64x(top, low);
+            let flag_1 = _mm_extract_epi64::<0>(comparison);
+            let flag_2 = _mm_extract_epi64::<1>(comparison);
+            assert_eq!(flag_1, 23);
+            assert_eq!(flag_2, 15);
+        }
+    }
+
+    #[test]
+    fn test_max_epu64() {
+        unsafe {
+            let top = _mm_setr_epi64x(23, 0);
+            let low = _mm_setr_epi64x(6, 15);
+            let comparison = _mm_max_epu64x(top, low);
+            let flag_1 = _mm_extract_epi64::<0>(comparison);
+            let flag_2 = _mm_extract_epi64::<1>(comparison);
+            assert_eq!(flag_1, 23);
+            assert_eq!(flag_2, 15);
+        }
+
+        unsafe {
+            let top = _mm_setr_epi64x(23, -5);
+            let low = _mm_setr_epi64x(-6, 15);
+            let comparison = _mm_max_epu64x(top, low);
+            let flag_1 = _mm_extract_epi64::<0>(comparison);
+            let flag_2 = _mm_extract_epi64::<1>(comparison);
+            assert_eq!(flag_1, 23);
+            assert_eq!(flag_2, 15);
+        }
+    }
 
     #[test]
     fn test_ge_epi64() {
@@ -173,7 +231,7 @@ mod tests {
     }
 
     #[test]
-    fn test_ge_epu64() {
+    fn test_gt_epu64() {
         unsafe {
             let top = _mm_setr_epi64x(23, 0);
             let low = _mm_setr_epi64x(6, 15);
@@ -188,6 +246,49 @@ mod tests {
             let top = _mm_setr_epi64x(23, -5);
             let low = _mm_setr_epi64x(-6, 15);
             let comparison = _mm_cmpgt_epu64(top, low);
+            let flag_1 = _mm_extract_epi64::<0>(comparison);
+            let flag_2 = _mm_extract_epi64::<1>(comparison);
+            assert_eq!(flag_1, 0);
+            assert_ne!(flag_2, 0);
+        }
+    }
+
+    #[test]
+    fn test_ge_le_epu64() {
+        unsafe {
+            let top = _mm_setr_epi64x(u64::MAX as i64, 5);
+            let low = _mm_setr_epi64x(6, 15);
+            let comparison = _mm_cmpge_epu64(top, low);
+            let flag_1 = _mm_extract_epi64::<0>(comparison);
+            let flag_2 = _mm_extract_epi64::<1>(comparison);
+            assert_ne!(flag_1, 0);
+            assert_eq!(flag_2, 0);
+        }
+
+        unsafe {
+            let top = _mm_setr_epi64x(7, 5);
+            let low = _mm_setr_epi64x(-1, -2);
+            let comparison = _mm_cmpge_epu64(top, low);
+            let flag_1 = _mm_extract_epi64::<0>(comparison);
+            let flag_2 = _mm_extract_epi64::<1>(comparison);
+            assert_eq!(flag_1, 0);
+            assert_eq!(flag_2, 0);
+        }
+
+        unsafe {
+            let top = _mm_setr_epi64x(7, 5);
+            let low = _mm_setr_epi64x(1, 2);
+            let comparison = _mm_cmpge_epu64(top, low);
+            let flag_1 = _mm_extract_epi64::<0>(comparison);
+            let flag_2 = _mm_extract_epi64::<1>(comparison);
+            assert_ne!(flag_1, 0);
+            assert_ne!(flag_2, 0);
+        }
+
+        unsafe {
+            let top = _mm_setr_epi64x(u64::MAX as i64, 5);
+            let low = _mm_setr_epi64x(6, 15);
+            let comparison = _mm_cmple_epu64(top, low);
             let flag_1 = _mm_extract_epi64::<0>(comparison);
             let flag_2 = _mm_extract_epi64::<1>(comparison);
             assert_eq!(flag_1, 0);

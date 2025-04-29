@@ -25,7 +25,7 @@ pub unsafe fn _mm256_asin_pd(d: __m256d) -> __m256d {
     let ca = _mm256_abs_pd(d);
     let nan_mask = _mm256_cmp_pd::<_CMP_GT_OS>(ca, ones);
     // for more 0.5
-    let reverse_05_mask = _mm256_cmp_pd::<_CMP_GE_OS>(ca, _mm256_set1_pd(0.5f64));
+    let reverse_05_mask = _mm256_cmp_pd::<_CMP_GE_OS>(ca, _mm256_set1_pd(0.5));
     let reversed = _mm256_sqrt_pd(_mm256_div_pd(_mm256_sub_pd(ones, ca), _mm256_set1_pd(2.)));
     let x = _mm256_select_pd(reverse_05_mask, reversed, ca);
     let zeros_is_zeros = _mm256_cmp_pd::<_CMP_EQ_OS>(d, _mm256_setzero_pd());

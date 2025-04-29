@@ -28,12 +28,11 @@ pub unsafe fn _mm_ln_fast_ps(d: __m128) -> __m128 {
     u = _mm_mlaf_ps(u, x2, _mm_set1_ps(LN_POLY_3_F));
     u = _mm_mlaf_ps(u, x2, _mm_set1_ps(LN_POLY_2_F));
     u = _mm_mlaf_ps(u, x2, _mm_set1_ps(LN_POLY_1_F));
-    let res = _mm_mlaf_ps(
+    _mm_mlaf_ps(
         _mm_set1_ps(std::f32::consts::LN_2),
         _mm_cvtepi32_ps(n),
         _mm_mul_ps(x, u),
-    );
-    res
+    )
 }
 
 /// Computes natural logarithm for an argument *ULP 1.5*

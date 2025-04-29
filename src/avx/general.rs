@@ -15,7 +15,7 @@ pub unsafe fn _mm256_prefer_fma_pd(a: __m256d, b: __m256d, c: __m256d) -> __m256
 #[inline]
 /// Computes `b*c + a` using fma when available
 pub unsafe fn _mm256_prefer_fma_pd(a: __m256d, b: __m256d, c: __m256d) -> __m256d {
-    return _mm256_fmadd_pd(b, c, a);
+    _mm256_fmadd_pd(b, c, a)
 }
 
 #[inline]
@@ -87,9 +87,7 @@ pub unsafe fn _mm256_cvtpd_epu64x(v: __m256d) -> __m256i {
         biased_exp,
     ));
     // Mask out overflow values to 0.
-    let fully_bounded = _mm256_and_si256(lower_bounded, upper_bound_mask);
-
-    return fully_bounded;
+    _mm256_and_si256(lower_bounded, upper_bound_mask)
 }
 
 #[inline]
@@ -135,13 +133,11 @@ pub unsafe fn _mm256_cvtpd_epi64x(v: __m256d) -> __m256i {
         biased_exp,
     ));
     // Saturate overflow values to INT64_MIN.
-    let bounded = _mm256_blendv_epi8(
+    _mm256_blendv_epi8(
         _mm256_set1_epi64x(i64::MAX),
         sign_adjusted,
         upper_bound_mask,
-    );
-
-    bounded
+    )
 }
 
 #[inline]
@@ -235,8 +231,7 @@ pub unsafe fn _mm256_ldexp3k_pd(x: __m256d, n: __m256i) -> __m256d {
 #[inline]
 /// Computes 2^n in f64 form for signed 64 bits integers, returns f64 in bits
 pub unsafe fn _mm256_pow2i_epi64(n: __m256i) -> __m256i {
-    let j = _mm256_slli_epi64::<52>(_mm256_add_epi64(n, _mm256_set1_epi32(0x3ff)));
-    j
+    _mm256_slli_epi64::<52>(_mm256_add_epi64(n, _mm256_set1_epi32(0x3ff)))
 }
 
 #[inline]

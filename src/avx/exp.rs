@@ -54,8 +54,7 @@ pub unsafe fn _mm256_expq_fast_pd(d: __m256d) -> __m256d {
         _mm256_set1_pd(1.),
     );
     let i2 = _mm256_castsi256_pd(_mm256_pow2i_epi64(q));
-    let r = _mm256_mul_pd(u, i2);
-    r
+    _mm256_mul_pd(u, i2)
 }
 
 #[cfg(test)]

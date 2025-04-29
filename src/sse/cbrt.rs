@@ -50,8 +50,7 @@ pub unsafe fn _mm_cbrt_fast_pd(x: __m128d) -> __m128d {
     let c0 = halley_cbrt(t, x);
     let c1 = halley_cbrt(c0, x);
     let c2 = halley_cbrt(c1, x);
-    let v = _mm_select_pd(_mm_eqzero_pd(x), _mm_set1_pd(0.), c2);
-    v
+    _mm_select_pd(_mm_eqzero_pd(x), _mm_set1_pd(0.), c2)
 }
 
 /// Takes cube root from value *ULP 1.5*

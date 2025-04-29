@@ -15,8 +15,7 @@ use std::arch::x86_64::*;
 pub unsafe fn _mm256_srai_epi64x<const IMM8: i32>(a: __m256i) -> __m256i {
     let m = _mm256_set1_epi64x(1 << (64 - 1));
     let x = _mm256_srli_epi64::<IMM8>(a);
-    let result = _mm256_sub_epi64(_mm256_xor_si256(x, m), m); //result = x^m - m
-    result
+    _mm256_sub_epi64(_mm256_xor_si256(x, m), m) //result = x^m - m
 }
 
 #[inline]
@@ -59,7 +58,7 @@ pub unsafe fn _mm256_packus_epi64(a: __m256i, b: __m256i) -> __m256i {
     let combined = _mm256_shuffle_ps::<SHUFFLE_1>(_mm256_castsi256_ps(a), _mm256_castsi256_ps(b));
     const SHUFFLE_2: i32 = _mm_shuffle(3, 1, 2, 0);
     let ordered = _mm256_permute4x64_pd::<SHUFFLE_2>(_mm256_castps_pd(combined));
-    return _mm256_castpd_si256(ordered);
+    _mm256_castpd_si256(ordered)
 }
 
 #[inline]
@@ -73,7 +72,7 @@ pub unsafe fn _mm256_packs_epi64(a: __m256i, b: __m256i) -> __m256i {
     let combined = _mm256_shuffle_ps::<SHUFFLE_1>(_mm256_castsi256_ps(a), _mm256_castsi256_ps(b));
     const SHUFFLE_2: i32 = _mm_shuffle(3, 1, 2, 0);
     let ordered = _mm256_permute4x64_pd::<SHUFFLE_2>(_mm256_castps_pd(combined));
-    return _mm256_castpd_si256(ordered);
+    _mm256_castpd_si256(ordered)
 }
 
 #[inline]
@@ -83,7 +82,7 @@ pub unsafe fn _mm256_packts_epi64(a: __m256i, b: __m256i) -> __m256i {
     let combined = _mm256_shuffle_ps::<SHUFFLE_1>(_mm256_castsi256_ps(a), _mm256_castsi256_ps(b));
     const SHUFFLE_2: i32 = _mm_shuffle(3, 1, 2, 0);
     let ordered = _mm256_permute4x64_pd::<SHUFFLE_2>(_mm256_castps_pd(combined));
-    return _mm256_castpd_si256(ordered);
+    _mm256_castpd_si256(ordered)
 }
 
 #[inline]
@@ -95,7 +94,7 @@ pub unsafe fn _mm256_cvtepi64_epi32x(v: __m256i) -> __m128i {
     let lo = _mm256_castps256_ps128(vf);
     const FLAGS: i32 = _mm_shuffle(2, 0, 2, 0);
     let packed = _mm_shuffle_ps::<FLAGS>(lo, hi);
-    return _mm_castps_si128(packed);
+    _mm_castps_si128(packed)
 }
 
 #[inline]
@@ -122,7 +121,7 @@ pub unsafe fn _mm256_mul_epu64(ab: __m256i, cd: __m256i) -> __m256i {
 
     /* high <<= 32; */
     high = _mm256_slli_epi64::<32>(high);
-    return _mm256_add_epi64(high, ac);
+    _mm256_add_epi64(high, ac)
 }
 
 #[inline]
