@@ -80,8 +80,7 @@ fn do_cbrt_sse(d: f32) -> f32 {
     unsafe {
         let v = _mm_set1_ps(d);
         let value = _mm_cbrt_ps(v);
-        let ex = f32::from_bits(_mm_extract_ps::<0>(value) as u32);
-        ex
+        f32::from_bits(_mm_extract_ps::<0>(value) as u32)
     }
 }
 

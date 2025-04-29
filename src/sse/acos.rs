@@ -19,7 +19,7 @@ pub unsafe fn _mm_acos_pd(x: __m128d) -> __m128d {
     let x_a = _mm_abs_pd(x);
     let x_asin = _mm_asin_pd(x_a);
     let v_pi = _mm_set1_pd(std::f64::consts::FRAC_PI_2);
-    return _mm_select_pd(gt_zero, _mm_sub_pd(v_pi, x_asin), _mm_add_pd(v_pi, x_asin));
+    _mm_select_pd(gt_zero, _mm_sub_pd(v_pi, x_asin), _mm_add_pd(v_pi, x_asin))
 }
 
 #[cfg(test)]

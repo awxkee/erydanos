@@ -55,8 +55,7 @@ pub unsafe fn _mm256_cbrt_fast_ps(x: __m256) -> __m256 {
 
     let c0 = halley_cbrt(t, x);
     let c1 = halley_cbrt(c0, x);
-    let v = _mm256_select_ps(_mm256_eqzero_ps(x), _mm256_set1_ps(0f32), c1);
-    v
+    _mm256_select_ps(_mm256_eqzero_ps(x), _mm256_set1_ps(0f32), c1)
 }
 
 /// Takes cube root from value *ULP 1.5*

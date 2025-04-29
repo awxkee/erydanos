@@ -18,7 +18,7 @@ pub unsafe fn _mm_acos_ps(x: __m128) -> __m128 {
     let x_a = _mm_abs_ps(x);
     let x_asin = _mm_asin_ps(x_a);
     let v_pi = _mm_set1_ps(std::f32::consts::FRAC_PI_2);
-    return _mm_select_ps(gt_zero, _mm_sub_ps(v_pi, x_asin), _mm_add_ps(v_pi, x_asin));
+    _mm_select_ps(gt_zero, _mm_sub_ps(v_pi, x_asin), _mm_add_ps(v_pi, x_asin))
 }
 
 #[cfg(test)]

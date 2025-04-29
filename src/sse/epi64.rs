@@ -60,7 +60,7 @@ pub unsafe fn _mm_mul_epu64(ab: __m128i, cd: __m128i) -> __m128i {
 
     /* high <<= 32; */
     high = _mm_slli_epi64::<32>(high);
-    return _mm_add_epi64(high, ac);
+    _mm_add_epi64(high, ac)
 }
 
 #[inline]
@@ -133,11 +133,11 @@ pub unsafe fn _mm_sllv_epi64x(a: __m128i, count: __m128i) -> __m128i {
 pub unsafe fn _mm_extract_epi64x<const IMM: i32>(d: __m128i) -> i64 {
     #[cfg(target_arch = "x86_64")]
     {
-        return if IMM == 0 {
+        if IMM == 0 {
             _mm_cvtsi128_si64(d)
         } else {
             _mm_extract_epi64::<IMM>(d)
-        };
+        }
     }
     #[cfg(target_arch = "x86")]
     {
@@ -158,7 +158,7 @@ pub unsafe fn _mm_extract_epi64x<const IMM: i32>(d: __m128i) -> i64 {
 pub unsafe fn _mm_not_epi64(a: __m128i) -> __m128i {
     #[allow(overflowing_literals)]
     let all_ones = _mm_set1_epi64x(0xffff_ffff_ffff_ffff);
-    return _mm_xor_si128(a, all_ones);
+    _mm_xor_si128(a, all_ones)
 }
 
 #[inline]
@@ -178,8 +178,7 @@ pub unsafe fn _mm_packus_epi64(a: __m128i, b: __m128i) -> __m128i {
     const SHUFFLE_MASK: i32 = _mm_shuffle(3, 1, 2, 0);
     let a = _mm_shuffle_epi32::<SHUFFLE_MASK>(a);
     let b1 = _mm_shuffle_epi32::<SHUFFLE_MASK>(b);
-    let moved = _mm_castps_si128(_mm_movelh_ps(_mm_castsi128_ps(a), _mm_castsi128_ps(b1)));
-    moved
+    _mm_castps_si128(_mm_movelh_ps(_mm_castsi128_ps(a), _mm_castsi128_ps(b1)))
 }
 
 #[inline]
@@ -192,8 +191,7 @@ pub unsafe fn _mm_packs_epi64(a: __m128i, b: __m128i) -> __m128i {
     const SHUFFLE_MASK: i32 = _mm_shuffle(3, 1, 2, 0);
     let a = _mm_shuffle_epi32::<SHUFFLE_MASK>(a);
     let b1 = _mm_shuffle_epi32::<SHUFFLE_MASK>(b);
-    let moved = _mm_castps_si128(_mm_movelh_ps(_mm_castsi128_ps(a), _mm_castsi128_ps(b1)));
-    moved
+    _mm_castps_si128(_mm_movelh_ps(_mm_castsi128_ps(a), _mm_castsi128_ps(b1)))
 }
 
 #[inline]
@@ -202,8 +200,7 @@ pub unsafe fn _mm_packts_epi64(a: __m128i, b: __m128i) -> __m128i {
     const SHUFFLE_MASK: i32 = _mm_shuffle(3, 1, 2, 0);
     let a = _mm_shuffle_epi32::<SHUFFLE_MASK>(a);
     let b1 = _mm_shuffle_epi32::<SHUFFLE_MASK>(b);
-    let moved = _mm_castps_si128(_mm_movelh_ps(_mm_castsi128_ps(a), _mm_castsi128_ps(b1)));
-    moved
+    _mm_castps_si128(_mm_movelh_ps(_mm_castsi128_ps(a), _mm_castsi128_ps(b1)))
 }
 
 #[cfg(test)]

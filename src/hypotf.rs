@@ -63,8 +63,7 @@ fn do_hypot_sse(x: f32, y: f32) -> f32 {
         let vx = _mm_set1_ps(x);
         let vy = _mm_set1_ps(y);
         let value = _mm_hypot_ps(vx, vy);
-        let ex = f32::from_bits(_mm_extract_ps::<0>(value) as u32);
-        ex
+        f32::from_bits(_mm_extract_ps::<0>(value) as u32)
     }
 }
 

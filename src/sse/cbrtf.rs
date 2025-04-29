@@ -54,17 +54,15 @@ pub unsafe fn _mm_cbrt_fast_ps(x: __m128) -> __m128 {
 
     let c0 = halley_cbrt(t, x);
     let c1 = halley_cbrt(c0, x);
-    let v = _mm_select_ps(_mm_eqzero_ps(x), _mm_set1_ps(0f32), c1);
-    v
+    _mm_select_ps(_mm_eqzero_ps(x), _mm_set1_ps(0f32), c1)
 }
 
 /// Takes cube root from value *ULP 1.5*
 #[inline]
 pub unsafe fn _mm_cbrt_ps(x: __m128) -> __m128 {
     let c1 = _mm_cbrt_fast_ps(x);
-    let mut v = _mm_select_ps(_mm_isinf_ps(x), _mm_set1_ps(f32::INFINITY), c1);
-    v = _mm_select_ps(_mm_isneginf_ps(x), _mm_set1_ps(f32::NEG_INFINITY), v);
-    v
+    let v = _mm_select_ps(_mm_isinf_ps(x), _mm_set1_ps(f32::INFINITY), c1);
+    _mm_select_ps(_mm_isneginf_ps(x), _mm_set1_ps(f32::NEG_INFINITY), v)
 }
 
 #[cfg(test)]

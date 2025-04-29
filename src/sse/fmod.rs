@@ -18,6 +18,5 @@ pub unsafe fn _mm_fmod_pd(a: __m128d, b: __m128d) -> __m128d {
     let division = _mm_mul_pd(dividend_vec, _mm_div_pd(_mm_set1_pd(1.), divisor_vec));
     let int_part = _mm_floor_pd(division);
     let product = _mm_mul_pd(int_part, divisor_vec);
-    let remainder = _mm_sub_pd(dividend_vec, product);
-    remainder
+    _mm_sub_pd(dividend_vec, product)
 }
