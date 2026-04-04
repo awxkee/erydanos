@@ -1,5 +1,8 @@
-use std::ops::{Add, Mul, Shr};
-
+use std::fs;
+use std::ops::{Add, Mul, Shr, Sub};
+use libm::{log, log2};
+use rug::Float;
+use rug::float::Round;
 // use rug::Assign;
 
 use erydanos::{
@@ -224,6 +227,212 @@ fn add_with_overflow_detection(a: i64, b: i64) -> (i64, bool) {
     (sum, overflow)
 }
 
+
+fn split_to_double_double(input: &str) -> (f64, f64) {
+    // Step 1: High-precision number with extra bits (e.g., 128 bits)
+    let valid = Float::parse(input);
+    let mut x = Float::with_val(128, valid.unwrap());
+
+    // Step 2: Round down to nearest f64
+    let hi = x.to_f64();
+    // let hi_trunc = f64::from_bits(hi.to_bits() & 0x_ffff_ffff_f800_0000);
+    // let hi_float = Float::with_val(64, hi_trunc);
+    let hi_float = Float::with_val(150, hi);
+
+    // Step 3: Subtract to get low part
+    x -= &hi_float;
+    let lo = x.to_f64();
+
+    (hi, lo)
+}
+
+fn to_hex_u64(input: &str) -> u64 {
+    // Step 1: High-precision number with extra bits (e.g., 128 bits)
+    let valid = Float::parse(input);
+    let mut x = Float::with_val(128, valid.unwrap());
+    x.to_f64_round(Round::Nearest).to_bits()
+}
+
+fn split_to_f_f(input: &str) -> (f32, f32) {
+    // Step 1: High-precision number with extra bits (e.g., 128 bits)
+    let valid = Float::parse(input);
+    let mut x = Float::with_val(128, valid.unwrap());
+
+    // Step 2: Round down to nearest f64
+    let hi = x.to_f32();
+    let hi_float = Float::with_val(128, hi);
+
+    // Step 3: Subtract to get low part
+    x -= &hi_float;
+    let lo = x.to_f32();
+
+    (hi, lo)
+}
+
+
+fn split_to_double_double_f(input: &Float) -> (f64, f64) {
+    // Step 1: High-precision number with extra bits (e.g., 128 bits)
+    // Step 2: Round down to nearest f64
+    let hi = input.to_f64();
+    let hi_float = Float::with_val(input.prec(), hi);
+    // let hi_trunc = f64::from_bits(hi.to_bits() & 0x_ffff_ffff_f800_0000);
+    // let hi_float = Float::with_val(64, hi_trunc);
+    let mut x = input.clone();
+    // Step 3: Subtract to get low part
+    x -= &hi_float;
+    let lo = x.to_f64();
+
+    (hi, lo)
+}
+
+fn split_to_double_double_f_d(input: &Float) -> (f64, Float) {
+    // Step 1: High-precision number with extra bits (e.g., 128 bits)
+    // Step 2: Round down to nearest f64
+    let hi = input.to_f64();
+    let hi_float = Float::with_val(128, hi);
+    // let hi_trunc = f64::from_bits(hi.to_bits() & 0x_ffff_ffff_f800_0000);
+    // let hi_float = Float::with_val(150, hi_trunc);
+    let mut x = input.clone();
+    // Step 3: Subtract to get low part
+    x -= &hi_float;
+
+    (hi, x)
+}
+
+fn get_log2_1() -> Float {
+    let v = Float::parse("0.69314718055994530941723212145817656807550013436025525412068000949339362196");
+    let mut log2_t = Float::with_val(150, v.unwrap());
+
+    let bits = log2_t.to_f64().to_bits() & ((0xffff_ffff_ffff_ffff >> 10) << 10);
+    let x = Float::with_val(150, f64::from_bits(bits));
+    
+    // let valid = Float::parse("0.693147180559945");
+    // let x = Float::with_val(150, valid.unwrap());
+    log2_t -= &x;
+    log2_t
+}
+
+fn split_to_float_float(input: &Float) -> (f32, f32) {
+    // Step 1: High-precision number with extra bits (e.g., 128 bits)
+    // Step 2: Round down to nearest f64
+    let hi = input.to_f32();
+    let hi_float = Float::with_val(64, hi);
+
+    let mut x = input.clone();
+    // Step 3: Subtract to get low part
+    x -= &hi_float;
+    let lo = x.to_f32();
+
+    (hi, lo)
+}
+
+#[derive(Debug, Clone, Copy)]
+struct Exp2Entry<T> {
+    factor: T,
+    eps: T,
+}
+
+/// Generate a lookup table with TBLSIZE entries.
+/// We map raw index [0, TBLSIZE) to signed integers in [-TBLSIZE/2, TBLSIZE/2 - 1].
+fn generate_exp2_table<const TBLSIZE: usize>() -> [Exp2Entry<f64>; TBLSIZE] {
+    let prec = 150u32; // high internal precision
+    let mut table: [Exp2Entry<f64>; TBLSIZE] = [Exp2Entry { factor: 0.0, eps: 0.0 }; TBLSIZE];
+
+    // For each raw index 0..256, compute signed index and table entry.
+    for raw_i in 0..TBLSIZE {
+        // Map: 0 -> -128, ..., 255 -> 127.
+        // Compute fraction = i_signed / TBLSIZE.
+        let mut fraction = Float::with_val(150, -0.5 + raw_i as f64 / (TBLSIZE as f64));
+        
+        // Compute high-precision exp2(fraction).
+        let eexp0 = fraction.clone().exp().to_f64();
+
+        let e1 = Float::with_val(150, eexp0);
+
+        // Now, we want to choose eps such that:
+        //    factor = 2^(fraction + eps)
+        // equals the high-precision value rounded to f64.
+        // One can define eps = log2(val_hp) - fraction.
+        let log2_val = e1.clone().ln();
+        let eps_hp = log2_val.clone().sub(fraction.clone());
+        let eps = eps_hp.to_f64();
+
+        // The factor: we want 2^(fraction + eps) computed in high precision,
+        // then rounded to f64.
+        let factor_hp = Float::with_val(prec, (fraction.clone() + eps_hp.clone()).exp());
+        let factor = factor_hp.to_f64();
+
+        table[raw_i] = Exp2Entry { factor, eps };
+    }
+    table
+}
+
+fn generate_log2_table<const TBLSIZE: usize>() -> [Exp2Entry<f64>; TBLSIZE] {
+    let prec = 150u32; // high internal precision
+    let mut table: [Exp2Entry<f64>; TBLSIZE] = [Exp2Entry { factor: 0.0, eps: 0.0 }; TBLSIZE];
+
+    // For each raw index 0..256, compute signed index and table entry.
+    for raw_i in 0..TBLSIZE {
+        // Map: 0 -> -128, ..., 255 -> 127.
+        // Compute fraction = i_signed / TBLSIZE.
+        let mut fraction = Float::with_val(150, -0.5 + raw_i as f64 / (TBLSIZE as f64));
+
+        // Compute high-precision exp2(fraction).
+        let eexp0 = fraction.clone().exp().to_f64();
+
+        let e1 = Float::with_val(150, eexp0);
+
+        // Now, we want to choose eps such that:
+        //    factor = 2^(fraction + eps)
+        // equals the high-precision value rounded to f64.
+        // One can define eps = log2(val_hp) - fraction.
+        let log2_val = e1.clone().ln();
+        let eps_hp = log2_val.clone().sub(fraction.clone());
+        let eps = eps_hp.to_f64();
+
+        // The factor: we want 2^(fraction + eps) computed in high precision,
+        // then rounded to f64.
+        let factor_hp = Float::with_val(prec, (fraction.clone() + eps_hp.clone()).exp());
+        let factor = factor_hp.to_f64();
+
+        table[raw_i] = Exp2Entry { factor, eps };
+    }
+    table
+}
+
+fn generate_exp2_table_f32<const TBLSIZE: usize>() -> [Exp2Entry<f32>; TBLSIZE] {
+    let prec = 150u32; // high internal precision
+    let mut table: [Exp2Entry<f32>; TBLSIZE] = [Exp2Entry { factor: 0.0, eps: 0.0 }; TBLSIZE];
+
+    // For each raw index 0..256, compute signed index and table entry.
+    for raw_i in 0..TBLSIZE {
+        // Map: 0 -> -128, ..., 255 -> 127.
+        // Compute fraction = i_signed / TBLSIZE.
+        let mut fraction = Float::with_val(150, -0.5 + raw_i as f64 / (TBLSIZE as f64));
+
+        // Compute high-precision exp2(fraction).
+        let eexp0 = fraction.clone().exp2().to_f32();
+
+        let e1 = Float::with_val(150, eexp0);
+
+        // Now, we want to choose eps such that:
+        //    factor = 2^(fraction + eps)
+        // equals the high-precision value rounded to f64.
+        // One can define eps = log2(val_hp) - fraction.
+        let log2_val = e1.clone().log2();
+        let eps_hp = log2_val.clone().sub(fraction.clone());
+        let eps = eps_hp.to_f32();
+
+        // The factor: we want 2^(fraction + eps) computed in high precision,
+        // then rounded to f64.
+        let factor_hp = Float::with_val(prec, (fraction.clone() + eps_hp.clone()).exp2());
+        let factor = factor_hp.to_f32();
+
+        table[raw_i] = Exp2Entry { factor, eps };
+    }
+    table
+}
+
 fn main() {
     // for i in -200..200 {
     //     let scale = 0.001f32;
@@ -251,6 +460,71 @@ fn main() {
     );
     println!("{:?}", multiply_u64(i64::MAX as u64, (-2i64) as u64));
     println!("{}", product.0 as i128 | ((product.1 as i128) << 64));
+    
+    println!("HEX {:#x}", to_hex_u64("0.14797756417918789262344603230303619056940078735351"));
+
+    println!("{:?}", split_to_double_double("2.88539008177792681471984936200378427485329190830597186827089881386221843836"));
+    
+    // let mut f = Float::with_val(128, 512f64);
+    // f = f.ln();
+    // f = f.recip();
+    // 
+    // println!("F {:?}", split_to_double_double_f(&f));
+    let k = f64::from_bits(0x3d39880000000000);
+
+    println!("` {}", k);
+    
+    let rz = generate_exp2_table::<256>();
+    println!("`1 {}", rz[0].eps);
+
+    let hex_repr = rz
+        .iter()
+        .map(|&a| (a.factor.to_bits(), a.eps.to_bits()))
+        .map(|(a0, a1)| format!("(0x{a0:08X}, 0x{a1:08X})"))
+        .collect::<Vec<_>>()
+        .join(",");
+
+    fs::write("./bs.rs", format!("[{}]", hex_repr)).unwrap();
+    
+    /*let v1 = get_log2_1();
+    println!("ln2_1({})", v1.to_f64_round(Round::Nearest));
+    // 
+    let mut lookup: [u64; 256] = [0; 256];
+    for (i, loc) in lookup.iter_mut().enumerate() {
+        
+        let mut v = -0.5 + i as f64 / 256.0;
+        
+        // let n_v = (i as i64 - 128) & (256i64 - 1);
+        // let n = Float::with_val(150, n_v);
+        // let dely = (n.clone() * Float::with_val(150, v1.clone())).to_f64_round(Round::Nearest);
+        // println!("{}", dely);
+        // v += dely;
+        let pe = Float::with_val(150, v).exp2();
+        let splat = split_to_double_double_f(&pe);
+        // *loc  = pe.to_f64_round(Round::Nearest).to_bits(); 
+        *loc  = splat.0.to_bits();
+        // println!("{}", i as f64 / 64.0);
+    }
+    
+    let hex_repr = lookup
+        .iter()
+        .map(|a0| format!("0x{a0:08X}"))
+        .collect::<Vec<_>>()
+        .join(",");
+
+    fs::write("./bs.rs", format!("[{}]", hex_repr)).unwrap();*/
+    
+    // let hex_repr = lookup
+    //     .iter()
+    //     .map(|(a, b)| format!("(0x{a:08X}, 0x{b:08X})"))
+    //     .collect::<Vec<_>>()
+    //     .join(",");
+
+    // fs::write("./bs.rs", format!("[{}]", hex_repr)).unwrap();
+    
+    // fs::write("./bs.rs", format!("{:?}", lookup)).unwrap();
+    
+    // println!("{:?}", lookup);
 
     // println!(
     //     " bits diff {}",
